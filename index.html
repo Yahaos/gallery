@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gallery | Portfolio</title>
+    <style>
+        /* --- 1. Base Styles --- */
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent: #ff4081;
+            --text-main: #ffffff;
+            --text-sec: #b0b0b0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- 2. Header with Animation --- */
+        header {
+            text-align: center;
+            padding: 3rem 1rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ff4081, #5c6bc0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-sec);
+            font-size: 1.1rem;
+        }
+
+        /* --- 3. Gallery Grid (Masonry) --- */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            column-count: 3; 
+            column-gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .gallery-container { column-count: 2; }
+        }
+        @media (max-width: 500px) {
+            .gallery-container { column-count: 1; }
+        }
+
+        /* --- 4. Photo Card & Animations --- */
+        .photo-card {
+            background-color: var(--card-bg);
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            break-inside: avoid;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            
+            /* Initial state for fade-in animation */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Hover Effect */
+        .photo-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-card:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay span {
+            color: white;
+            font-size: 1.5rem;
+            border: 1px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- 5. Lightbox (Modal) --- */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(255, 64, 129, 0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active img {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover { color: var(--accent); }
+
+        /* --- 6. Keyframes --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>VISUALS</h1>
+        <p class="subtitle">A Collection of Moments & Aesthetics</p>
+    </header>
+
+    <main class="gallery-container" id="gallery">
+        <div class="photo-card" style="animation-delay: 0.1s">
+            <img src="https://drive.google.com/uc?export=view&id=1mSyrqroOMaxQON0aCEu6WE3gNn4W4vyW" alt="Photo 1">
+            <div class="overlay"><span>+</span></div>
+        </div>
+        <div class="photo-card" style="animation-delay: 0.2s">
+            <img src="https://picsum.photos/600/600?random=2" alt="Photo 2">
+            <div class="overlay"><span>+</span></div>
+        </div>
+        <div class="photo-card" style="animation-delay: 0.3s">
+            <img src="https://picsum.photos/600/900?random=3" alt="Photo 3">
+            <div class="overlay"><span>+</span></div>
+        </div>
+        <div class="photo-card" style="animation-delay: 0.4s">
+            <img src="https://picsum.photos/600/700?random=4" alt="Photo 4">
+            <div class="overlay"><span>+</span></div>
+        </div>
+        <div class="photo-card" style="animation-delay: 0.5s">
+            <img src="https://picsum.photos/600/500?random=5" alt="Photo 5">
+            <div class="overlay"><span>+</span></div>
+        </div>
+        <div class="photo-card" style="animation-delay: 0.6s">
+            <img src="https://picsum.photos/600/850?random=6" alt="Photo 6">
+            <div class="overlay"><span>+</span></div>
+        </div>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <span class="close-btn">&times;</span>
+        <img src="" alt="Full view" id="lightbox-img">
+    </div>
+
+    <script>
+        // --- Logic ---
+        const photoCards = document.querySelectorAll('.photo-card img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.querySelector('.close-btn');
+
+        // Open Photo
+        photoCards.forEach(img => {
+            img.parentElement.addEventListener('click', () => {
+                lightboxImg.src = img.src; 
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Disable scroll
+            });
+        });
+
+        // Close Photo
+        const closeLightbox = () => {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Enable scroll
+        };
+
+        closeBtn.addEventListener('click', closeLightbox);
+
+        // Close when clicking outside image
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+    </script>
+
+</body>
+</html>
