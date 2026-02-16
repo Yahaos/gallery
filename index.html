@@ -36,7 +36,11 @@
             transition: background 0.5s ease;
             min-height: 100vh;
             -webkit-user-select: none; user-select: none;
+            overflow-x: hidden;
         }
+
+        /* Убираем скролл для Main */
+        body.no-scroll { overflow: hidden; }
 
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -94,10 +98,12 @@
 
         .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
         .page.active { display: block; }
+        #info.active { height: 100vh; display: flex; align-items: center; justify-content: center; padding-bottom: 0; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .info-content {
-            max-width: 700px; margin: 150px auto; text-align: center;
+            max-width: 700px; text-align: center;
             padding: 60px; background: var(--card-bg); border-radius: 40px;
             border: 1px solid var(--glass-border); backdrop-filter: blur(20px);
         }
@@ -112,8 +118,6 @@
             position: relative; cursor: pointer;
         }
         .gallery-item:hover { transform: translateY(-10px); border-color: var(--accent-color); }
-        
-        /* Выделение при нажатии */
         .gallery-item:active { outline: 3px solid var(--accent-color); outline-offset: -3px; }
 
         .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
@@ -136,7 +140,7 @@
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
-            cursor: pointer; /* Указатель клика для закрытия */
+            cursor: zoom-out;
         }
         .lightbox.active { display: flex; opacity: 1; }
         .lightbox-wrapper { 
@@ -153,7 +157,7 @@
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body oncontextmenu="return false;" class="no-scroll">
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
     <div id="screamer-overlay">
@@ -230,20 +234,13 @@
     </section>
 
     <section id="future" class="page">
-        <div class="info-content">
+        <div class="info-content" style="margin: 150px auto;">
             <h1 style="letter-spacing: 10px;">HORIZON</h1>
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
-            
             <div class="update-card">
                 <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
                 <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders for a more immersive feel.</p>
-            </div>
-
-            <div class="update-card">
-                <span class="status-badge" style="border: 1px solid #4caf50; color: #4caf50;">In Development</span>
-                <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight and color palette.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders.</p>
             </div>
         </div>
     </section>
@@ -256,6 +253,15 @@
     </div>
 
     <script>
+        // Анти-F12 и Блокировка доступа
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const audioScreamer = document.getElementById('screamer-audio');
             
@@ -276,18 +282,25 @@
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
+                    const target = link.getAttribute('data-target');
                     navLinks.forEach(l => l.classList.remove('active'));
                     pages.forEach(p => p.classList.remove('active'));
                     link.classList.add('active');
-                    document.getElementById(link.getAttribute('data-target')).classList.add('active');
+                    document.getElementById(target).classList.add('active');
+                    
+                    // Блокировка скролла только на Main
+                    if(target === 'info') {
+                        document.body.classList.add('no-scroll');
+                    } else {
+                        document.body.classList.remove('no-scroll');
+                    }
                     window.scrollTo({top: 0, behavior: 'smooth'});
                 });
             });
 
-            // Screamer Logic
+            // Screamer
             const trigger = document.getElementById('scare-trigger');
             const overlay = document.getElementById('screamer-overlay');
-
             trigger.addEventListener('click', () => {
                 overlay.style.display = 'flex';
                 audioScreamer.volume = 1;
@@ -295,10 +308,9 @@
                 setTimeout(() => { overlay.style.display = 'none'; }, 1800);
             });
 
-            // Lightbox Logic
+            // Lightbox
             const lightbox = document.getElementById('lightbox');
             const lWrapper = document.getElementById('lightbox-wrapper');
-            
             document.querySelectorAll('.gallery-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const src = item.getAttribute('data-src');
@@ -308,22 +320,16 @@
                 });
             });
 
-            // Выход с фотки при клике на любое свободное место (фон)
-            lightbox.onclick = (e) => {
+            // Закрытие при клике на свободное место
+            lightbox.addEventListener('click', (e) => {
+                // Если клик был по самому лайтбоксу (фону), а не по обертке с фото
                 if (e.target === lightbox || e.target.id === 'close-x') {
                     lightbox.classList.remove('active');
                     setTimeout(() => lightbox.style.display = 'none', 400);
                 }
-            };
+            });
 
-            // Explore More
-            const loadBtn = document.getElementById('load-more');
-            const noMoreMsg = document.getElementById('no-more-msg');
-            loadBtn.onclick = () => {
-                loadBtn.style.display = 'none';
-                noMoreMsg.style.display = 'block';
-            };
-
+            // Theme & Music
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
             const bgMusic = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-toggle');
@@ -334,6 +340,12 @@
                 musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
             };
             document.getElementById('volume-slider').oninput = (e) => { bgMusic.volume = e.target.value; };
+
+            const loadBtn = document.getElementById('load-more');
+            loadBtn.onclick = () => {
+                loadBtn.style.display = 'none';
+                document.getElementById('no-more-msg').style.display = 'block';
+            };
         });
     </script>
 </body>
