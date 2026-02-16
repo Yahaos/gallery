@@ -1,132 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Gallery | Portfolio</title>
+    <title>Моя Фотогалерея</title>
     <style>
-        /* --- 1. Base Styles --- */
-        :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --accent: #ff4081;
-            --text-main: #ffffff;
-            --text-sec: #b0b0b0;
-        }
-
-        * {
-            box-sizing: border-box;
+        /* Общие стили для темной темы */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
             margin: 0;
             padding: 0;
+            line-height: 1.6;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow-x: hidden;
-        }
-
-        /* --- 2. Header with Animation --- */
-        header {
-            text-align: center;
-            padding: 3rem 1rem;
-            animation: fadeInDown 1s ease-out;
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
         }
 
         h1 {
-            font-size: 3rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #ff4081, #5c6bc0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            text-align: center;
+            color: #e0e0e0;
+            margin-bottom: 30px;
         }
 
-        p.subtitle {
-            color: var(--text-sec);
-            font-size: 1.1rem;
+        /* Стили для сетки галереи */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
 
-        /* --- 3. Gallery Grid (Masonry) --- */
-        .gallery-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            column-count: 3; 
-            column-gap: 20px;
-        }
-
-        @media (max-width: 800px) {
-            .gallery-container { column-count: 2; }
-        }
-        @media (max-width: 500px) {
-            .gallery-container { column-count: 1; }
-        }
-
-        /* --- 4. Photo Card & Animations --- */
-        .photo-card {
-            background-color: var(--card-bg);
-            margin-bottom: 20px;
-            border-radius: 12px;
+        /* Стили для карточки фото */
+        .gallery-item {
+            background-color: #2a2a2a;
+            border-radius: 8px;
             overflow: hidden;
-            break-inside: avoid;
-            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            
-            /* Initial state for fade-in animation */
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease-out forwards;
         }
 
-        .photo-card img {
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .gallery-item img {
             width: 100%;
-            height: auto;
+            height: 200px; /* Фиксированная высота для предпросмотра */
+            object-fit: cover; /* Обрезка изображений для заполнения */
             display: block;
-            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        /* Hover Effect */
-        .photo-card:hover img {
-            transform: scale(1.1);
+        .gallery-item-info {
+            padding: 15px;
+            text-align: center;
         }
 
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .gallery-item-info h3 {
+            margin-top: 0;
+            color: #f0f0f0;
+            font-size: 1.1em;
         }
 
-        .photo-card:hover .overlay {
-            opacity: 1;
+        .gallery-item-info p {
+            color: #b0b0b0;
+            font-size: 0.9em;
         }
 
-        .overlay span {
-            color: white;
-            font-size: 1.5rem;
-            border: 1px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* --- 5. Lightbox (Modal) --- */
+        /* Стили для лайтбокса (модального окна) */
         .lightbox {
+            display: none; /* Скрыто по умолчанию */
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
@@ -135,115 +90,139 @@
         }
 
         .lightbox.active {
-            display: flex;
             opacity: 1;
         }
 
-        .lightbox img {
+        .lightbox-content {
+            position: relative;
             max-width: 90%;
             max-height: 90%;
+            text-align: center;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 80vh; /* Максимальная высота 80% от высоты видимой области */
+            display: block;
+            margin: 0 auto;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(255, 64, 129, 0.3);
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
         }
 
-        .lightbox.active img {
-            transform: scale(1);
-        }
-
-        .close-btn {
+        .lightbox-close {
             position: absolute;
-            top: 30px;
-            right: 40px;
-            font-size: 3rem;
-            color: white;
+            top: -30px; /* Размещаем над изображением */
+            right: 0;
+            color: #f0f0f0;
+            font-size: 40px;
             cursor: pointer;
-            transition: color 0.3s;
+            transition: color 0.2s ease;
         }
 
-        .close-btn:hover { color: var(--accent); }
-
-        /* --- 6. Keyframes --- */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .lightbox-close:hover {
+            color: #ff6600;
         }
 
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
+        .lightbox-caption {
+            color: #f0f0f0;
+            margin-top: 10px;
+            font-size: 1.1em;
         }
-
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>VISUALS</h1>
-        <p class="subtitle">A Collection of Moments & Aesthetics</p>
-    </header>
-
-    <main class="gallery-container" id="gallery">
-        <div class="photo-card" style="animation-delay: 0.1s">
-            <img src="images/test.jpg" alt="Photo 1">
-            <div class="overlay"><span>+</span></div>
+    <div class="container">
+        <h1>Моя Фотогалерея</h1>
+        
+        <div class="gallery" id="gallery">
+            <div class="gallery-item">
+                <img src="https://picsum.photos/id/237/400/300" alt="Собака смотрит на камеру">
+                <div class="gallery-item-info">
+                    <h3>Верный Друг</h3>
+                    <p>Фотография сделана в парке на закате.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/id/1084/400/300" alt="Горы и туман">
+                <div class="gallery-item-info">
+                    <h3>Туманные Пики</h3>
+                    <p>Величие природы.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/id/10/400/300" alt="Рабочий стол программиста">
+                <div class="gallery-item-info">
+                    <h3>Рабочее Пространство</h3>
+                    <p>Идеальное место для творчества.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/id/20/400/300" alt="Листья на земле">
+                <div class="gallery-item-info">
+                    <h3>Осенние Оттенки</h3>
+                    <p>Красота падения листвы.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/id/21/400/300" alt="Макро фото цветка">
+                <div class="gallery-item-info">
+                    <h3>Детали Цветка</h3>
+                    <p>Мир в крупном плане.</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://picsum.photos/id/22/400/300" alt="Птица сидит на ветке">
+                <div class="gallery-item-info">
+                    <h3>Лесной Обитатель</h3>
+                    <p>Мгновение тишины.</p>
+                </div>
+            </div>
         </div>
-        <div class="photo-card" style="animation-delay: 0.2s">
-            <img src="images/test.jpg" alt="Photo 2">
-            <div class="overlay"><span>+</span></div>
-        </div>
-        <div class="photo-card" style="animation-delay: 0.3s">
-            <img src="images/test.jpg" alt="Photo 3">
-            <div class="overlay"><span>+</span></div>
-        </div>
-        <div class="photo-card" style="animation-delay: 0.4s">
-            <img src="images/test.jpg" alt="Photo 4">
-            <div class="overlay"><span>+</span></div>
-        </div>
-        <div class="photo-card" style="animation-delay: 0.5s">
-            <img src="images/test.jpg" alt="Photo 5">
-            <div class="overlay"><span>+</span></div>
-        </div>
-        <div class="photo-card" style="animation-delay: 0.6s">
-            <img src="images/test.jpg" alt="Photo 6">
-            <div class="overlay"><span>+</span></div>
-        </div>
-    </main>
+    </div>
 
     <div class="lightbox" id="lightbox">
-        <span class="close-btn">&times;</span>
-        <img src="" alt="Full view" id="lightbox-img">
+        <div class="lightbox-content">
+            <span class="lightbox-close">&times;</span>
+            <img src="" alt="Full image" id="lightbox-img">
+            <p class="lightbox-caption" id="lightbox-caption"></p>
+        </div>
     </div>
 
     <script>
-        // --- Logic ---
-        const photoCards = document.querySelectorAll('.photo-card img');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-        const closeBtn = document.querySelector('.close-btn');
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            const lightboxClose = document.querySelector('.lightbox-close');
 
-        // Open Photo
-        photoCards.forEach(img => {
-            img.parentElement.addEventListener('click', () => {
-                lightboxImg.src = img.src; 
-                lightbox.classList.add('active');
-                document.body.style.overflow = 'hidden'; // Disable scroll
+            galleryItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const imgSrc = item.querySelector('img').src;
+                    const imgAlt = item.querySelector('img').alt;
+                    const captionText = item.querySelector('.gallery-item-info h3').textContent + ' - ' + item.querySelector('.gallery-item-info p').textContent;
+
+                    lightboxImg.src = imgSrc;
+                    lightboxImg.alt = imgAlt;
+                    lightboxCaption.textContent = captionText;
+                    lightbox.classList.add('active'); // Активируем лайтбокс
+                    document.body.style.overflow = 'hidden'; // Запрещаем прокрутку фона
+                });
             });
-        });
 
-        // Close Photo
-        const closeLightbox = () => {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = 'auto'; // Enable scroll
-        };
+            lightboxClose.addEventListener('click', () => {
+                lightbox.classList.remove('active'); // Деактивируем лайтбокс
+                document.body.style.overflow = 'auto'; // Разрешаем прокрутку фона
+            });
 
-        closeBtn.addEventListener('click', closeLightbox);
-
-        // Close when clicking outside image
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) {
-                closeLightbox();
-            }
+            // Закрытие лайтбокса при клике вне картинки
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
         });
     </script>
 
