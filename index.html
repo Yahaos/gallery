@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Visual Archive | Premium Experience</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0f0f0f;
-            --card-bg: rgba(255, 255, 255, 0.03); /* Уменьшил фон для фотографий */
+            --card-bg: rgba(255, 255, 255, 0.03);
             --accent-color: #ff4081;
             --text-color: #ffffff;
             --sub-text: #b0b0b0;
@@ -37,9 +37,10 @@
             min-height: 100vh;
             -webkit-user-select: none; user-select: none;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body.no-scroll { overflow: hidden; }
+        body.no-scroll { overflow: hidden; position: fixed; width: 100%; }
 
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -50,137 +51,107 @@
         .progress-container { position: fixed; top: 0; width: 100%; height: 4px; z-index: 9999; }
         .progress-bar { height: 100%; background: var(--accent-color); width: 0%; box-shadow: 0 0 15px var(--accent-color); }
 
+        /* Адаптивная навигация */
         nav {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 10px; background: var(--card-bg);
-            padding: 10px 20px; border-radius: 50px; border: 1px solid var(--glass-border);
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 5px; background: var(--card-bg);
+            padding: 8px; border-radius: 50px; border: 1px solid var(--glass-border);
             backdrop-filter: blur(15px); z-index: 4000;
+            width: fit-content; max-width: 90%;
         }
 
         .nav-link {
-            padding: 10px 25px; color: var(--text-color); text-decoration: none;
-            font-size: 0.85rem; font-weight: 500; border-radius: 25px;
+            padding: 10px 20px; color: var(--text-color); text-decoration: none;
+            font-size: 0.75rem; font-weight: 500; border-radius: 25px;
             transition: var(--transition); cursor: pointer; opacity: 0.6;
+            white-space: nowrap;
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        /* Бегущая строка */
         .marquee-container {
-            position: fixed;
-            top: 75px;
-            right: 20px;
-            width: 200px;
-            overflow: hidden;
-            opacity: 0;
-            transition: var(--transition);
-            z-index: 3000;
-            pointer-events: none;
+            position: fixed; top: 75px; right: 20px; width: 150px;
+            overflow: hidden; opacity: 0; transition: var(--transition); z-index: 3000; pointer-events: none;
         }
         .marquee-container.active { opacity: 1; }
         .marquee-text {
-            display: inline-block;
-            white-space: nowrap;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-color);
+            display: inline-block; white-space: nowrap; font-size: 0.6rem;
+            text-transform: uppercase; letter-spacing: 2px; color: var(--accent-color);
             animation: marquee 10s linear infinite;
         }
+
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
 
-        .social-links { margin-top: 30px; display: flex; justify-content: center; gap: 40px; }
+        .social-links { margin-top: 30px; display: flex; justify-content: center; gap: 30px; }
         .social-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .social-btn { text-decoration: none; color: inherit; cursor: pointer; }
-        .social-btn i { font-size: 2.5rem; transition: var(--transition); }
-        .social-btn:hover i { color: var(--accent-color); transform: scale(1.2); filter: drop-shadow(0 0 10px var(--accent-color)); }
-        .social-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--sub-text); }
+        .social-btn i { font-size: 2rem; transition: var(--transition); }
+        .social-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; color: var(--sub-text); }
 
-        #screamer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; display: none;
-            justify-content: center; align-items: center;
-        }
-        #screamer-overlay img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
-        .controls { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 12px; z-index: 3000; }
+        .controls { position: fixed; top: 15px; right: 15px; display: flex; align-items: center; gap: 8px; z-index: 3000; }
         .volume-container {
             display: flex; align-items: center; background: var(--card-bg);
-            padding: 0 15px; height: 45px; border-radius: 25px;
+            padding: 0 10px; height: 40px; border-radius: 20px;
             border: 1px solid var(--glass-border); backdrop-filter: blur(10px);
             opacity: 0; transform: translateX(20px); transition: var(--transition);
-            pointer-events: none;
         }
         .controls:hover .volume-container { opacity: 1; transform: translateX(0); pointer-events: all; }
-        #volume-slider { width: 80px; cursor: pointer; accent-color: var(--accent-color); }
+        #volume-slider { width: 60px; cursor: pointer; accent-color: var(--accent-color); }
         .control-btn {
-            width: 45px; height: 45px; border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             background: var(--card-bg); border: 1px solid var(--glass-border);
             color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px); transition: var(--transition);
+            backdrop-filter: blur(10px);
         }
 
-        .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
+        .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 120px; }
         .page.active { display: block; }
         #info.active { height: 100vh; display: flex; align-items: center; justify-content: center; padding-bottom: 0; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .info-content {
-            max-width: 700px; text-align: center;
-            padding: 60px; background: var(--card-bg); border-radius: 40px;
+            width: 85%; max-width: 600px; text-align: center;
+            padding: 40px 20px; background: var(--card-bg); border-radius: 30px;
             border: 1px solid var(--glass-border); backdrop-filter: blur(20px);
         }
 
-        .hero-section { text-align: center; padding: 120px 20px 60px; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px; }
+        .hero-section { text-align: center; padding: 100px 20px 40px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Сетка для мобилок */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         
         .gallery-item {
-            background: var(--card-bg); border-radius: 30px; overflow: hidden;
+            background: var(--card-bg); border-radius: 20px; overflow: hidden;
             border: 1px solid var(--glass-border); transition: var(--transition);
-            position: relative; cursor: pointer;
         }
-        .gallery-item:hover { transform: translateY(-10px); border-color: var(--accent-color); }
-        .gallery-item:active { outline: 3px solid var(--accent-color); outline-offset: -3px; }
-
-        .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
-
-        .img-container { height: 400px; overflow: hidden; position: relative; background-size: cover; background-position: center; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .gallery-item:hover .img-container { transform: scale(1.1); }
-        
-        .gallery-item-info { padding: 25px; background: transparent; text-align: center; } /* Сделал фон прозрачным */
-        .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
+        .img-container { height: 300px; background-size: cover; background-position: center; transition: 1s ease; }
+        .gallery-item-info { padding: 20px; text-align: center; }
+        .gallery-item-info h3 { font-size: 1rem; margin: 0; }
 
         .load-more-btn {
-            padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color);
-            color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
-            margin-top: 60px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            padding: 14px 40px; background: transparent; border: 1px solid var(--accent-color);
+            color: var(--text-color); border-radius: 50px; cursor: pointer;
+            margin-top: 40px; font-size: 0.8rem; letter-spacing: 2px;
         }
-        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
-        #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        .lightbox {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
-            backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
-            cursor: zoom-out;
-        }
-        .lightbox.active { display: flex; opacity: 1; }
-        .lightbox-wrapper { 
-            position: relative; width: 80%; height: 80%; 
-            transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: default; background-size: contain; background-repeat: no-repeat; background-position: center;
-        }
-        .lightbox.active .lightbox-wrapper { transform: scale(1); }
-        .close-lightbox { position: absolute; top: -60px; right: 0; color: white; font-size: 3rem; cursor: pointer; transition: var(--transition); }
-        .close-lightbox:hover { transform: rotate(90deg); color: var(--accent-color); }
+        .update-card { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid var(--glass-border); margin-bottom: 20px; }
 
-        .update-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px; transition: var(--transition); }
-        .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+        /* Lightbox для мобилок */
+        .lightbox-wrapper { width: 95%; height: 70vh; }
+
+        /* Медиа-запросы для телефонов */
+        @media (max-width: 600px) {
+            .info-content h1 { font-size: 1.5rem !important; letter-spacing: 8px !important; }
+            .info-content p { font-size: 0.85rem !important; line-height: 1.8 !important; }
+            .hero-section h1 { font-size: 1.8rem !important; }
+            .nav-link { padding: 8px 15px; font-size: 0.7rem; }
+            .volume-container { display: none; } /* Прячем громкость на мобилках для чистоты */
+            .marquee-container { top: 70px; right: 15px; width: 120px; }
+            .gallery { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body oncontextmenu="return false;" class="no-scroll">
@@ -189,6 +160,7 @@
     <div id="screamer-overlay">
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXF4ZzZ6Ynd6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6bmZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGVpEFTD3SGoM/giphy.gif" alt="Jumpscare">
     </div>
+    
     <audio id="screamer-audio" preload="auto">
         <source src="https://files.catbox.moe/rbt7sc.mp3" type="audio/mpeg">
     </audio>
@@ -217,7 +189,7 @@
 
     <section id="info" class="page active">
         <div class="info-content">
-            <h1 style="letter-spacing: 15px;">VISION</h1>
+            <h1 style="letter-spacing: 15px; margin: 0 0 20px 0;">VISION</h1>
             <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">A private digital repository focusing on minimal aesthetics and modern visual culture.</p>
             <div class="social-links">
                 <div class="social-wrapper">
@@ -235,7 +207,7 @@
     <section id="gallery" class="page">
         <header class="hero-section">
             <h1 style="letter-spacing: 8px;">ARCHIVE 01</h1>
-            <p style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">CURATED SELECTION</p>
+            <p style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.7rem;">CURATED SELECTION</p>
         </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
@@ -244,7 +216,7 @@
                     <div class="img-container" style="background-image: url('images/test.jpg');"></div>
                     <div class="gallery-item-info">
                         <h3>Nocturnal Flow</h3>
-                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 01</p>
+                        <p style="color:var(--sub-text); font-size:0.6rem; letter-spacing: 2px;">VAULT UNIT 01</p>
                     </div>
                 </div>
                 <div class="gallery-item" data-src="images/test.jpg">
@@ -252,32 +224,32 @@
                     <div class="img-container" style="background-image: url('images/test.jpg');"></div>
                     <div class="gallery-item-info">
                         <h3>Minimal Essence</h3>
-                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 02</p>
+                        <p style="color:var(--sub-text); font-size:0.6rem; letter-spacing: 2px;">VAULT UNIT 02</p>
                     </div>
                 </div>
             </div>
             <center>
                 <button class="load-more-btn" id="load-more">Explore More</button>
-                <div id="no-more-msg">End of Current Archive</div>
+                <div id="no-more-msg" style="margin-top: 40px; font-size: 0.7rem; color: var(--sub-text);">End of Archive</div>
             </center>
         </div>
     </section>
 
     <section id="future" class="page">
-        <div class="info-content" style="margin: 150px auto;">
-            <h1 style="letter-spacing: 10px;">HORIZON</h1>
-            <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
-            
+        <div class="container" style="padding-top: 100px;">
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h1 style="letter-spacing: 10px;">HORIZON</h1>
+                <p style="color: var(--sub-text); font-size: 0.8rem;">Future Implementation</p>
+            </div>
             <div class="update-card">
                 <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
                 <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders.</p>
+                <p style="color:var(--sub-text); font-size:0.8rem;">4K video backgrounds and dynamic transition shaders.</p>
             </div>
-
             <div class="update-card">
                 <span class="status-badge" style="border: 1px solid var(--accent-color); color: var(--accent-color);">Planning</span>
                 <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-driven image organization based on color palette and visual density.</p>
+                <p style="color:var(--sub-text); font-size:0.8rem;">AI-driven image organization systems.</p>
             </div>
         </div>
     </section>
@@ -290,24 +262,18 @@
     </div>
 
     <script>
-        // Анти-F12 и Блокировка доступа
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        // Анти-F12
+        document.onkeydown = (e) => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 67, 74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode == 85)) return false;
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             const audioScreamer = document.getElementById('screamer-audio');
             const marquee = document.getElementById('marquee');
             
-            document.body.addEventListener('click', () => {
-                audioScreamer.play().then(() => {
-                    audioScreamer.pause();
-                    audioScreamer.currentTime = 0;
-                }).catch(() => {});
+            // Фикс для аудио на мобилках (разблокировка при первом тапе)
+            document.body.addEventListener('touchstart', () => {
+                audioScreamer.play().then(() => { audioScreamer.pause(); audioScreamer.currentTime = 0; }).catch(() => {});
             }, { once: true });
 
             window.onscroll = () => {
@@ -326,11 +292,8 @@
                     link.classList.add('active');
                     document.getElementById(target).classList.add('active');
                     
-                    if(target === 'info') {
-                        document.body.classList.add('no-scroll');
-                    } else {
-                        document.body.classList.remove('no-scroll');
-                    }
+                    if(target === 'info') document.body.classList.add('no-scroll');
+                    else document.body.classList.remove('no-scroll');
                     window.scrollTo({top: 0, behavior: 'smooth'});
                 });
             });
@@ -344,23 +307,23 @@
                 setTimeout(() => { overlay.style.display = 'none'; }, 1800);
             });
 
-            const lightbox = document.getElementById('lightbox');
-            const lWrapper = document.getElementById('lightbox-wrapper');
             document.querySelectorAll('.gallery-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const src = item.getAttribute('data-src');
-                    lWrapper.style.backgroundImage = `url('${src}')`;
+                    const lightbox = document.getElementById('lightbox');
+                    document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${src}')`;
                     lightbox.style.display = 'flex';
                     setTimeout(() => lightbox.classList.add('active'), 10);
                 });
             });
 
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox || e.target.id === 'close-x') {
-                    lightbox.classList.remove('active');
-                    setTimeout(() => lightbox.style.display = 'none', 400);
+            document.getElementById('lightbox').onclick = (e) => {
+                if (e.target.id === 'lightbox' || e.target.id === 'close-x') {
+                    const lb = document.getElementById('lightbox');
+                    lb.classList.remove('active');
+                    setTimeout(() => lb.style.display = 'none', 400);
                 }
-            });
+            };
 
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
             
@@ -377,15 +340,13 @@
                     marquee.classList.add('active');
                 }
                 isPlaying = !isPlaying;
-                musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
                 musicBtn.style.color = isPlaying ? 'var(--accent-color)' : 'var(--text-color)';
+                musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
             };
 
             document.getElementById('volume-slider').oninput = (e) => { bgMusic.volume = e.target.value; };
-
-            const loadBtn = document.getElementById('load-more');
-            loadBtn.onclick = () => {
-                loadBtn.style.display = 'none';
+            document.getElementById('load-more').onclick = function() {
+                this.style.display = 'none';
                 document.getElementById('no-more-msg').style.display = 'block';
             };
         });
