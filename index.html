@@ -91,6 +91,11 @@
             backdrop-filter: blur(10px); transition: var(--transition);
         }
 
+        /* --- Instagram Icon Size --- */
+        .social-links { margin-top: 30px; }
+        .social-btn i { font-size: 2.5rem; color: var(--text-color); transition: var(--transition); }
+        .social-btn:hover i { color: var(--accent-color); transform: scale(1.1); }
+
         /* --- Sections --- */
         .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
         .page.active { display: block; }
@@ -127,15 +132,6 @@
         }
         .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
 
-        .load-more-btn {
-            padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color);
-            color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
-            margin-top: 60px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-        }
-        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
-        
-        #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
-
         /* --- LIGHTBOX --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -145,8 +141,8 @@
         .lightbox.active { display: flex; opacity: 1; }
         .lightbox-wrapper { position: relative; max-width: 90%; max-height: 90%; transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .lightbox.active .lightbox-wrapper { transform: scale(1); }
-        .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
-        .close-lightbox { position: absolute; top: -50px; right: 0; color: white; font-size: 2rem; cursor: pointer; transition: 0.3s; }
+        .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .close-lightbox { position: absolute; top: -50px; right: 0; color: white; font-size: 2rem; cursor: pointer; }
 
         /* Horizon Cards */
         .update-card {
@@ -167,7 +163,7 @@
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
     <nav>
-        <div class="nav-link active" data-target="info">Curator</div>
+        <div class="nav-link active" data-target="info">Main</div>
         <div class="nav-link" data-target="gallery">Archive</div>
         <div class="nav-link" data-target="future">Horizon</div>
     </nav>
@@ -191,7 +187,9 @@
                 A private digital repository focusing on minimal aesthetics and modern visual culture.
             </p>
             <div class="social-links">
-                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
             </div>
         </div>
     </section>
@@ -222,8 +220,8 @@
             </div>
             
             <center>
-                <button class="load-more-btn" id="load-more">Explore More</button>
-                <div id="no-more-msg">End of Current Archive</div>
+                <button class="load-more-btn" id="load-more" style="padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color); color: var(--text-color); border-radius: 50px; cursor: pointer; margin-top: 60px;">Explore More</button>
+                <div id="no-more-msg" style="display:none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px;">End of Current Archive</div>
             </center>
         </div>
     </section>
@@ -234,15 +232,21 @@
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
             
             <div class="update-card">
+                <span class="status-badge" style="background: #6200ea; color: white;">Coming Soon</span>
+                <h3>00 System Core v2.0</h3>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Major engine update. Enhanced performance, new visual shaders, and personalized archive sorting.</p>
+            </div>
+
+            <div class="update-card">
                 <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
                 <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders for a more immersive feel.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders.</p>
             </div>
 
             <div class="update-card">
                 <span class="status-badge" style="border: 1px solid #4caf50; color: #4caf50;">In Development</span>
                 <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight and color palette.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight.</p>
             </div>
         </div>
     </section>
@@ -250,7 +254,6 @@
     <div class="lightbox" id="lightbox">
         <div class="lightbox-wrapper">
             <span class="close-lightbox" id="close-x">&times;</span>
-            <div class="img-protection"></div>
             <img src="" id="lightbox-img">
         </div>
     </div>
@@ -277,54 +280,46 @@
                 });
             });
 
-            // Lightbox
-            const lightbox = document.getElementById('lightbox');
-            const lImg = document.getElementById('lightbox-img');
-            const openLightbox = (src) => {
-                lImg.src = src;
-                lightbox.style.display = 'flex';
-                setTimeout(() => lightbox.classList.add('active'), 10);
-            };
-            const closeLightbox = () => {
-                lightbox.classList.remove('active');
-                setTimeout(() => lightbox.style.display = 'none', 400);
-            };
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
-            });
-            lightbox.addEventListener('click', (e) => { if(e.target !== lImg) closeLightbox(); });
-
             // Theme Toggle
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
 
-            // --- Music & Volume Logic ---
+            // Music & Volume
             const audio = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-toggle');
             const volumeSlider = document.getElementById('volume-slider');
             let isPlaying = false;
 
-            // 1. Установка стандартной громкости 25%
             audio.volume = 0.25;
 
-            // 2. Управление кнопкой Play/Pause
             musicBtn.onclick = () => {
                 isPlaying ? audio.pause() : audio.play();
                 isPlaying = !isPlaying;
                 musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
             };
 
-            // 3. Изменение громкости ползунком
-            volumeSlider.oninput = (e) => {
-                audio.volume = e.target.value;
+            volumeSlider.oninput = (e) => { audio.volume = e.target.value; };
+
+            // Lightbox Logic
+            const lightbox = document.getElementById('lightbox');
+            const lImg = document.getElementById('lightbox-img');
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    lImg.src = item.querySelector('img').src;
+                    lightbox.style.display = 'flex';
+                    setTimeout(() => lightbox.classList.add('active'), 10);
+                });
+            });
+            document.getElementById('close-x').onclick = () => {
+                lightbox.classList.remove('active');
+                setTimeout(() => lightbox.style.display = 'none', 400);
             };
 
-            // Explore More
+            // Load More Simulation
             const loadBtn = document.getElementById('load-more');
-            const noMoreMsg = document.getElementById('no-more-msg');
-            loadBtn.addEventListener('click', () => {
+            loadBtn.onclick = () => {
                 loadBtn.style.display = 'none';
-                noMoreMsg.style.display = 'block';
-            });
+                document.getElementById('no-more-msg').style.display = 'block';
+            };
         });
     </script>
 </body>
