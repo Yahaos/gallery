@@ -64,7 +64,26 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        .controls { position: fixed; top: 20px; right: 20px; display: flex; gap: 12px; z-index: 3000; }
+        /* --- Controls & Volume Slider --- */
+        .controls { 
+            position: fixed; top: 20px; right: 20px; 
+            display: flex; align-items: center; gap: 12px; z-index: 3000; 
+        }
+        
+        .volume-container {
+            display: flex; align-items: center; background: var(--card-bg);
+            padding: 0 15px; height: 45px; border-radius: 25px;
+            border: 1px solid var(--glass-border); backdrop-filter: blur(10px);
+            opacity: 0; transform: translateX(20px); transition: var(--transition);
+            pointer-events: none;
+        }
+        
+        .controls:hover .volume-container { opacity: 1; transform: translateX(0); pointer-events: all; }
+
+        #volume-slider {
+            width: 80px; cursor: pointer; accent-color: var(--accent-color);
+        }
+
         .control-btn {
             width: 45px; height: 45px; border-radius: 50%;
             background: var(--card-bg); border: 1px solid var(--glass-border);
@@ -101,15 +120,13 @@
         .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .gallery-item:hover img { transform: scale(1.1); }
         
-        /* Улучшенный текст в карточках: теперь по центру */
         .gallery-item-info { 
             padding: 25px; 
             background: rgba(0,0,0,0.3); 
-            text-align: center; /* Текст теперь по центру */
+            text-align: center;
         }
         .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
 
-        /* Buttons & Messages */
         .load-more-btn {
             padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color);
             color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
@@ -156,6 +173,9 @@
     </nav>
 
     <div class="controls">
+        <div class="volume-container">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.25">
+        </div>
         <button class="control-btn" id="theme-toggle">🌓</button>
         <button class="control-btn" id="music-toggle">🎵</button>
     </div>
@@ -224,14 +244,6 @@
                 <h3>02 Neural Sorting</h3>
                 <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight and color palette.</p>
             </div>
-
-            <div class="update-card" style="opacity: 0.8;">
-                <span class="status-badge" style="border: 1px solid #2196f3; color: #2196f3;">Planning</span>
-                <h3>03 Encrypted Vault</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">A password-protected section for exclusive collectors and high-fidelity source files.</p>
-            </div>
-
-            <div style="margin-top: 40px; font-size: 0.6rem; letter-spacing: 4px; color: var(--accent-color); font-weight: 700;">STATUS: CONTINUOUS EVOLUTION</div>
         </div>
     </section>
 
@@ -245,12 +257,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Scroll Logic
             window.onscroll = () => {
                 const winScroll = document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
             };
 
+            // Navigation
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
@@ -263,46 +277,55 @@
                 });
             });
 
+            // Lightbox
             const lightbox = document.getElementById('lightbox');
             const lImg = document.getElementById('lightbox-img');
-            
             const openLightbox = (src) => {
                 lImg.src = src;
                 lightbox.style.display = 'flex';
                 setTimeout(() => lightbox.classList.add('active'), 10);
             };
-
             const closeLightbox = () => {
                 lightbox.classList.remove('active');
                 setTimeout(() => lightbox.style.display = 'none', 400);
             };
-
             document.querySelectorAll('.gallery-item').forEach(item => {
                 item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
             });
+            lightbox.addEventListener('click', (e) => { if(e.target !== lImg) closeLightbox(); });
 
-            lightbox.addEventListener('click', (e) => {
-                if(e.target !== lImg) closeLightbox();
-            });
+            // Theme Toggle
+            document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
 
+            // --- Music & Volume Logic ---
+            const audio = document.getElementById('bg-music');
+            const musicBtn = document.getElementById('music-toggle');
+            const volumeSlider = document.getElementById('volume-slider');
+            let isPlaying = false;
+
+            // 1. Установка стандартной громкости 25%
+            audio.volume = 0.25;
+
+            // 2. Управление кнопкой Play/Pause
+            musicBtn.onclick = () => {
+                isPlaying ? audio.pause() : audio.play();
+                isPlaying = !isPlaying;
+                musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
+            };
+
+            // 3. Изменение громкости ползунком
+            volumeSlider.oninput = (e) => {
+                audio.volume = e.target.value;
+            };
+
+            // Explore More
             const loadBtn = document.getElementById('load-more');
             const noMoreMsg = document.getElementById('no-more-msg');
             loadBtn.addEventListener('click', () => {
                 loadBtn.style.display = 'none';
                 noMoreMsg.style.display = 'block';
             });
-
-            document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-            const musicBtn = document.getElementById('music-toggle');
-            const audio = document.getElementById('bg-music');
-            let isPlaying = false;
-            musicBtn.onclick = () => {
-                isPlaying ? audio.pause() : audio.play();
-                isPlaying = !isPlaying;
-                musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
-            };
         });
     </script>
 </body>
 </html>
-
