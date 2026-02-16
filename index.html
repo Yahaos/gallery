@@ -112,6 +112,8 @@
             position: relative; cursor: pointer;
         }
         .gallery-item:hover { transform: translateY(-10px); border-color: var(--accent-color); }
+        /* Эффект выделения при клике */
+        .gallery-item:active { outline: 3px solid var(--accent-color); transform: scale(0.98); }
 
         .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
 
@@ -154,7 +156,6 @@
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
     <div id="screamer-overlay">
-        <div class="img-protection"></div>
         <img src="https://raw.githubusercontent.com/6wxxvy/assets/main/screamer.jpg" alt="Jumpscare">
     </div>
     <audio id="screamer-audio" preload="auto">
@@ -254,6 +255,15 @@
     </div>
 
     <script>
+        // Блокировка F12 и DevTools
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || 
+                (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
+                return false;
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const audioScreamer = document.getElementById('screamer-audio');
             
@@ -282,7 +292,7 @@
                 });
             });
 
-            // Screamer Logic Fixed
+            // Screamer Logic Fixed (Overlay layer fix)
             const trigger = document.getElementById('scare-trigger');
             const overlay = document.getElementById('screamer-overlay');
 
