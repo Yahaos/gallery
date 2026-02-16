@@ -1,181 +1,260 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Gallery</title>
+    <title>Premium Photo Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Общие стили для темной темы */
+        :root {
+            --bg-dark: #0f0f0f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --accent-color: #ff4081;
+            --text-color: #ffffff;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #0a0a0a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-color);
             margin: 0;
             padding: 0;
-            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
+            max-width: 1400px;
+            margin: 60px auto;
+            padding: 0 40px;
         }
 
         h1 {
             text-align: center;
-            color: #e0e0e0;
-            margin-bottom: 30px;
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 50px;
+            background: linear-gradient(to right, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInDown 1s ease forwards;
         }
 
-        /* Стили для сетки галереи */
+        /* Сетка галереи */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
         }
 
-        /* Стили для карточки фото */
+        /* Карточка фото */
         .gallery-item {
-            background-color: #2a2a2a;
-            border-radius: 8px;
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
         }
+
+        /* Поочередная анимация появления */
+        .gallery-item:nth-child(1) { animation-delay: 0.1s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.3s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(5) { animation-delay: 0.5s; }
+        .gallery-item:nth-child(6) { animation-delay: 0.6s; }
 
         .gallery-item:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            transform: translateY(-10px);
+            border-color: var(--accent-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .img-container {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
         }
 
         .gallery-item img {
             width: 100%;
-            height: 200px; /* Фиксированная высота для предпросмотра */
-            object-fit: cover; /* Обрезка изображений для заполнения */
-            display: block;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Эффект блика при наведении */
+        .img-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-25deg);
+            transition: 0.5s;
+        }
+
+        .gallery-item:hover .img-container::after {
+            left: 125%;
         }
 
         .gallery-item-info {
-            padding: 15px;
-            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.4);
         }
 
         .gallery-item-info h3 {
-            margin-top: 0;
-            color: #f0f0f0;
-            font-size: 1.1em;
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--accent-color);
         }
 
         .gallery-item-info p {
-            color: #b0b0b0;
-            font-size: 0.9em;
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: #aaa;
         }
 
-        /* Стили для лайтбокса (модального окна) */
+        /* Лайтбокс */
         .lightbox {
-            display: none; /* Скрыто по умолчанию */
+            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            align-items: center;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
             justify-content: center;
-            z-index: 1000;
+            align-items: center;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
 
         .lightbox.active {
+            display: flex;
             opacity: 1;
         }
 
         .lightbox-content {
             position: relative;
-            max-width: 90%;
-            max-height: 90%;
-            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .lightbox-content img {
-            max-width: 100%;
-            max-height: 80vh; /* Максимальная высота 80% от высоты видимой области */
-            display: block;
-            margin: 0 auto;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+        .lightbox.active .lightbox-content {
+            transform: scale(1);
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
         }
 
         .lightbox-close {
             position: absolute;
-            top: -30px; /* Размещаем над изображением */
-            right: 0;
-            color: #f0f0f0;
-            font-size: 40px;
+            top: -50px; right: 0;
+            color: white;
+            font-size: 50px;
             cursor: pointer;
-            transition: color 0.2s ease;
+            line-height: 1;
         }
 
-        .lightbox-close:hover {
-            color: #ff6600;
+        /* Анимации */
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .lightbox-caption {
-            color: #f0f0f0;
-            margin-top: 10px;
-            font-size: 1.1em;
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .container { padding: 0 20px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Photo Gallery</h1>
+        <h1>Gallery</h1>
         
         <div class="gallery" id="gallery">
             <div class="gallery-item">
-                <img src="images/test.jpg" alt="Anna">
+                <div class="img-container">
+                    <img src="images/test.jpg" alt="Anna">
+                </div>
                 <div class="gallery-item-info">
                     <h3>Anna Bartlewska</h3>
-                    <p>Soo pretty.</p>
+                    <p>Elegance in motion</p>
                 </div>
             </div>
             <div class="gallery-item">
-                <img src="images/test.jpg" alt="Anna">
+                <div class="img-container">
+                    <img src="images/test.jpg" alt="Anna">
+                </div>
                 <div class="gallery-item-info">
                     <h3>Anna Bartlewska</h3>
-                    <p>Soo pretty.</p>
+                    <p>Urban vibes</p>
                 </div>
             </div>
             <div class="gallery-item">
-                <img src="images/test.jpg" alt="Anna">
+                <div class="img-container">
+                    <img src="images/test.jpg" alt="Anna">
+                </div>
                 <div class="gallery-item-info">
                     <h3>Anna Bartlewska</h3>
-                    <p>Soo pretty.</p>
+                    <p>Natural beauty</p>
                 </div>
             </div>
             <div class="gallery-item">
-                <img src="images/test.jpg" alt="Anna">
+                <div class="img-container">
+                    <img src="images/test.jpg" alt="Anna">
+                </div>
                 <div class="gallery-item-info">
                     <h3>Anna Bartlewska</h3>
-                    <p>Soo pretty.</p>
+                    <p>Golden hour</p>
                 </div>
             </div>
             <div class="gallery-item">
-                <img src="images/test.jpg" alt="Anna">
+                <div class="img-container">
+                    <img src="images/test.jpg" alt="Anna">
+                </div>
                 <div class="gallery-item-info">
                     <h3>Anna Bartlewska</h3>
-                    <p>Soo pretty.</p>
+                    <p>Dreamy eyes</p>
                 </div>
             </div>
             <div class="gallery-item">
-                <img src="images/test.jpg" alt="Anna">
+                <div class="img-container">
+                    <img src="images/test.jpg" alt="Anna">
+                </div>
                 <div class="gallery-item-info">
                     <h3>Anna Bartlewska</h3>
-                    <p>Soo pretty.</p>
+                    <p>Style icon</p>
                 </div>
             </div>
         </div>
@@ -184,51 +263,36 @@
     <div class="lightbox" id="lightbox">
         <div class="lightbox-content">
             <span class="lightbox-close">&times;</span>
-            <img src="" alt="Full image" id="lightbox-img">
-            <p class="lightbox-caption" id="lightbox-caption"></p>
+            <img src="" id="lightbox-img">
+            <p id="lightbox-caption" style="color: white; margin-top: 15px; font-weight: 300; letter-spacing: 1px;"></p>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const galleryItems = document.querySelectorAll('.gallery-item');
+            const items = document.querySelectorAll('.gallery-item');
             const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            const lightboxCaption = document.getElementById('lightbox-caption');
-            const lightboxClose = document.querySelector('.lightbox-close');
+            const lImg = document.getElementById('lightbox-img');
+            const lCap = document.getElementById('lightbox-caption');
 
-            galleryItems.forEach(item => {
+            items.forEach(item => {
                 item.addEventListener('click', () => {
-                    const imgSrc = item.querySelector('img').src;
-                    const imgAlt = item.querySelector('img').alt;
-                    const captionText = item.querySelector('.gallery-item-info h3').textContent + ' - ' + item.querySelector('.gallery-item-info p').textContent;
-
-                    lightboxImg.src = imgSrc;
-                    lightboxImg.alt = imgAlt;
-                    lightboxCaption.textContent = captionText;
-                    lightbox.classList.add('active'); // Активируем лайтбокс
-                    document.body.style.overflow = 'hidden'; // Запрещаем прокрутку фона
+                    const img = item.querySelector('img');
+                    const title = item.querySelector('h3').innerText;
+                    lImg.src = img.src;
+                    lCap.innerText = title;
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden';
                 });
             });
 
-            lightboxClose.addEventListener('click', () => {
-                lightbox.classList.remove('active'); // Деактивируем лайтбокс
-                document.body.style.overflow = 'auto'; // Разрешаем прокрутку фона
-            });
-
-            // Закрытие лайтбокса при клике вне картинки
             lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) {
+                if (e.target.classList.contains('lightbox') || e.target.classList.contains('lightbox-close')) {
                     lightbox.classList.remove('active');
                     document.body.style.overflow = 'auto';
                 }
             });
         });
     </script>
-
 </body>
 </html>
-
-
-
-
