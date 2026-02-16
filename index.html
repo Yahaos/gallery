@@ -14,7 +14,7 @@
             --text-color: #ffffff;
             --sub-text: #b0b0b0;
             --glass-border: rgba(255, 255, 255, 0.1);
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         body.light-theme {
@@ -28,17 +28,14 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #0a0a0a);
+            background: var(--bg-dark);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             color: var(--text-color);
             margin: 0; padding: 0;
-            transition: background 0.5s ease, color 0.5s ease;
+            transition: background 0.5s ease;
             min-height: 100vh;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            -webkit-user-select: none; user-select: none;
         }
 
         img { -webkit-user-drag: none; user-drag: none; }
@@ -49,8 +46,9 @@
             100% { background-position: 0% 50%; }
         }
 
-        .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: transparent; z-index: 6000; }
-        .progress-bar { height: 100%; background: var(--accent-color); width: 0%; box-shadow: 0 0 10px var(--accent-color); }
+        /* --- UI Elements --- */
+        .progress-container { position: fixed; top: 0; width: 100%; height: 4px; z-index: 9999; }
+        .progress-bar { height: 100%; background: var(--accent-color); width: 0%; box-shadow: 0 0 15px var(--accent-color); }
 
         nav {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
@@ -60,96 +58,92 @@
         }
 
         .nav-link {
-            padding: 10px 20px; color: var(--text-color); text-decoration: none;
-            font-size: 0.9rem; font-weight: 500; border-radius: 25px;
-            transition: var(--transition); cursor: pointer;
+            padding: 10px 25px; color: var(--text-color); text-decoration: none;
+            font-size: 0.85rem; font-weight: 500; border-radius: 25px;
+            transition: var(--transition); cursor: pointer; opacity: 0.6;
         }
+        .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        .nav-link.active { background: var(--accent-color); color: white; box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4); }
-
-        .controls { position: fixed; top: 20px; right: 20px; display: flex; gap: 15px; z-index: 3000; }
+        .controls { position: fixed; top: 20px; right: 20px; display: flex; gap: 12px; z-index: 3000; }
         .control-btn {
             width: 45px; height: 45px; border-radius: 50%;
             background: var(--card-bg); border: 1px solid var(--glass-border);
-            color: var(--text-color); cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(10px); transition: var(--transition);
         }
 
-        .page { display: none; animation: fadeIn 0.6s ease; padding-bottom: 120px; }
+        /* --- Sections --- */
+        .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .info-content {
-            max-width: 800px; margin: 100px auto; text-align: center;
-            padding: 50px 40px; background: var(--card-bg); border-radius: 30px;
-            border: 1px solid var(--glass-border); backdrop-filter: blur(15px);
+            max-width: 700px; margin: 150px auto; text-align: center;
+            padding: 60px; background: var(--card-bg); border-radius: 40px;
+            border: 1px solid var(--glass-border); backdrop-filter: blur(20px);
         }
 
-        .social-links { display: flex; justify-content: center; gap: 20px; margin-top: 40px; }
-        .social-btn {
-            width: 50px; height: 50px; border-radius: 12px;
-            background: var(--card-bg); border: 1px solid var(--glass-border);
-            color: var(--text-color); font-size: 1.5rem;
-            display: flex; align-items: center; justify-content: center;
-            text-decoration: none; transition: var(--transition);
-        }
-        .social-btn:hover { color: white; background: var(--accent-color); transform: translateY(-5px); }
-
-        .hero-section { text-align: center; padding: 120px 20px 60px; }
-        h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 15px; }
+        /* --- Gallery System --- */
         .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px; }
         
         .gallery-item {
-            background: var(--card-bg); border-radius: 24px; overflow: hidden;
+            background: var(--card-bg); border-radius: 30px; overflow: hidden;
             border: 1px solid var(--glass-border); transition: var(--transition);
-            opacity: 0; transform: translateY(20px); cursor: pointer;
-            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative; cursor: pointer;
         }
-        .gallery-item:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+        .gallery-item:hover { transform: translateY(-10px); border-color: var(--accent-color); }
 
-        .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: transparent; }
+        .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
 
-        .page.active .gallery-item, .gallery-item.loaded { animation: itemAppear 0.8s forwards; }
-        @keyframes itemAppear { to { opacity: 1; transform: translateY(0); } }
-
-        .img-container { height: 320px; overflow: hidden; position: relative; background: #1a1a1a; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .img-container { height: 400px; overflow: hidden; position: relative; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .gallery-item:hover img { transform: scale(1.1); }
-        .gallery-item-info { padding: 20px; border-top: 1px solid var(--glass-border); background: var(--card-bg); }
+        .gallery-item-info { padding: 25px; background: rgba(0,0,0,0.2); }
 
+        /* Buttons & Messages */
         .load-more-btn {
-            padding: 14px 45px; background: transparent; border: 1px solid var(--accent-color);
+            padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color);
             color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
-            margin-top: 40px; font-weight: 500;
+            margin-top: 60px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
         }
-        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 20px rgba(255,64,129,0.3); }
+        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
+        
+        #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        .no-more-msg {
-            display: none; margin-top: 40px; color: var(--sub-text);
-            font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .update-card {
-            background: var(--card-bg); padding: 25px; border-radius: 20px; 
-            border: 1px solid var(--glass-border); transition: var(--transition);
-            text-align: left; margin-bottom: 20px;
-        }
-        .status-tag { padding: 5px 12px; border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; margin-right: 10px; }
-
+        /* --- IMPROVED LIGHTBOX --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 5000; justify-content: center; align-items: center;
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
         }
-        .lightbox.active { display: flex; }
-        .lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .lightbox-wrapper { position: relative; display: inline-block; }
+        .lightbox.active { display: flex; opacity: 1; }
+        
+        .lightbox-wrapper { 
+            position: relative; max-width: 90%; max-height: 90%; 
+            transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .lightbox.active .lightbox-wrapper { transform: scale(1); }
+
+        .lightbox img { 
+            max-width: 100%; max-height: 85vh; border-radius: 20px; 
+            box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .close-lightbox {
+            position: absolute; top: -50px; right: 0; color: white; 
+            font-size: 2rem; cursor: pointer; transition: 0.3s;
+        }
+        .close-lightbox:hover { color: var(--accent-color); transform: rotate(90deg); }
+
+        /* Horizon Cards */
+        .update-card {
+            background: var(--card-bg); padding: 30px; border-radius: 25px; 
+            border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px;
+        }
     </style>
 </head>
-<body oncontextmenu="return false;"> 
+<body oncontextmenu="return false;">
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
     <nav>
@@ -169,18 +163,12 @@
 
     <section id="info" class="page active">
         <div class="info-content">
-            <h1>The Vision</h1>
-            <p style="color: var(--sub-text); line-height: 2; font-size: 1.1rem; font-weight: 300;">
-                A curated digital sanctuary where art meets code. <br>
-                Protected repository for visual research and aesthetic exploration.
+            <h1 style="letter-spacing: 15px;">VISION</h1>
+            <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">
+                A private digital repository focusing on minimal aesthetics and modern visual culture.
             </p>
             <div class="social-links">
-                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank" rel="noopener noreferrer">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-            </div>
-            <div style="margin-top: 50px; opacity: 0.7;">
-                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FYahaos.github.io%2Fgallery&count_bg=%23FF4081&title_bg=%23333333&title=impressions" alt="Views"/>
+                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank"><i class="fa-brands fa-instagram"></i></a>
             </div>
         </div>
     </section>
@@ -188,25 +176,25 @@
     <section id="gallery" class="page">
         <header class="hero-section">
             <h1>Archive 01</h1>
-            <p style="color: var(--sub-text); letter-spacing: 2px;">Visual Artifacts</p>
+            <p style="color: var(--sub-text); letter-spacing: 5px;">COLLECTED WORKS</p>
         </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
-                <div class="gallery-item" style="animation-delay: 0.1s;">
+                <div class="gallery-item">
                     <div class="img-protection"></div>
                     <div class="img-container"><img src="images/test.jpg" alt="Art 1"></div>
-                    <div class="gallery-item-info"><h3>Nocturnal Flow</h3><p style="color:var(--sub-text); font-size:0.7rem;">Digital Art</p></div>
+                    <div class="gallery-item-info"><h3>Nocturnal Flow</h3><p style="color:var(--sub-text); font-size:0.7rem;">Vault 01</p></div>
                 </div>
-                <div class="gallery-item" style="animation-delay: 0.2s;">
+                <div class="gallery-item">
                     <div class="img-protection"></div>
                     <div class="img-container"><img src="images/test.jpg" alt="Art 2"></div>
-                    <div class="gallery-item-info"><h3>Minimal Essence</h3><p style="color:var(--sub-text); font-size:0.7rem;">Abstract</p></div>
+                    <div class="gallery-item-info"><h3>Minimal Essence</h3><p style="color:var(--sub-text); font-size:0.7rem;">Vault 02</p></div>
                 </div>
             </div>
             
             <center>
                 <button class="load-more-btn" id="load-more">Explore More</button>
-                <div id="no-more" class="no-more-msg">No more photos available</div>
+                <div id="no-more-msg">No more photos available</div>
             </center>
         </div>
     </section>
@@ -214,25 +202,17 @@
     <section id="future" class="page">
         <div class="info-content">
             <h1>Horizon</h1>
-            <p style="color: var(--sub-text); margin-bottom: 40px;">Coming Soon: Updates & Experiments</p>
-            <div style="display: grid; gap: 20px;">
-                <div class="update-card">
-                    <span class="status-tag" style="background: var(--accent-color);">SOON</span>
-                    <h4 style="display: inline; letter-spacing: 1px;">Cinematic Motion</h4>
-                    <p style="color: var(--sub-text); font-size: 0.85rem; margin-top: 10px;">Interactive video backgrounds and smooth-transition UI.</p>
-                </div>
-                <div class="update-card" style="opacity: 0.7;">
-                    <span class="status-tag" style="border: 1px solid var(--accent-color); color: var(--accent-color);">IN DEV</span>
-                    <h4 style="display: inline; letter-spacing: 1px;">Augmented Gallery</h4>
-                    <p style="color: var(--sub-text); font-size: 0.85rem; margin-top: 10px;">A 3D perspective mode for immersive content viewing.</p>
-                </div>
+            <div class="update-card">
+                <span style="background:var(--accent-color); padding:5px 10px; border-radius:10px; font-size:0.6rem; font-weight:700;">SOON</span>
+                <h3>01 Cinematic Motion</h3>
+                <p style="color:var(--sub-text); font-size:0.8rem;">Implementation of 4K video backgrounds.</p>
             </div>
-            <div style="margin-top: 50px; font-size: 0.7rem; color: var(--accent-color); letter-spacing: 3px; font-weight: 700;">SYSTEM STATUS: EVOLVING</div>
         </div>
     </section>
 
     <div class="lightbox" id="lightbox">
         <div class="lightbox-wrapper">
+            <span class="close-lightbox" id="close-x">&times;</span>
             <div class="img-protection"></div>
             <img src="" id="lightbox-img">
         </div>
@@ -240,19 +220,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i') || e.keyCode === 123) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-
+            // Scroll Progress
             window.onscroll = () => {
                 const winScroll = document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
             };
 
+            // Navigation
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
@@ -265,29 +240,42 @@
                 });
             });
 
+            // Improved Lightbox Logic
             const lightbox = document.getElementById('lightbox');
             const lImg = document.getElementById('lightbox-img');
-            const initLightbox = () => {
-                document.querySelectorAll('.gallery-item').forEach(item => {
-                    item.onclick = () => {
-                        lImg.src = item.querySelector('img').src;
-                        lightbox.classList.add('active');
-                    }
-                });
-            };
-            initLightbox();
-            lightbox.onclick = () => lightbox.classList.remove('active');
-
-            const loadBtn = document.getElementById('load-more');
-            const noMoreMsg = document.getElementById('no-more');
             
-            loadBtn.addEventListener('click', () => {
-                loadBtn.style.display = 'none'; // Кнопка исчезает
-                noMoreMsg.style.display = 'block'; // Появляется надпись "No more photos available"
+            const openLightbox = (src) => {
+                lImg.src = src;
+                lightbox.style.display = 'flex';
+                setTimeout(() => lightbox.classList.add('active'), 10);
+            };
+
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                setTimeout(() => lightbox.style.display = 'none', 400);
+            };
+
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const src = item.querySelector('img').src;
+                    openLightbox(src);
+                });
             });
 
+            lightbox.addEventListener('click', (e) => {
+                if(e.target !== lImg) closeLightbox();
+            });
+
+            // Explore More Logic
+            const loadBtn = document.getElementById('load-more');
+            const noMoreMsg = document.getElementById('no-more-msg');
+            loadBtn.addEventListener('click', () => {
+                loadBtn.style.display = 'none';
+                noMoreMsg.style.display = 'block';
+            });
+
+            // Theme & Music
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-            
             const musicBtn = document.getElementById('music-toggle');
             const audio = document.getElementById('bg-music');
             let isPlaying = false;
