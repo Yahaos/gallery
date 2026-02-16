@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Archive | Protected</title>
+    <title>Visual Archive | Premium Experience</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
@@ -36,7 +36,7 @@
             transition: background 0.5s ease, color 0.5s ease;
             min-height: 100vh;
             
-            /* БЛОКИРОВКА ВЫДЕЛЕНИЯ */
+            /* БЛОКИРОВКА ВЫДЕЛЕНИЯ ТЕКСТА */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -55,6 +55,7 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* --- Scroll Progress Bar --- */
         .progress-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 4px;
             background: transparent; z-index: 6000;
@@ -64,6 +65,7 @@
             width: 0%; box-shadow: 0 0 10px var(--accent-color);
         }
 
+        /* --- Navigation --- */
         nav {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 10px; background: var(--card-bg);
@@ -82,6 +84,7 @@
             box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
         }
 
+        /* --- Controls --- */
         .controls {
             position: fixed; top: 20px; right: 20px;
             display: flex; gap: 15px; z-index: 3000;
@@ -95,6 +98,7 @@
             backdrop-filter: blur(10px); transition: var(--transition);
         }
 
+        /* --- Page System --- */
         .page { display: none; animation: fadeIn 0.6s ease; padding-bottom: 120px; }
         .page.active { display: block; }
 
@@ -103,6 +107,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* --- Content Blocks --- */
         .info-content {
             max-width: 800px; margin: 100px auto; text-align: center;
             padding: 50px 40px; background: var(--card-bg); border-radius: 30px;
@@ -119,6 +124,7 @@
         }
         .social-btn:hover { color: white; background: var(--accent-color); transform: translateY(-5px); }
 
+        /* --- Gallery --- */
         .hero-section { text-align: center; padding: 120px 20px 60px; }
         h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 15px; }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
@@ -145,13 +151,26 @@
         .gallery-item:hover img { transform: scale(1.05); }
         .gallery-item-info { padding: 20px; border-top: 1px solid var(--glass-border); }
 
+        /* Load More Button */
         .load-more-btn {
             padding: 14px 45px; background: transparent; border: 1px solid var(--accent-color);
             color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
             margin-top: 40px;
         }
-        .load-more-btn:hover { background: var(--accent-color); color: white; }
+        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 20px rgba(255,64,129,0.3); }
 
+        /* --- Horizon Updates Styling --- */
+        .update-card {
+            background: var(--card-bg); padding: 25px; border-radius: 20px; 
+            border: 1px solid var(--glass-border); transition: var(--transition);
+            text-align: left; margin-bottom: 20px;
+        }
+        .status-tag {
+            padding: 5px 12px; border-radius: 20px; font-size: 0.6rem; 
+            font-weight: 700; letter-spacing: 1px; margin-right: 10px;
+        }
+
+        /* --- Lightbox --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 5000; justify-content: center; align-items: center;
@@ -159,8 +178,6 @@
         }
         .lightbox.active { display: flex; }
         .lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; }
-        
-        /* Защита картинки внутри лайтбокса */
         .lightbox-wrapper { position: relative; display: inline-block; }
     </style>
 </head>
@@ -177,40 +194,84 @@
         <button class="control-btn" id="music-toggle">🎵</button>
     </div>
 
-    <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
 
     <section id="info" class="page active">
         <div class="info-content">
             <h1>The Vision</h1>
-            <p style="color: var(--sub-text);">Protected Digital Sanctuary.</p>
+            <p style="color: var(--sub-text); line-height: 2; font-size: 1.1rem; font-weight: 300;">
+                A curated digital sanctuary where art meets code. <br>
+                Protected repository for visual research and aesthetic exploration.
+            </p>
             <div class="social-links">
-                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+            </div>
+            <div style="margin-top: 50px; opacity: 0.7;">
+                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FYahaos.github.io%2Fgallery&count_bg=%23FF4081&title_bg=%23333333&title=impressions" alt="Views"/>
             </div>
         </div>
     </section>
 
     <section id="gallery" class="page">
-        <header class="hero-section"><h1>Archive 01</h1></header>
+        <header class="hero-section">
+            <h1>Archive 01</h1>
+            <p style="color: var(--sub-text); letter-spacing: 2px;">Visual Artifacts</p>
+        </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
                 <div class="gallery-item" style="animation-delay: 0.1s;">
-                    <div class="img-protection"></div> <div class="img-container"><img src="images/test.jpg" alt="Art"></div>
-                    <div class="gallery-item-info"><h3>Nocturnal Flow</h3></div>
+                    <div class="img-protection"></div>
+                    <div class="img-container"><img src="images/test.jpg" alt="Art 1"></div>
+                    <div class="gallery-item-info"><h3>Nocturnal Flow</h3><p style="color:var(--sub-text); font-size:0.7rem;">Digital Art</p></div>
+                </div>
+                <div class="gallery-item" style="animation-delay: 0.2s;">
+                    <div class="img-protection"></div>
+                    <div class="img-container"><img src="images/test.jpg" alt="Art 2"></div>
+                    <div class="gallery-item-info"><h3>Minimal Essence</h3><p style="color:var(--sub-text); font-size:0.7rem;">Abstract</p></div>
                 </div>
             </div>
+            
             <center><button class="load-more-btn" id="load-more">Explore More</button></center>
+        </div>
+    </section>
+
+    <section id="future" class="page">
+        <div class="info-content">
+            <h1>Horizon</h1>
+            <p style="color: var(--sub-text); margin-bottom: 40px;">Coming Soon: Updates & Experiments</p>
+            
+            <div style="display: grid; gap: 20px;">
+                <div class="update-card">
+                    <span class="status-tag" style="background: var(--accent-color);">SOON</span>
+                    <h4 style="display: inline; letter-spacing: 1px;">Cinematic Motion</h4>
+                    <p style="color: var(--sub-text); font-size: 0.85rem; margin-top: 10px;">Interactive video backgrounds and smooth-transition UI.</p>
+                </div>
+
+                <div class="update-card" style="opacity: 0.7;">
+                    <span class="status-tag" style="border: 1px solid var(--accent-color); color: var(--accent-color);">IN DEV</span>
+                    <h4 style="display: inline; letter-spacing: 1px;">Augmented Gallery</h4>
+                    <p style="color: var(--sub-text); font-size: 0.85rem; margin-top: 10px;">A 3D perspective mode for immersive content viewing.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px; font-size: 0.7rem; color: var(--accent-color); letter-spacing: 3px; font-weight: 700;">SYSTEM STATUS: EVOLVING</div>
         </div>
     </section>
 
     <div class="lightbox" id="lightbox">
         <div class="lightbox-wrapper">
-            <div class="img-protection"></div> <img src="" id="lightbox-img">
+            <div class="img-protection"></div>
+            <img src="" id="lightbox-img">
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Защита от горячих клавиш (F12, Ctrl+S, Ctrl+U)
+            // Блокировка F12, Ctrl+S, Ctrl+U
             document.addEventListener('keydown', (e) => {
                 if (e.ctrlKey && (e.key === 's' || e.key === 'u' || e.key === 'i') || e.keyCode === 123) {
                     e.preventDefault();
@@ -218,14 +279,14 @@
                 }
             });
 
-            // Прогресс скролла
+            // Индикатор прогресса прокрутки
             window.onscroll = () => {
                 const winScroll = document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
             };
 
-            // Навигация
+            // Навигация по страницам
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
@@ -234,11 +295,11 @@
                     pages.forEach(p => p.classList.remove('active'));
                     link.classList.add('active');
                     document.getElementById(link.getAttribute('data-target')).classList.add('active');
-                    window.scrollTo({top:0, behavior:'smooth'});
+                    window.scrollTo({top: 0, behavior: 'smooth'});
                 });
             });
 
-            // Лайтбокс
+            // Лайтбокс (Просмотр фото)
             const lightbox = document.getElementById('lightbox');
             const lImg = document.getElementById('lightbox-img');
             const initLightbox = () => {
@@ -252,10 +313,31 @@
             initLightbox();
             lightbox.onclick = () => lightbox.classList.remove('active');
 
-            // Тема
+            // Кнопка Load More
+            const loadBtn = document.getElementById('load-more');
+            const grid = document.getElementById('photo-grid');
+            loadBtn.addEventListener('click', () => {
+                loadBtn.style.opacity = '0.5';
+                setTimeout(() => {
+                    for(let i=0; i<2; i++) {
+                        const newItem = document.createElement('div');
+                        newItem.className = 'gallery-item loaded';
+                        newItem.innerHTML = `
+                            <div class="img-protection"></div>
+                            <div class="img-container"><img src="images/test.jpg"></div>
+                            <div class="gallery-item-info"><h3>Extended Archive</h3><p style="color:var(--sub-text); font-size:0.7rem;">New Discovery</p></div>
+                        `;
+                        grid.appendChild(newItem);
+                    }
+                    loadBtn.style.opacity = '1';
+                    initLightbox();
+                }, 800);
+            });
+
+            // Переключатель темы
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
             
-            // Музыка
+            // Музыкальный плеер
             const musicBtn = document.getElementById('music-toggle');
             const audio = document.getElementById('bg-music');
             let isPlaying = false;
