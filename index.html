@@ -84,6 +84,7 @@
         }
 
         /* --- Gallery System --- */
+        .hero-section { text-align: center; padding: 120px 20px 60px; }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px; }
         
@@ -99,7 +100,14 @@
         .img-container { height: 400px; overflow: hidden; position: relative; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .gallery-item:hover img { transform: scale(1.1); }
-        .gallery-item-info { padding: 25px; background: rgba(0,0,0,0.2); }
+        
+        /* Улучшенный текст в карточках: теперь по центру */
+        .gallery-item-info { 
+            padding: 25px; 
+            background: rgba(0,0,0,0.3); 
+            text-align: center; /* Текст теперь по центру */
+        }
+        .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
 
         /* Buttons & Messages */
         .load-more-btn {
@@ -111,35 +119,30 @@
         
         #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        /* --- IMPROVED LIGHTBOX --- */
+        /* --- LIGHTBOX --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
         }
         .lightbox.active { display: flex; opacity: 1; }
-        
-        .lightbox-wrapper { 
-            position: relative; max-width: 90%; max-height: 90%; 
-            transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
+        .lightbox-wrapper { position: relative; max-width: 90%; max-height: 90%; transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .lightbox.active .lightbox-wrapper { transform: scale(1); }
-
-        .lightbox img { 
-            max-width: 100%; max-height: 85vh; border-radius: 20px; 
-            box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .close-lightbox {
-            position: absolute; top: -50px; right: 0; color: white; 
-            font-size: 2rem; cursor: pointer; transition: 0.3s;
-        }
-        .close-lightbox:hover { color: var(--accent-color); transform: rotate(90deg); }
+        .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
+        .close-lightbox { position: absolute; top: -50px; right: 0; color: white; font-size: 2rem; cursor: pointer; transition: 0.3s; }
 
         /* Horizon Cards */
         .update-card {
             background: var(--card-bg); padding: 30px; border-radius: 25px; 
             border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px;
+            transition: var(--transition);
+        }
+        .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
+        
+        .status-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 8px; 
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            margin-bottom: 15px; letter-spacing: 1px;
         }
     </style>
 </head>
@@ -175,38 +178,60 @@
 
     <section id="gallery" class="page">
         <header class="hero-section">
-            <h1>Archive 01</h1>
-            <p style="color: var(--sub-text); letter-spacing: 5px;">COLLECTED WORKS</p>
+            <h1 style="letter-spacing: 8px;">ARCHIVE 01</h1>
+            <p style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">CURATED SELECTION</p>
         </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
                 <div class="gallery-item">
                     <div class="img-protection"></div>
                     <div class="img-container"><img src="images/test.jpg" alt="Art 1"></div>
-                    <div class="gallery-item-info"><h3>Nocturnal Flow</h3><p style="color:var(--sub-text); font-size:0.7rem;">Vault 01</p></div>
+                    <div class="gallery-item-info">
+                        <h3>Nocturnal Flow</h3>
+                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 01</p>
+                    </div>
                 </div>
                 <div class="gallery-item">
                     <div class="img-protection"></div>
                     <div class="img-container"><img src="images/test.jpg" alt="Art 2"></div>
-                    <div class="gallery-item-info"><h3>Minimal Essence</h3><p style="color:var(--sub-text); font-size:0.7rem;">Vault 02</p></div>
+                    <div class="gallery-item-info">
+                        <h3>Minimal Essence</h3>
+                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 02</p>
+                    </div>
                 </div>
             </div>
             
             <center>
                 <button class="load-more-btn" id="load-more">Explore More</button>
-                <div id="no-more-msg">No more photos available</div>
+                <div id="no-more-msg">End of Current Archive</div>
             </center>
         </div>
     </section>
 
     <section id="future" class="page">
         <div class="info-content">
-            <h1>Horizon</h1>
+            <h1 style="letter-spacing: 10px;">HORIZON</h1>
+            <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
+            
             <div class="update-card">
-                <span style="background:var(--accent-color); padding:5px 10px; border-radius:10px; font-size:0.6rem; font-weight:700;">SOON</span>
+                <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
                 <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.8rem;">Implementation of 4K video backgrounds.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders for a more immersive feel.</p>
             </div>
+
+            <div class="update-card">
+                <span class="status-badge" style="border: 1px solid #4caf50; color: #4caf50;">In Development</span>
+                <h3>02 Neural Sorting</h3>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight and color palette.</p>
+            </div>
+
+            <div class="update-card" style="opacity: 0.8;">
+                <span class="status-badge" style="border: 1px solid #2196f3; color: #2196f3;">Planning</span>
+                <h3>03 Encrypted Vault</h3>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">A password-protected section for exclusive collectors and high-fidelity source files.</p>
+            </div>
+
+            <div style="margin-top: 40px; font-size: 0.6rem; letter-spacing: 4px; color: var(--accent-color); font-weight: 700;">STATUS: CONTINUOUS EVOLUTION</div>
         </div>
     </section>
 
@@ -220,14 +245,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Scroll Progress
             window.onscroll = () => {
                 const winScroll = document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
             };
 
-            // Navigation
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
@@ -240,7 +263,6 @@
                 });
             });
 
-            // Improved Lightbox Logic
             const lightbox = document.getElementById('lightbox');
             const lImg = document.getElementById('lightbox-img');
             
@@ -256,17 +278,13 @@
             };
 
             document.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const src = item.querySelector('img').src;
-                    openLightbox(src);
-                });
+                item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
             });
 
             lightbox.addEventListener('click', (e) => {
                 if(e.target !== lImg) closeLightbox();
             });
 
-            // Explore More Logic
             const loadBtn = document.getElementById('load-more');
             const noMoreMsg = document.getElementById('no-more-msg');
             loadBtn.addEventListener('click', () => {
@@ -274,7 +292,6 @@
                 noMoreMsg.style.display = 'block';
             });
 
-            // Theme & Music
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
             const musicBtn = document.getElementById('music-toggle');
             const audio = document.getElementById('bg-music');
