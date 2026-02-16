@@ -36,7 +36,6 @@
             transition: background 0.5s ease;
             min-height: 100vh;
             -webkit-user-select: none; user-select: none;
-            overflow-x: hidden;
         }
 
         img { -webkit-user-drag: none; user-drag: none; }
@@ -65,44 +64,37 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        /* --- Social & Ghost Style --- */
+        /* --- Social Links Styles --- */
         .social-links { 
-            margin-top: 40px; 
+            margin-top: 30px; 
             display: flex; 
             justify-content: center; 
-            gap: 50px; 
+            gap: 40px; 
         }
         
-        .social-item {
+        .social-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .social-btn { text-decoration: none; color: inherit; position: relative; }
+        .social-btn { text-decoration: none; color: inherit; cursor: pointer; }
         .social-btn i { 
             font-size: 2.5rem; 
             transition: var(--transition); 
         }
-        
-        .social-label {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--sub-text);
-            font-weight: 700;
-        }
-
         .social-btn:hover i { 
             color: var(--accent-color); 
             transform: scale(1.2);
             filter: drop-shadow(0 0 10px var(--accent-color));
         }
-
-        .ghost-btn:hover i {
-            color: #ff0000 !important;
-            filter: drop-shadow(0 0 15px #ff0000) !important;
+        
+        .social-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--sub-text);
         }
 
         /* --- Screamer Overlay --- */
@@ -113,7 +105,7 @@
         }
         #screamer-overlay img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* --- Controls --- */
+        /* --- Controls & Volume Slider --- */
         .controls { 
             position: fixed; top: 20px; right: 20px; 
             display: flex; align-items: center; gap: 12px; z-index: 3000; 
@@ -227,6 +219,13 @@
 <body oncontextmenu="return false;">
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
+    <div id="screamer-overlay">
+        <img src="https://raw.githubusercontent.com/6wxxvy/assets/main/screamer.jpg" onerror="this.src='https://files.catbox.moe/6v6pks.jpg'" alt="Jumpscare">
+    </div>
+    <audio id="screamer-audio">
+        <source src="https://files.catbox.moe/rbt7sc.mp3" type="audio/mpeg">
+    </audio>
+
     <nav>
         <div class="nav-link active" data-target="info">Main</div>
         <div class="nav-link" data-target="gallery">Archive</div>
@@ -241,17 +240,9 @@
         <button class="control-btn" id="music-toggle">🎵</button>
     </div>
 
-    <audio id="screamer-sound">
-        <source src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Screamer&filename=mt/mtu0mziyotu4mtu0mzcz_r_2bg_2f3n_2b3o_2bs.mp3" type="audio/mpeg">
-    </audio>
-
     <audio id="bg-music" loop>
         <source src="SOMBRA.mp3" type="audio/mpeg">
     </audio>
-
-    <div id="screamer-overlay">
-        <img src="https://i.imgur.com/H6S7pYv.jpg" alt="SCREAMER">
-    </div>
 
     <section id="info" class="page active">
         <div class="info-content">
@@ -260,18 +251,18 @@
                 A private digital repository focusing on minimal aesthetics and modern visual culture.
             </p>
             <div class="social-links">
-                <div class="social-item">
+                <div class="social-wrapper">
                     <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank">
                         <i class="fa-brands fa-instagram"></i>
                     </a>
                     <span class="social-label">Instagram</span>
                 </div>
-
-                <div class="social-item">
-                    <div class="social-btn ghost-btn" id="ghost-trigger" style="cursor: pointer;">
+                
+                <div class="social-wrapper">
+                    <div class="social-btn" id="scare-trigger">
                         <i class="fa-solid fa-ghost"></i>
                     </div>
-                    <span class="social-label">Archive 666</span>
+                    <span class="social-label">Screamer</span>
                 </div>
             </div>
         </div>
@@ -358,6 +349,22 @@
                 });
             });
 
+            // Screamer Logic
+            const trigger = document.getElementById('scare-trigger');
+            const overlay = document.getElementById('screamer-overlay');
+            const sound = document.getElementById('screamer-audio');
+
+            trigger.addEventListener('click', () => {
+                overlay.style.display = 'flex';
+                sound.currentTime = 0;
+                sound.volume = 1;
+                sound.play().catch(e => console.log("User interaction required for audio"));
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 1500);
+            });
+
             // Lightbox
             const lightbox = document.getElementById('lightbox');
             const lImg = document.getElementById('lightbox-img');
@@ -381,29 +388,10 @@
             });
 
             lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) closeLightbox();
-            });
-
-            // Ghost Screamer Logic
-            const ghostTrigger = document.getElementById('ghost-trigger');
-            const screamerOverlay = document.getElementById('screamer-overlay');
-            const screamerSound = document.getElementById('screamer-sound');
-
-            ghostTrigger.onclick = () => {
-                // Пытаемся войти в полноэкранный режим для эффекта
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
+                if (e.target === lightbox) {
+                    closeLightbox();
                 }
-                
-                screamerOverlay.style.display = 'flex';
-                screamerSound.volume = 1;
-                screamerSound.play();
-
-                setTimeout(() => {
-                    screamerOverlay.style.display = 'none';
-                    if (document.exitFullscreen) document.exitFullscreen();
-                }, 1500); // Скример на 1.5 сек
-            };
+            });
 
             // Theme Toggle
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
