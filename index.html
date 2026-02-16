@@ -31,33 +31,56 @@
             100% { background-position: 0% 50%; }
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 60px auto;
-            padding: 0 40px;
+        /* --- Новая секция заголовка --- */
+        .hero-section {
+            text-align: center;
+            padding: 80px 20px 40px;
+            animation: fadeInDown 1s ease forwards;
         }
 
         h1 {
-            text-align: center;
             font-size: 3.5rem;
             font-weight: 300;
             letter-spacing: 8px;
             text-transform: uppercase;
-            margin-bottom: 50px;
-            background: linear-gradient(to right, #fff, #666);
+            margin: 0;
+            background: linear-gradient(to right, #fff, #888);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: fadeInDown 1s ease forwards;
         }
 
-        /* Сетка галереи */
+        .description {
+            max-width: 600px;
+            margin: 20px auto;
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .counter-badge {
+            margin-top: 15px;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .counter-badge:hover {
+            opacity: 1;
+        }
+
+        /* --- Контейнер галереи --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto 60px;
+            padding: 0 40px;
+        }
+
         .gallery {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 30px;
         }
 
-        /* Карточка фото */
         .gallery-item {
             position: relative;
             background: var(--card-bg);
@@ -71,13 +94,13 @@
             animation: fadeInUp 0.8s ease forwards;
         }
 
-        /* Поочередная анимация появления */
-        .gallery-item:nth-child(1) { animation-delay: 0.1s; }
-        .gallery-item:nth-child(2) { animation-delay: 0.2s; }
-        .gallery-item:nth-child(3) { animation-delay: 0.3s; }
-        .gallery-item:nth-child(4) { animation-delay: 0.4s; }
-        .gallery-item:nth-child(5) { animation-delay: 0.5s; }
-        .gallery-item:nth-child(6) { animation-delay: 0.6s; }
+        /* Задержки анимации */
+        .gallery-item:nth-child(1) { animation-delay: 0.2s; }
+        .gallery-item:nth-child(2) { animation-delay: 0.3s; }
+        .gallery-item:nth-child(3) { animation-delay: 0.4s; }
+        .gallery-item:nth-child(4) { animation-delay: 0.5s; }
+        .gallery-item:nth-child(5) { animation-delay: 0.6s; }
+        .gallery-item:nth-child(6) { animation-delay: 0.7s; }
 
         .gallery-item:hover {
             transform: translateY(-10px);
@@ -102,7 +125,6 @@
             transform: scale(1.1);
         }
 
-        /* Эффект блика при наведении */
         .img-container::after {
             content: '';
             position: absolute;
@@ -181,7 +203,6 @@
             line-height: 1;
         }
 
-        /* Анимации */
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
         }
@@ -190,18 +211,26 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Адаптивность */
         @media (max-width: 768px) {
-            h1 { font-size: 2rem; }
+            h1 { font-size: 2.2rem; letter-spacing: 4px; }
             .container { padding: 0 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Gallery</h1>
+    <header class="hero-section">
+        <h1>Visuals</h1>
+        <p class="description">
+            Добро пожаловать в мою личную галерею. Здесь собраны лучшие моменты, вдохновение и эстетика. Листайте вниз, чтобы увидеть больше.
+        </p>
         
+        <div class="counter-badge">
+            <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2FYahaos.github.io%2Fgallery&count_bg=%23FF4081&title_bg=%23333333&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false" alt="Views"/>
+        </div>
+    </header>
+
+    <div class="container">
         <div class="gallery" id="gallery">
             <div class="gallery-item">
                 <div class="img-container">
