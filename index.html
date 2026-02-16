@@ -36,6 +36,7 @@
             transition: background 0.5s ease;
             min-height: 100vh;
             -webkit-user-select: none; user-select: none;
+            overflow-x: hidden;
         }
 
         img { -webkit-user-drag: none; user-drag: none; }
@@ -64,20 +65,55 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        /* --- Instagram Style --- */
-        .social-links { margin-top: 30px; }
-        .social-btn { text-decoration: none; color: inherit; }
+        /* --- Social & Ghost Style --- */
+        .social-links { 
+            margin-top: 40px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 50px; 
+        }
+        
+        .social-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-btn { text-decoration: none; color: inherit; position: relative; }
         .social-btn i { 
-            font-size: 2.5rem; /* Увеличена иконка */
+            font-size: 2.5rem; 
             transition: var(--transition); 
         }
+        
+        .social-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--sub-text);
+            font-weight: 700;
+        }
+
         .social-btn:hover i { 
             color: var(--accent-color); 
             transform: scale(1.2);
             filter: drop-shadow(0 0 10px var(--accent-color));
         }
 
-        /* --- Controls & Volume Slider --- */
+        .ghost-btn:hover i {
+            color: #ff0000 !important;
+            filter: drop-shadow(0 0 15px #ff0000) !important;
+        }
+
+        /* --- Screamer Overlay --- */
+        #screamer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: none;
+            justify-content: center; align-items: center;
+        }
+        #screamer-overlay img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- Controls --- */
         .controls { 
             position: fixed; top: 20px; right: 20px; 
             display: flex; align-items: center; gap: 12px; z-index: 3000; 
@@ -147,18 +183,18 @@
         
         #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        /* --- LIGHTBOX (UI Update) --- */
+        /* --- LIGHTBOX --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
-            cursor: zoom-out; /* Указываем, что клик закроет */
+            cursor: zoom-out;
         }
         .lightbox.active { display: flex; opacity: 1; }
         .lightbox-wrapper { 
             position: relative; max-width: 90%; max-height: 90%; 
             transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: default; /* Внутри обертки обычный курсор */
+            cursor: default;
         }
         .lightbox.active .lightbox-wrapper { transform: scale(1); }
         .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
@@ -169,7 +205,7 @@
             display: inline-block;
         }
         .close-lightbox:hover { 
-            transform: rotate(90deg); /* Анимация вращения */
+            transform: rotate(90deg);
             color: var(--accent-color); 
         }
 
@@ -205,9 +241,17 @@
         <button class="control-btn" id="music-toggle">🎵</button>
     </div>
 
+    <audio id="screamer-sound">
+        <source src="https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Screamer&filename=mt/mtu0mziyotu4mtu0mzcz_r_2bg_2f3n_2b3o_2bs.mp3" type="audio/mpeg">
+    </audio>
+
     <audio id="bg-music" loop>
         <source src="SOMBRA.mp3" type="audio/mpeg">
     </audio>
+
+    <div id="screamer-overlay">
+        <img src="https://i.imgur.com/H6S7pYv.jpg" alt="SCREAMER">
+    </div>
 
     <section id="info" class="page active">
         <div class="info-content">
@@ -216,9 +260,19 @@
                 A private digital repository focusing on minimal aesthetics and modern visual culture.
             </p>
             <div class="social-links">
-                <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
+                <div class="social-item">
+                    <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <span class="social-label">Instagram</span>
+                </div>
+
+                <div class="social-item">
+                    <div class="social-btn ghost-btn" id="ghost-trigger" style="cursor: pointer;">
+                        <i class="fa-solid fa-ghost"></i>
+                    </div>
+                    <span class="social-label">Archive 666</span>
+                </div>
             </div>
         </div>
     </section>
@@ -321,18 +375,35 @@
                 item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
             });
 
-            // Закрытие при клике на крестик
             document.getElementById('close-x').addEventListener('click', (e) => {
                 e.stopPropagation();
                 closeLightbox();
             });
 
-            // Закрытие при клике на свободное место (фон)
             lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) {
-                    closeLightbox();
-                }
+                if (e.target === lightbox) closeLightbox();
             });
+
+            // Ghost Screamer Logic
+            const ghostTrigger = document.getElementById('ghost-trigger');
+            const screamerOverlay = document.getElementById('screamer-overlay');
+            const screamerSound = document.getElementById('screamer-sound');
+
+            ghostTrigger.onclick = () => {
+                // Пытаемся войти в полноэкранный режим для эффекта
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+                
+                screamerOverlay.style.display = 'flex';
+                screamerSound.volume = 1;
+                screamerSound.play();
+
+                setTimeout(() => {
+                    screamerOverlay.style.display = 'none';
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }, 1500); // Скример на 1.5 сек
+            };
 
             // Theme Toggle
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
