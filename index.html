@@ -64,6 +64,19 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
+        /* --- Instagram Style --- */
+        .social-links { margin-top: 30px; }
+        .social-btn { text-decoration: none; color: inherit; }
+        .social-btn i { 
+            font-size: 2.5rem; /* Увеличена иконка */
+            transition: var(--transition); 
+        }
+        .social-btn:hover i { 
+            color: var(--accent-color); 
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 10px var(--accent-color));
+        }
+
         /* --- Controls & Volume Slider --- */
         .controls { 
             position: fixed; top: 20px; right: 20px; 
@@ -80,9 +93,7 @@
         
         .controls:hover .volume-container { opacity: 1; transform: translateX(0); pointer-events: all; }
 
-        #volume-slider {
-            width: 80px; cursor: pointer; accent-color: var(--accent-color);
-        }
+        #volume-slider { width: 80px; cursor: pointer; accent-color: var(--accent-color); }
 
         .control-btn {
             width: 45px; height: 45px; border-radius: 50%;
@@ -90,11 +101,6 @@
             color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(10px); transition: var(--transition);
         }
-
-        /* --- Instagram Icon Size --- */
-        .social-links { margin-top: 30px; }
-        .social-btn i { font-size: 2.5rem; color: var(--text-color); transition: var(--transition); }
-        .social-btn:hover i { color: var(--accent-color); transform: scale(1.1); }
 
         /* --- Sections --- */
         .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
@@ -132,17 +138,40 @@
         }
         .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
 
-        /* --- LIGHTBOX --- */
+        .load-more-btn {
+            padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color);
+            color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
+            margin-top: 60px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
+        
+        #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
+
+        /* --- LIGHTBOX (UI Update) --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
+            cursor: zoom-out; /* Указываем, что клик закроет */
         }
         .lightbox.active { display: flex; opacity: 1; }
-        .lightbox-wrapper { position: relative; max-width: 90%; max-height: 90%; transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .lightbox-wrapper { 
+            position: relative; max-width: 90%; max-height: 90%; 
+            transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: default; /* Внутри обертки обычный курсор */
+        }
         .lightbox.active .lightbox-wrapper { transform: scale(1); }
-        .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .close-lightbox { position: absolute; top: -50px; right: 0; color: white; font-size: 2rem; cursor: pointer; }
+        .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
+        
+        .close-lightbox { 
+            position: absolute; top: -60px; right: 0; color: white; 
+            font-size: 3rem; cursor: pointer; transition: var(--transition); 
+            display: inline-block;
+        }
+        .close-lightbox:hover { 
+            transform: rotate(90deg); /* Анимация вращения */
+            color: var(--accent-color); 
+        }
 
         /* Horizon Cards */
         .update-card {
@@ -220,8 +249,8 @@
             </div>
             
             <center>
-                <button class="load-more-btn" id="load-more" style="padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color); color: var(--text-color); border-radius: 50px; cursor: pointer; margin-top: 60px;">Explore More</button>
-                <div id="no-more-msg" style="display:none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px;">End of Current Archive</div>
+                <button class="load-more-btn" id="load-more">Explore More</button>
+                <div id="no-more-msg">End of Current Archive</div>
             </center>
         </div>
     </section>
@@ -232,28 +261,23 @@
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
             
             <div class="update-card">
-                <span class="status-badge" style="background: #6200ea; color: white;">Coming Soon</span>
-                <h3>00 System Core v2.0</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Major engine update. Enhanced performance, new visual shaders, and personalized archive sorting.</p>
-            </div>
-
-            <div class="update-card">
                 <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
                 <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders for a more immersive feel.</p>
             </div>
 
             <div class="update-card">
                 <span class="status-badge" style="border: 1px solid #4caf50; color: #4caf50;">In Development</span>
                 <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight and color palette.</p>
             </div>
         </div>
     </section>
 
     <div class="lightbox" id="lightbox">
-        <div class="lightbox-wrapper">
+        <div class="lightbox-wrapper" id="lightbox-wrapper">
             <span class="close-lightbox" id="close-x">&times;</span>
+            <div class="img-protection"></div>
             <img src="" id="lightbox-img">
         </div>
     </div>
@@ -280,6 +304,36 @@
                 });
             });
 
+            // Lightbox
+            const lightbox = document.getElementById('lightbox');
+            const lImg = document.getElementById('lightbox-img');
+            const openLightbox = (src) => {
+                lImg.src = src;
+                lightbox.style.display = 'flex';
+                setTimeout(() => lightbox.classList.add('active'), 10);
+            };
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                setTimeout(() => lightbox.style.display = 'none', 400);
+            };
+
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
+            });
+
+            // Закрытие при клике на крестик
+            document.getElementById('close-x').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeLightbox();
+            });
+
+            // Закрытие при клике на свободное место (фон)
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
             // Theme Toggle
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
 
@@ -288,7 +342,6 @@
             const musicBtn = document.getElementById('music-toggle');
             const volumeSlider = document.getElementById('volume-slider');
             let isPlaying = false;
-
             audio.volume = 0.25;
 
             musicBtn.onclick = () => {
@@ -299,27 +352,13 @@
 
             volumeSlider.oninput = (e) => { audio.volume = e.target.value; };
 
-            // Lightbox Logic
-            const lightbox = document.getElementById('lightbox');
-            const lImg = document.getElementById('lightbox-img');
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    lImg.src = item.querySelector('img').src;
-                    lightbox.style.display = 'flex';
-                    setTimeout(() => lightbox.classList.add('active'), 10);
-                });
-            });
-            document.getElementById('close-x').onclick = () => {
-                lightbox.classList.remove('active');
-                setTimeout(() => lightbox.style.display = 'none', 400);
-            };
-
-            // Load More Simulation
+            // Explore More
             const loadBtn = document.getElementById('load-more');
-            loadBtn.onclick = () => {
+            const noMoreMsg = document.getElementById('no-more-msg');
+            loadBtn.addEventListener('click', () => {
                 loadBtn.style.display = 'none';
-                document.getElementById('no-more-msg').style.display = 'block';
-            };
+                noMoreMsg.style.display = 'block';
+            });
         });
     </script>
 </body>
