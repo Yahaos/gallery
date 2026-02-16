@@ -38,15 +38,12 @@
             -webkit-user-select: none; user-select: none;
         }
 
-        img { -webkit-user-drag: none; user-drag: none; }
-
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* --- UI Elements --- */
         .progress-container { position: fixed; top: 0; width: 100%; height: 4px; z-index: 9999; }
         .progress-bar { height: 100%; background: var(--accent-color); width: 0%; box-shadow: 0 0 15px var(--accent-color); }
 
@@ -64,53 +61,22 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        /* --- Social Links Styles --- */
-        .social-links { 
-            margin-top: 30px; 
-            display: flex; 
-            justify-content: center; 
-            gap: 40px; 
-        }
-        
-        .social-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
+        .social-links { margin-top: 30px; display: flex; justify-content: center; gap: 40px; }
+        .social-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .social-btn { text-decoration: none; color: inherit; cursor: pointer; }
-        .social-btn i { 
-            font-size: 2.5rem; 
-            transition: var(--transition); 
-        }
-        .social-btn:hover i { 
-            color: var(--accent-color); 
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 10px var(--accent-color));
-        }
-        
-        .social-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--sub-text);
-        }
+        .social-btn i { font-size: 2.5rem; transition: var(--transition); }
+        .social-btn:hover i { color: var(--accent-color); transform: scale(1.2); filter: drop-shadow(0 0 10px var(--accent-color)); }
+        .social-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--sub-text); }
 
-        /* --- Screamer Overlay --- */
         #screamer-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; display: none;
             justify-content: center; align-items: center;
         }
-        #screamer-overlay img { width: 100%; height: 100%; object-fit: cover; }
+        /* Скрытая ссылка на картинку скримера */
+        #screamer-overlay div { width: 100%; height: 100%; background: url('https://raw.githubusercontent.com/6wxxvy/assets/main/screamer.jpg') center/cover no-repeat; }
 
-        /* --- Controls & Volume Slider --- */
-        .controls { 
-            position: fixed; top: 20px; right: 20px; 
-            display: flex; align-items: center; gap: 12px; z-index: 3000; 
-        }
-        
+        .controls { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 12px; z-index: 3000; }
         .volume-container {
             display: flex; align-items: center; background: var(--card-bg);
             padding: 0 15px; height: 45px; border-radius: 25px;
@@ -118,11 +84,8 @@
             opacity: 0; transform: translateX(20px); transition: var(--transition);
             pointer-events: none;
         }
-        
         .controls:hover .volume-container { opacity: 1; transform: translateX(0); pointer-events: all; }
-
         #volume-slider { width: 80px; cursor: pointer; accent-color: var(--accent-color); }
-
         .control-btn {
             width: 45px; height: 45px; border-radius: 50%;
             background: var(--card-bg); border: 1px solid var(--glass-border);
@@ -130,7 +93,6 @@
             backdrop-filter: blur(10px); transition: var(--transition);
         }
 
-        /* --- Sections --- */
         .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -141,7 +103,6 @@
             border: 1px solid var(--glass-border); backdrop-filter: blur(20px);
         }
 
-        /* --- Gallery System --- */
         .hero-section { text-align: center; padding: 120px 20px 60px; }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px; }
@@ -155,15 +116,11 @@
 
         .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
 
-        .img-container { height: 400px; overflow: hidden; position: relative; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .gallery-item:hover img { transform: scale(1.1); }
+        /* Изображения теперь через background-image */
+        .img-container { height: 400px; overflow: hidden; position: relative; background-size: cover; background-position: center; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .gallery-item:hover .img-container { transform: scale(1.1); }
         
-        .gallery-item-info { 
-            padding: 25px; 
-            background: rgba(0,0,0,0.3); 
-            text-align: center;
-        }
+        .gallery-item-info { padding: 25px; background: rgba(0,0,0,0.3); text-align: center; }
         .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
 
         .load-more-btn {
@@ -172,10 +129,8 @@
             margin-top: 60px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
         }
         .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
-        
         #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        /* --- LIGHTBOX --- */
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
@@ -184,45 +139,24 @@
         }
         .lightbox.active { display: flex; opacity: 1; }
         .lightbox-wrapper { 
-            position: relative; max-width: 90%; max-height: 90%; 
+            position: relative; width: 80%; height: 80%; 
             transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: default;
+            cursor: default; background-size: contain; background-repeat: no-repeat; background-position: center;
         }
         .lightbox.active .lightbox-wrapper { transform: scale(1); }
-        .lightbox img { max-width: 100%; max-height: 85vh; border-radius: 20px; box-shadow: 0 25px 80px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); }
-        
-        .close-lightbox { 
-            position: absolute; top: -60px; right: 0; color: white; 
-            font-size: 3rem; cursor: pointer; transition: var(--transition); 
-            display: inline-block;
-        }
-        .close-lightbox:hover { 
-            transform: rotate(90deg);
-            color: var(--accent-color); 
-        }
+        .close-lightbox { position: absolute; top: -60px; right: 0; color: white; font-size: 3rem; cursor: pointer; transition: var(--transition); }
+        .close-lightbox:hover { transform: rotate(90deg); color: var(--accent-color); }
 
-        /* Horizon Cards */
-        .update-card {
-            background: var(--card-bg); padding: 30px; border-radius: 25px; 
-            border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px;
-            transition: var(--transition);
-        }
+        .update-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px; transition: var(--transition); }
         .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
-        
-        .status-badge {
-            display: inline-block; padding: 4px 12px; border-radius: 8px; 
-            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-            margin-bottom: 15px; letter-spacing: 1px;
-        }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
-    <div id="screamer-overlay">
-        <img src="https://raw.githubusercontent.com/6wxxvy/assets/main/screamer.jpg" onerror="this.src='https://files.catbox.moe/6v6pks.jpg'" alt="Jumpscare">
-    </div>
-    <audio id="screamer-audio">
+    <div id="screamer-overlay"><div></div></div>
+    <audio id="screamer-audio" preload="auto">
         <source src="https://files.catbox.moe/rbt7sc.mp3" type="audio/mpeg">
     </audio>
 
@@ -247,21 +181,14 @@
     <section id="info" class="page active">
         <div class="info-content">
             <h1 style="letter-spacing: 15px;">VISION</h1>
-            <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">
-                A private digital repository focusing on minimal aesthetics and modern visual culture.
-            </p>
+            <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">A private digital repository focusing on minimal aesthetics and modern visual culture.</p>
             <div class="social-links">
                 <div class="social-wrapper">
-                    <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
+                    <a href="https://www.instagram.com/6wxxvy/" class="social-btn" target="_blank"><i class="fa-brands fa-instagram"></i></a>
                     <span class="social-label">Instagram</span>
                 </div>
-                
                 <div class="social-wrapper">
-                    <div class="social-btn" id="scare-trigger">
-                        <i class="fa-solid fa-ghost"></i>
-                    </div>
+                    <div class="social-btn" id="scare-trigger"><i class="fa-solid fa-ghost"></i></div>
                     <span class="social-label">Screamer</span>
                 </div>
             </div>
@@ -275,24 +202,23 @@
         </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
-                <div class="gallery-item">
+                <div class="gallery-item" data-src="images/test.jpg">
                     <div class="img-protection"></div>
-                    <div class="img-container"><img src="images/test.jpg" alt="Art 1"></div>
+                    <div class="img-container" style="background-image: url('images/test.jpg');"></div>
                     <div class="gallery-item-info">
                         <h3>Nocturnal Flow</h3>
                         <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 01</p>
                     </div>
                 </div>
-                <div class="gallery-item">
+                <div class="gallery-item" data-src="images/test.jpg">
                     <div class="img-protection"></div>
-                    <div class="img-container"><img src="images/test.jpg" alt="Art 2"></div>
+                    <div class="img-container" style="background-image: url('images/test.jpg');"></div>
                     <div class="gallery-item-info">
                         <h3>Minimal Essence</h3>
                         <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 02</p>
                     </div>
                 </div>
             </div>
-            
             <center>
                 <button class="load-more-btn" id="load-more">Explore More</button>
                 <div id="no-more-msg">End of Current Archive</div>
@@ -304,17 +230,10 @@
         <div class="info-content">
             <h1 style="letter-spacing: 10px;">HORIZON</h1>
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
-            
             <div class="update-card">
                 <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
                 <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders for a more immersive feel.</p>
-            </div>
-
-            <div class="update-card">
-                <span class="status-badge" style="border: 1px solid #4caf50; color: #4caf50;">In Development</span>
-                <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-powered categorization that organizes the archive based on visual weight and color palette.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds.</p>
             </div>
         </div>
     </section>
@@ -323,20 +242,27 @@
         <div class="lightbox-wrapper" id="lightbox-wrapper">
             <span class="close-lightbox" id="close-x">&times;</span>
             <div class="img-protection"></div>
-            <img src="" id="lightbox-img">
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Scroll Logic
+            const audioScreamer = document.getElementById('screamer-audio');
+            
+            // Разблокировка звука при первом клике (фикс скримера)
+            document.body.addEventListener('click', () => {
+                audioScreamer.play().then(() => {
+                    audioScreamer.pause();
+                    audioScreamer.currentTime = 0;
+                }).catch(() => {});
+            }, { once: true });
+
             window.onscroll = () => {
                 const winScroll = document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
             };
 
-            // Navigation
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             navLinks.forEach(link => {
@@ -352,72 +278,45 @@
             // Screamer Logic
             const trigger = document.getElementById('scare-trigger');
             const overlay = document.getElementById('screamer-overlay');
-            const sound = document.getElementById('screamer-audio');
 
             trigger.addEventListener('click', () => {
                 overlay.style.display = 'flex';
-                sound.currentTime = 0;
-                sound.volume = 1;
-                sound.play().catch(e => console.log("User interaction required for audio"));
-                
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                }, 1500);
+                audioScreamer.volume = 1;
+                audioScreamer.play();
+                setTimeout(() => { overlay.style.display = 'none'; }, 1500);
             });
 
             // Lightbox
             const lightbox = document.getElementById('lightbox');
-            const lImg = document.getElementById('lightbox-img');
-            const openLightbox = (src) => {
-                lImg.src = src;
-                lightbox.style.display = 'flex';
-                setTimeout(() => lightbox.classList.add('active'), 10);
-            };
+            const lWrapper = document.getElementById('lightbox-wrapper');
+            
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const src = item.getAttribute('data-src');
+                    lWrapper.style.backgroundImage = `url('${src}')`;
+                    lightbox.style.display = 'flex';
+                    setTimeout(() => lightbox.classList.add('active'), 10);
+                });
+            });
+
             const closeLightbox = () => {
                 lightbox.classList.remove('active');
                 setTimeout(() => lightbox.style.display = 'none', 400);
             };
 
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', () => openLightbox(item.querySelector('img').src));
-            });
+            document.getElementById('close-x').onclick = closeLightbox;
+            lightbox.onclick = (e) => { if(e.target === lightbox) closeLightbox(); };
 
-            document.getElementById('close-x').addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeLightbox();
-            });
-
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) {
-                    closeLightbox();
-                }
-            });
-
-            // Theme Toggle
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-
-            // Music & Volume
-            const audio = document.getElementById('bg-music');
+            const bgMusic = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-toggle');
-            const volumeSlider = document.getElementById('volume-slider');
             let isPlaying = false;
-            audio.volume = 0.25;
-
             musicBtn.onclick = () => {
-                isPlaying ? audio.pause() : audio.play();
+                isPlaying ? bgMusic.pause() : bgMusic.play();
                 isPlaying = !isPlaying;
                 musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
             };
-
-            volumeSlider.oninput = (e) => { audio.volume = e.target.value; };
-
-            // Explore More
-            const loadBtn = document.getElementById('load-more');
-            const noMoreMsg = document.getElementById('no-more-msg');
-            loadBtn.addEventListener('click', () => {
-                loadBtn.style.display = 'none';
-                noMoreMsg.style.display = 'block';
-            });
+            document.getElementById('volume-slider').oninput = (e) => { bgMusic.volume = e.target.value; };
         });
     </script>
 </body>
