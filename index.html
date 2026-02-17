@@ -271,7 +271,6 @@
         const GOOGLE_CLIENT_ID = "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com"; 
         let isAuthorized = false;
 
-        // Google Callback
         function handleCredentialResponse(response) {
             isAuthorized = true;
             document.getElementById('auth-modal').style.display = 'none';
@@ -309,7 +308,6 @@
         navLinks.forEach(link => {
             link.onclick = () => {
                 const target = link.getAttribute('data-target');
-                // Lock Archive behind Auth
                 if(target === 'gallery' && !isAuthorized) {
                     document.getElementById('auth-modal').style.display = 'flex';
                     return;
@@ -318,7 +316,15 @@
             };
         });
 
-        // Other logic (Screamer, Theme, Volume)
+        // FIXED: Explore More logic
+        document.getElementById('load-more').onclick = function() {
+            // Здесь можно добавить массив ссылок на новые фото
+            alert("Archive Expansion Module coming soon.");
+            this.style.display = 'none';
+            document.getElementById('no-more-msg').style.display = 'block';
+        };
+
+        // UI Interactions
         document.getElementById('scare-trigger').onclick = () => {
             const ov = document.getElementById('screamer-overlay');
             const au = document.getElementById('screamer-audio');
@@ -336,14 +342,17 @@
             else { m.pause(); marq.classList.remove('active'); }
         };
 
-        // Lightbox
-        document.querySelectorAll('.gallery-item').forEach(item => {
-            item.onclick = () => {
-                document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
-                document.getElementById('lightbox').style.display = 'flex';
-                setTimeout(() => document.getElementById('lightbox').classList.add('active'), 10);
-            };
-        });
+        // Lightbox functionality
+        function initGallery() {
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.onclick = () => {
+                    document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
+                    document.getElementById('lightbox').style.display = 'flex';
+                    setTimeout(() => document.getElementById('lightbox').classList.add('active'), 10);
+                };
+            });
+        }
+        initGallery();
 
         document.getElementById('close-x').onclick = () => {
             document.getElementById('lightbox').classList.remove('active');
