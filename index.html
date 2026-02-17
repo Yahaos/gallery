@@ -6,10 +6,11 @@
     <title>Visual Archive | Premium Experience</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
             --bg-dark: #0f0f0f;
-            --card-bg: rgba(255, 255, 255, 0.03); /* Уменьшил фон для фотографий */
+            --card-bg: rgba(255, 255, 255, 0.03);
             --accent-color: #ff4081;
             --text-color: #ffffff;
             --sub-text: #b0b0b0;
@@ -64,27 +65,16 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
 
-        /* Бегущая строка */
         .marquee-container {
-            position: fixed;
-            top: 75px;
-            right: 20px;
-            width: 200px;
-            overflow: hidden;
-            opacity: 0;
-            transition: var(--transition);
-            z-index: 3000;
-            pointer-events: none;
+            position: fixed; top: 75px; right: 20px; width: 200px;
+            overflow: hidden; opacity: 0; transition: var(--transition);
+            z-index: 3000; pointer-events: none;
         }
         .marquee-container.active { opacity: 1; }
         .marquee-text {
-            display: inline-block;
-            white-space: nowrap;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-color);
-            animation: marquee 10s linear infinite;
+            display: inline-block; white-space: nowrap; font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: var(--accent-color); animation: marquee 10s linear infinite;
         }
         @keyframes marquee {
             0% { transform: translateX(100%); }
@@ -144,14 +134,12 @@
             position: relative; cursor: pointer;
         }
         .gallery-item:hover { transform: translateY(-10px); border-color: var(--accent-color); }
-        .gallery-item:active { outline: 3px solid var(--accent-color); outline-offset: -3px; }
 
         .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
-
         .img-container { height: 400px; overflow: hidden; position: relative; background-size: cover; background-position: center; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
         .gallery-item:hover .img-container { transform: scale(1.1); }
         
-        .gallery-item-info { padding: 25px; background: transparent; text-align: center; } /* Сделал фон прозрачным */
+        .gallery-item-info { padding: 25px; background: transparent; text-align: center; }
         .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
 
         .load-more-btn {
@@ -162,48 +150,36 @@
         .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
         #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        .lightbox {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
-            backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
-            cursor: zoom-out;
-        }
-        .lightbox.active { display: flex; opacity: 1; }
-        .lightbox-wrapper { 
-            position: relative; width: 80%; height: 80%; 
-            transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: default; background-size: contain; background-repeat: no-repeat; background-position: center;
-        }
-        .lightbox.active .lightbox-wrapper { transform: scale(1); }
-        .close-lightbox { position: absolute; top: -60px; right: 0; color: white; font-size: 3rem; cursor: pointer; transition: var(--transition); }
-        .close-lightbox:hover { transform: rotate(90deg); color: var(--accent-color); }
-
         .update-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px; transition: var(--transition); }
         .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
 
-        /* --- Стили для авторизации --- */
+        .lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
+            backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
+        }
+        .lightbox.active { display: flex; opacity: 1; }
+        .lightbox-wrapper { position: relative; width: 80%; height: 80%; background-size: contain; background-repeat: no-repeat; background-position: center; }
+        .close-lightbox { position: absolute; top: -60px; right: 0; color: white; font-size: 3rem; cursor: pointer; }
+
         #auth-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999;
             display: none; justify-content: center; align-items: center; backdrop-filter: blur(20px);
         }
         .auth-box {
             background: var(--card-bg); padding: 40px; border-radius: 30px;
-            border: 1px solid var(--glass-border); text-align: center; width: 300px;
-        }
-        .auth-input {
-            width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--accent-color);
-            color: white; text-align: center; padding: 10px 0; margin: 20px 0; font-size: 1.2rem; outline: none;
-            letter-spacing: 5px;
+            border: 1px solid var(--glass-border); text-align: center; width: 320px;
         }
     </style>
 </head>
 <body oncontextmenu="return false;" class="no-scroll">
+
     <div id="auth-modal">
         <div class="auth-box">
-            <h2 style="letter-spacing: 5px; font-size: 0.9rem;">SECURITY CHECK</h2>
-            <input type="password" id="auth-pass" class="auth-input" placeholder="••••">
-            <button class="load-more-btn" id="auth-btn" style="margin-top: 10px; padding: 10px 30px; font-size: 0.7rem;">Access Vault</button>
+            <h2 style="letter-spacing: 5px; font-size: 0.9rem; margin-bottom: 30px;">SECURE GATE</h2>
+            <div id="google-btn"></div>
+            <p style="font-size: 0.6rem; color: var(--sub-text); margin-top: 20px;">Identity Verification Required</p>
         </div>
     </div>
 
@@ -231,7 +207,7 @@
     </div>
 
     <div class="marquee-container" id="marquee">
-        <div class="marquee-text">Now Playing: SOMBRA.mp3 — Atmospheric Flow — </div>
+        <div class="marquee-text">System Online — Encryption Active — </div>
     </div>
 
     <audio id="bg-music" loop>
@@ -241,10 +217,10 @@
     <section id="info" class="page active">
         <div class="info-content">
             <h1 style="letter-spacing: 15px;">VISION</h1>
-            <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">A private digital repository focusing on minimal aesthetics and modern visual culture.</p>
+            <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">A private digital repository focusing on minimal aesthetics.</p>
             <div class="social-links">
                 <div class="social-wrapper">
-                    <a href="https://www.instagram.com" class="social-btn" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
                     <span class="social-label">Instagram</span>
                 </div>
                 <div class="social-wrapper">
@@ -258,7 +234,7 @@
     <section id="gallery" class="page">
         <header class="hero-section">
             <h1 style="letter-spacing: 8px;">ARCHIVE 01</h1>
-            <p style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">CURATED SELECTION</p>
+            <p style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">SECURED REPOSITORY</p>
         </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
@@ -266,22 +242,13 @@
                     <div class="img-protection"></div>
                     <div class="img-container" style="background-image: url('images/test.jpg');"></div>
                     <div class="gallery-item-info">
-                        <h3>Nocturnal Flow</h3>
-                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 01</p>
-                    </div>
-                </div>
-                <div class="gallery-item" data-src="images/test.jpg">
-                    <div class="img-protection"></div>
-                    <div class="img-container" style="background-image: url('images/test.jpg');"></div>
-                    <div class="gallery-item-info">
-                        <h3>Minimal Essence</h3>
-                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 02</p>
+                        <h3>Unit 01: Nocturnal</h3>
                     </div>
                 </div>
             </div>
             <center>
                 <button class="load-more-btn" id="load-more">Explore More</button>
-                <div id="no-more-msg">End of Current Archive</div>
+                <div id="no-more-msg">End of Archive</div>
             </center>
         </div>
     </section>
@@ -292,9 +259,9 @@
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
             
             <div class="update-card">
-                <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
-                <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders.</p>
+                <span class="status-badge" style="background: var(--accent-color); color: white;">Latest Update</span>
+                <h3>01 Google SSO Core</h3>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Identity-based access control implemented via Google Identity Services for secure archive entry.</p>
             </div>
 
             <div class="update-card">
@@ -308,146 +275,88 @@
     <div class="lightbox" id="lightbox">
         <div class="lightbox-wrapper" id="lightbox-wrapper">
             <span class="close-lightbox" id="close-x">&times;</span>
-            <div class="img-protection"></div>
         </div>
     </div>
 
     <script>
-        // Анти-F12 и Блокировка доступа
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-        };
+        const GOOGLE_CLIENT_ID = "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com"; 
+        let isAuthorized = false;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const audioScreamer = document.getElementById('screamer-audio');
-            const marquee = document.getElementById('marquee');
-            
-            // --- ЛОГИКА АВТОРИЗАЦИИ ---
-            let isAuthorized = false;
-            const PAS = "2603"; // Ваш пароль
-            const authModal = document.getElementById('auth-modal');
-            const authInput = document.getElementById('auth-pass');
-            const authBtn = document.getElementById('auth-btn');
+        function handleCredentialResponse(response) {
+            isAuthorized = true;
+            document.getElementById('auth-modal').style.display = 'none';
+            switchPage('gallery');
+        }
 
-            document.body.addEventListener('click', () => {
-                audioScreamer.play().then(() => {
-                    audioScreamer.pause();
-                    audioScreamer.currentTime = 0;
-                }).catch(() => {});
-            }, { once: true });
-
-            window.onscroll = () => {
-                const winScroll = document.documentElement.scrollTop;
-                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
-            };
-
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page');
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    const target = link.getAttribute('data-target');
-                    
-                    // Если пытаемся войти в архив без авторизации
-                    if(target === 'gallery' && !isAuthorized) {
-                        authModal.style.display = 'flex';
-                        authInput.focus();
-                        return;
-                    }
-
-                    switchPage(target);
-                });
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleCredentialResponse
             });
+            google.accounts.id.renderButton(
+                document.getElementById("google-btn"),
+                { theme: "dark", size: "large", width: 240 }
+            );
+        }
 
-            // Функция смены страницы
-            function switchPage(target) {
-                navLinks.forEach(l => l.classList.remove('active'));
-                pages.forEach(p => p.classList.remove('active'));
-                
-                const activeLink = document.querySelector(`[data-target="${target}"]`);
-                if(activeLink) activeLink.classList.add('active');
-                
-                document.getElementById(target).classList.add('active');
-                
-                if(target === 'info') {
-                    document.body.classList.add('no-scroll');
-                } else {
-                    document.body.classList.remove('no-scroll');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        function switchPage(target) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            pages.forEach(p => p.classList.remove('active'));
+            document.querySelector(`[data-target="${target}"]`).classList.add('active');
+            document.getElementById(target).classList.add('active');
+            document.body.classList.toggle('no-scroll', target === 'info');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        navLinks.forEach(link => {
+            link.onclick = () => {
+                const target = link.getAttribute('data-target');
+                if(target === 'gallery' && !isAuthorized) {
+                    document.getElementById('auth-modal').style.display = 'flex';
+                    return;
                 }
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            }
-
-            // Обработка ввода пароля
-            authBtn.addEventListener('click', () => {
-                if(authInput.value === PAS) {
-                    isAuthorized = true;
-                    authModal.style.display = 'none';
-                    switchPage('gallery');
-                } else {
-                    authInput.style.borderBottomColor = 'red';
-                    setTimeout(() => authInput.style.borderBottomColor = '', 1000);
-                }
-            });
-
-            const trigger = document.getElementById('scare-trigger');
-            const overlay = document.getElementById('screamer-overlay');
-            trigger.addEventListener('click', () => {
-                overlay.style.display = 'flex';
-                audioScreamer.volume = 1;
-                audioScreamer.play();
-                setTimeout(() => { overlay.style.display = 'none'; }, 1800);
-            });
-
-            const lightbox = document.getElementById('lightbox');
-            const lWrapper = document.getElementById('lightbox-wrapper');
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const src = item.getAttribute('data-src');
-                    lWrapper.style.backgroundImage = `url('${src}')`;
-                    lightbox.style.display = 'flex';
-                    setTimeout(() => lightbox.classList.add('active'), 10);
-                });
-            });
-
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox || e.target.id === 'close-x') {
-                    lightbox.classList.remove('active');
-                    setTimeout(() => lightbox.style.display = 'none', 400);
-                }
-            });
-
-            document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-            
-            const bgMusic = document.getElementById('bg-music');
-            const musicBtn = document.getElementById('music-toggle');
-            let isPlaying = false;
-
-            musicBtn.onclick = () => {
-                if(isPlaying) {
-                    bgMusic.pause();
-                    marquee.classList.remove('active');
-                } else {
-                    bgMusic.play();
-                    marquee.classList.add('active');
-                }
-                isPlaying = !isPlaying;
-                musicBtn.style.borderColor = isPlaying ? 'var(--accent-color)' : 'var(--glass-border)';
-                musicBtn.style.color = isPlaying ? 'var(--accent-color)' : 'var(--text-color)';
-            };
-
-            document.getElementById('volume-slider').oninput = (e) => { bgMusic.volume = e.target.value; };
-
-            const loadBtn = document.getElementById('load-more');
-            loadBtn.onclick = () => {
-                loadBtn.style.display = 'none';
-                document.getElementById('no-more-msg').style.display = 'block';
+                switchPage(target);
             };
         });
+
+        window.onscroll = () => {
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
+        };
+
+        document.getElementById('scare-trigger').onclick = () => {
+            const ov = document.getElementById('screamer-overlay');
+            const au = document.getElementById('screamer-audio');
+            ov.style.display = 'flex';
+            au.play();
+            setTimeout(() => ov.style.display = 'none', 1800);
+        };
+
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.onclick = () => {
+                document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
+                document.getElementById('lightbox').style.display = 'flex';
+                setTimeout(() => document.getElementById('lightbox').classList.add('active'), 10);
+            };
+        });
+
+        document.getElementById('close-x').onclick = () => {
+            document.getElementById('lightbox').classList.remove('active');
+            setTimeout(() => document.getElementById('lightbox').style.display = 'none', 400);
+        };
+
+        document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
+        
+        document.getElementById('music-toggle').onclick = () => {
+            const m = document.getElementById('bg-music');
+            const marq = document.getElementById('marquee');
+            if(m.paused) { m.play(); marq.classList.add('active'); }
+            else { m.pause(); marq.classList.remove('active'); }
+        };
     </script>
 </body>
 </html>
-
