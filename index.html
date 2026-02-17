@@ -150,9 +150,14 @@
         .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
         #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
 
-        .update-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px; transition: var(--transition); }
-        .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+        #auth-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999;
+            display: none; justify-content: center; align-items: center; backdrop-filter: blur(20px);
+        }
+        .auth-box {
+            background: var(--card-bg); padding: 40px; border-radius: 30px;
+            border: 1px solid var(--glass-border); text-align: center; width: 320px;
+        }
 
         .lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -162,15 +167,6 @@
         .lightbox.active { display: flex; opacity: 1; }
         .lightbox-wrapper { position: relative; width: 80%; height: 80%; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .close-lightbox { position: absolute; top: -60px; right: 0; color: white; font-size: 3rem; cursor: pointer; }
-
-        #auth-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999;
-            display: none; justify-content: center; align-items: center; backdrop-filter: blur(20px);
-        }
-        .auth-box {
-            background: var(--card-bg); padding: 40px; border-radius: 30px;
-            border: 1px solid var(--glass-border); text-align: center; width: 320px;
-        }
     </style>
 </head>
 <body oncontextmenu="return false;" class="no-scroll">
@@ -257,17 +253,10 @@
         <div class="info-content" style="margin: 150px auto;">
             <h1 style="letter-spacing: 10px;">HORIZON</h1>
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
-            
-            <div class="update-card">
-                <span class="status-badge" style="background: var(--accent-color); color: white;">Latest Update</span>
-                <h3>01 Google SSO Core</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Identity-based access control implemented via Google Identity Services for secure archive entry.</p>
-            </div>
-
-            <div class="update-card">
-                <span class="status-badge" style="border: 1px solid var(--accent-color); color: var(--accent-color);">Planning</span>
-                <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-driven image organization based on color palette and visual density.</p>
+            <div style="text-align: left; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border);">
+                <span style="font-size: 0.6rem; color: var(--accent-color); font-weight: 700;">UPDATE LOG v2.1</span>
+                <h3 style="margin: 10px 0;">Google Authentication</h3>
+                <p style="color: var(--sub-text); font-size: 0.85rem; line-height: 1.6;">Access to Archive is now gated by Google Identity Services for enhanced privacy.</p>
             </div>
         </div>
     </section>
@@ -282,6 +271,7 @@
         const GOOGLE_CLIENT_ID = "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com"; 
         let isAuthorized = false;
 
+        // Google Callback
         function handleCredentialResponse(response) {
             isAuthorized = true;
             document.getElementById('auth-modal').style.display = 'none';
@@ -305,8 +295,13 @@
         function switchPage(target) {
             navLinks.forEach(l => l.classList.remove('active'));
             pages.forEach(p => p.classList.remove('active'));
-            document.querySelector(`[data-target="${target}"]`).classList.add('active');
-            document.getElementById(target).classList.add('active');
+            
+            const activeLink = document.querySelector(`[data-target="${target}"]`);
+            const activePage = document.getElementById(target);
+            
+            if(activeLink) activeLink.classList.add('active');
+            if(activePage) activePage.classList.add('active');
+            
             document.body.classList.toggle('no-scroll', target === 'info');
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
@@ -314,6 +309,7 @@
         navLinks.forEach(link => {
             link.onclick = () => {
                 const target = link.getAttribute('data-target');
+                // Lock Archive behind Auth
                 if(target === 'gallery' && !isAuthorized) {
                     document.getElementById('auth-modal').style.display = 'flex';
                     return;
@@ -322,12 +318,7 @@
             };
         });
 
-        window.onscroll = () => {
-            const winScroll = document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
-        };
-
+        // Other logic (Screamer, Theme, Volume)
         document.getElementById('scare-trigger').onclick = () => {
             const ov = document.getElementById('screamer-overlay');
             const au = document.getElementById('screamer-audio');
@@ -336,6 +327,16 @@
             setTimeout(() => ov.style.display = 'none', 1800);
         };
 
+        document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
+        
+        document.getElementById('music-toggle').onclick = () => {
+            const m = document.getElementById('bg-music');
+            const marq = document.getElementById('marquee');
+            if(m.paused) { m.play(); marq.classList.add('active'); }
+            else { m.pause(); marq.classList.remove('active'); }
+        };
+
+        // Lightbox
         document.querySelectorAll('.gallery-item').forEach(item => {
             item.onclick = () => {
                 document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
@@ -349,13 +350,10 @@
             setTimeout(() => document.getElementById('lightbox').style.display = 'none', 400);
         };
 
-        document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-        
-        document.getElementById('music-toggle').onclick = () => {
-            const m = document.getElementById('bg-music');
-            const marq = document.getElementById('marquee');
-            if(m.paused) { m.play(); marq.classList.add('active'); }
-            else { m.pause(); marq.classList.remove('active'); }
+        window.onscroll = () => {
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
         };
     </script>
 </body>
