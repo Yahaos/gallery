@@ -170,7 +170,6 @@
         .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
 
-        /* СТИЛИ ДЛЯ ОКНА АВТОРИЗАЦИИ */
         #auth-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999;
             display: none; justify-content: center; align-items: center; backdrop-filter: blur(20px);
@@ -181,7 +180,6 @@
             border: 1px solid var(--glass-border); text-align: center; width: 320px;
             display: flex; flex-direction: column; align-items: center; gap: 20px;
         }
-        /* КРЕСТИК В ОКНЕ АВТОРИЗАЦИИ */
         .close-auth {
             position: absolute; top: 15px; right: 20px;
             color: var(--sub-text); font-size: 1.8rem; cursor: pointer;
@@ -196,7 +194,6 @@
     <div id="auth-modal">
         <div class="auth-box">
             <span class="close-auth" id="close-auth-x">&times;</span>
-            
             <h2 id="auth-title" style="letter-spacing: 5px; font-size: 0.9rem; margin-bottom: 10px;">SECURE ACCESS</h2>
             <p id="auth-desc" style="font-size: 0.7rem; color: var(--sub-text); margin-bottom: 10px;">Sign in with Google to view the archive</p>
             <div id="google-signin-btn"></div>
@@ -255,7 +252,7 @@
     <section id="gallery" class="page">
         <header class="hero-section">
             <h1 style="letter-spacing: 8px;">ARCHIVE 01</h1>
-            <p style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">CURATED SELECTION</p>
+            <p id="archive-status" style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">CURATED SELECTION</p>
         </header>
         <div class="container">
             <div class="gallery" id="photo-grid">
@@ -287,23 +284,10 @@
         <div class="info-content" style="margin: 150px auto;">
             <h1 style="letter-spacing: 10px;">HORIZON</h1>
             <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
-            
             <div class="update-card">
                 <span class="status-badge" style="background: #4caf50; color: white;">Released</span>
                 <h3>00 Secure Auth</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Google API Integration with Whitelist-only access protocol.</p>
-            </div>
-
-            <div class="update-card">
-                <span class="status-badge" style="background: var(--accent-color); color: white;">Soon</span>
-                <h3>01 Cinematic Motion</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Implementation of 4K video backgrounds and dynamic transition shaders.</p>
-            </div>
-
-            <div class="update-card">
-                <span class="status-badge" style="border: 1px solid var(--accent-color); color: var(--accent-color);">Planning</span>
-                <h3>02 Neural Sorting</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">AI-driven image organization based on color palette and visual density.</p>
+                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Google API Integration with Privilege-based access protocol.</p>
             </div>
         </div>
     </section>
@@ -311,24 +295,13 @@
     <section id="admin" class="page">
         <div class="info-content" style="margin: 150px auto; text-align: left;">
             <h1 style="letter-spacing: 10px; text-align: center;">TERMINAL</h1>
-            
             <div class="update-card">
-                <h3 style="color: var(--accent-color);">ACCESS WHITELIST</h3>
+                <h3 style="color: var(--accent-color);">SYSTEM ROLES</h3>
                 <div id="whitelist-view" style="font-family: monospace; font-size: 0.8rem; margin-top: 15px; opacity: 0.8;"></div>
             </div>
-
             <div class="update-card">
                 <h3 style="color: #4caf50;">ACCESS LOG (SUCCESS)</h3>
-                <div id="success-logs" style="font-family: monospace; font-size: 0.75rem; margin-top: 15px; max-height: 400px; overflow-y: auto; line-height: 1.6;">
-                    > Fetching from server...
-                </div>
-            </div>
-
-            <div class="update-card">
-                <h3 style="color: #f44336;">SECURITY ALERTS (FAILED)</h3>
-                <div id="fail-logs" style="font-family: monospace; font-size: 0.75rem; margin-top: 15px; max-height: 400px; overflow-y: auto; line-height: 1.6;">
-                    > System clean.
-                </div>
+                <div id="success-logs" style="font-family: monospace; font-size: 0.75rem; margin-top: 15px; max-height: 400px; overflow-y: auto; line-height: 1.6;">> Fetching...</div>
             </div>
         </div>
     </section>
@@ -341,41 +314,32 @@
     </div>
 
     <script>
-        // --- CONFIG ---
-        const ALLOWED_USERS = ["krekw@mail.ua", "vladvoloshin2009@gmail.com"];
-        const ADMINS = ["krekw@mail.ua"];
-        const BACKEND_URL = "https://node-iar7.onrender.com"; // Твой сервер
+        // --- DATABASE & CONFIG ---
+        // Роли: 'admin', 'premium', 'user'
+        const USER_DATABASE = {
+            "krekw@mail.ua": "admin",
+            "vladvoloshin2009@gmail.com": "premium",
+            "testuser@gmail.com": "user"
+        };
+        
+        const BACKEND_URL = "https://node-iar7.onrender.com";
+        let isAuthorized = false;
+        let currentUserRole = null;
 
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        document.onkeydown = (e) => {
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) return false;
         };
 
-        let isAuthorized = false;
-
         function parseJwt(token) {
-            try {
-                return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-            } catch (e) { return null; }
+            try { return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); } catch (e) { return null; }
         }
 
         async function getIp() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return data.ip;
-            } catch { return 'Hidden/Unknown'; }
+            try { return (await (await fetch('https://api.ipify.org?format=json')).json()).ip; } catch { return 'Unknown'; }
         }
 
         async function saveLog(email, status) {
-            const ip = await getIp();
-            const device = navigator.userAgent.split(')')[0].split('(')[1] || 'Unknown Device';
-            
-            const logData = { email, status, ip, device };
-
+            const logData = { email, status, ip: await getIp(), device: navigator.userAgent.split('(')[1]?.split(')')[0] || 'Unknown' };
             try {
                 await fetch(`${BACKEND_URL}/api/log`, {
                     method: 'POST',
@@ -383,115 +347,108 @@
                     body: JSON.stringify(logData)
                 });
             } catch (e) {
-                console.error('Backend error, fallback to local');
                 const logs = JSON.parse(localStorage.getItem('archive_logs_v2') || '[]');
                 logs.push({ ...logData, time: new Date().toLocaleString() });
                 localStorage.setItem('archive_logs_v2', JSON.stringify(logs));
             }
         }
 
+        function applyPrivileges(role) {
+            const adminLink = document.getElementById('nav-admin-link');
+            const loadMoreBtn = document.getElementById('load-more');
+            const statusLabel = document.getElementById('archive-status');
+
+            statusLabel.innerText = `CURATED SELECTION | ACCESS: ${role.toUpperCase()}`;
+
+            if(role === 'admin') {
+                adminLink.style.display = 'block';
+            } else {
+                adminLink.style.display = 'none';
+            }
+
+            if(role === 'user') {
+                loadMoreBtn.innerText = "UPGRADE TO PREMIUM FOR MORE";
+                loadMoreBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    alert("This content is reserved for Premium members.");
+                };
+            } else {
+                loadMoreBtn.onclick = function() {
+                    this.style.display = 'none';
+                    document.getElementById('no-more-msg').style.display = 'block';
+                };
+            }
+        }
+
         async function updateAdminView() {
             const successDiv = document.getElementById('success-logs');
-            const failDiv = document.getElementById('fail-logs');
-
+            const whitelistDiv = document.getElementById('whitelist-view');
+            
+            whitelistDiv.innerHTML = Object.entries(USER_DATABASE).map(([email, role]) => `> ${email} [${role.toUpperCase()}]<br>`).join('');
+            
             try {
-                const res = await fetch(`${BACKEND_URL}/api/logs`);
-                const logs = await res.json();
-                
-                const successItems = logs.filter(l => l.status === 'success').reverse();
-                const failItems = logs.filter(l => l.status === 'denied').reverse();
-
-                if(successItems.length) {
-                    successDiv.innerHTML = successItems.map(l => 
-                        `<div style="margin-bottom:10px; border-left: 2px solid #4caf50; padding-left: 10px;">
-                            <span style="color:#4caf50">[ACCESS]</span> ${l.email}<br>
-                            <span style="opacity:0.5; font-size:0.65rem;">IP: ${l.ip} | DEV: ${l.device} | ${l.time}</span>
-                        </div>`
-                    ).join('');
-                } else { successDiv.innerHTML = "> No success entries."; }
-
-                if(failItems.length) {
-                    failDiv.innerHTML = failItems.map(l => 
-                        `<div style="margin-bottom:10px; border-left: 2px solid #f44336; padding-left: 10px;">
-                            <span style="color:#f44336">[BLOCKED]</span> ${l.email}<br>
-                            <span style="opacity:0.5; font-size:0.65rem;">IP: ${l.ip} | DEV: ${l.device} | ${l.time}</span>
-                        </div>`
-                    ).join('');
-                } else { failDiv.innerHTML = "> System clean."; }
-            } catch (e) {
-                successDiv.innerHTML = "<span style='color:red'>Offline: Connect to Render failed</span>";
-            }
-            document.getElementById('whitelist-view').innerHTML = ALLOWED_USERS.map(e => `> ${e}<br>`).join('');
+                const logs = await (await fetch(`${BACKEND_URL}/api/logs`)).json();
+                successDiv.innerHTML = logs.reverse().map(l => 
+                    `<div style="margin-bottom:10px; border-left: 2px solid var(--accent-color); padding-left: 10px;">
+                        <span style="color:var(--accent-color)">[LOG]</span> ${l.email} (${l.status})<br>
+                        <span style="opacity:0.5; font-size:0.65rem;">${l.ip} | ${l.time}</span>
+                    </div>`
+                ).join('');
+            } catch (e) { successDiv.innerHTML = "Offline: Backend connection failed."; }
         }
 
         async function handleCredentialResponse(response) {
             const data = parseJwt(response.credential);
             if(data) {
-                if(ALLOWED_USERS.includes(data.email)) {
-                    await saveLog(data.email, 'success');
+                const role = USER_DATABASE[data.email];
+                if(role) {
+                    await saveLog(data.email, `success_${role}`);
                     isAuthorized = true;
+                    currentUserRole = role;
+                    applyPrivileges(role);
                     document.getElementById('auth-modal').style.display = 'none';
                     document.body.classList.remove('no-scroll');
-                    
-                    if(ADMINS.includes(data.email)) {
-                        document.getElementById('nav-admin-link').style.display = 'block';
-                        updateAdminView();
-                    }
                     switchPage('gallery');
                 } else {
                     await saveLog(data.email, 'denied');
                     document.getElementById('auth-title').innerText = "RESTRICTED";
-                    document.getElementById('auth-desc').innerText = "Email not found in whitelist.";
-                    document.getElementById('auth-desc').style.color = "var(--accent-color)";
+                    document.getElementById('auth-desc').innerText = "Account not found.";
                 }
             }
         }
 
         window.onload = function () {
-            fetch(`${BACKEND_URL}/ping`).catch(() => {});
-
             google.accounts.id.initialize({
                 client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
                 callback: handleCredentialResponse
             });
-            google.accounts.id.renderButton(
-                document.getElementById("google-signin-btn"),
-                { theme: "dark", size: "large", width: 250, text: "continue_with" }
-            );
+            google.accounts.id.renderButton(document.getElementById("google-signin-btn"), { theme: "dark", size: "large", width: 250 });
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            const audioScreamer = document.getElementById('screamer-audio');
-            const marquee = document.getElementById('marquee');
-            const authModal = document.getElementById('auth-modal');
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
 
             window.switchPage = function(target) {
                 navLinks.forEach(l => l.classList.remove('active'));
                 pages.forEach(p => p.classList.remove('active'));
-                const activeLink = document.querySelector(`[data-target="${target}"]`);
-                if(activeLink) activeLink.classList.add('active');
+                document.querySelector(`[data-target="${target}"]`)?.classList.add('active');
                 document.getElementById(target).classList.add('active');
-                
-                // Исправлено: скролл блокируется только если мы на Main
                 if(target === 'info') document.body.classList.add('no-scroll');
                 else document.body.classList.remove('no-scroll');
-                
                 window.scrollTo({top: 0, behavior: 'smooth'});
             };
 
-            // ЛОГИКА ЗАКРЫТИЯ МОДАЛКИ (КРЕСТИК)
             document.getElementById('close-auth-x').onclick = () => {
-                authModal.style.display = 'none';
-                switchPage('info'); // Возвращаем на главную
+                document.getElementById('auth-modal').style.display = 'none';
+                switchPage('info');
             };
 
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     const target = link.getAttribute('data-target');
                     if((target === 'gallery' || target === 'admin') && !isAuthorized) {
-                        authModal.style.display = 'flex';
+                        document.getElementById('auth-modal').style.display = 'flex';
                         return;
                     }
                     if(target === 'admin') updateAdminView();
@@ -499,15 +456,14 @@
                 });
             });
 
+            // Theme, Music, Screamer, Lightbox logic
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-            
             const bgMusic = document.getElementById('bg-music');
             const musicBtn = document.getElementById('music-toggle');
             let isPlaying = false;
-
             musicBtn.onclick = () => {
-                if(isPlaying) { bgMusic.pause(); marquee.classList.remove('active'); }
-                else { bgMusic.play(); marquee.classList.add('active'); }
+                if(isPlaying) { bgMusic.pause(); document.getElementById('marquee').classList.remove('active'); }
+                else { bgMusic.play(); document.getElementById('marquee').classList.add('active'); }
                 isPlaying = !isPlaying;
                 musicBtn.style.color = isPlaying ? 'var(--accent-color)' : 'var(--text-color)';
             };
@@ -515,8 +471,8 @@
             document.getElementById('scare-trigger').onclick = () => {
                 const overlay = document.getElementById('screamer-overlay');
                 overlay.style.display = 'flex';
-                audioScreamer.play();
-                setTimeout(() => { overlay.style.display = 'none'; }, 1800);
+                document.getElementById('screamer-audio').play();
+                setTimeout(() => overlay.style.display = 'none', 1800);
             };
 
             const lightbox = document.getElementById('lightbox');
@@ -528,13 +484,7 @@
                 };
             });
             lightbox.onclick = () => { lightbox.classList.remove('active'); setTimeout(() => lightbox.style.display = 'none', 400); };
-
-            document.getElementById('load-more').onclick = function() {
-                this.style.display = 'none';
-                document.getElementById('no-more-msg').style.display = 'block';
-            };
         });
     </script>
 </body>
 </html>
-
