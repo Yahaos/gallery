@@ -24,179 +24,141 @@
             --text-color: #1a1a1a;
             --sub-text: #555555;
             --glass-border: rgba(0, 0, 0, 0.1);
-            background: linear-gradient(-45deg, #e0e0e0, #f5f5f5, #ffffff);
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--bg-dark);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
             color: var(--text-color);
             margin: 0; padding: 0;
             transition: background 0.5s ease;
             min-height: 100vh;
-            -webkit-user-select: none; user-select: none;
+            user-select: none;
             overflow-x: hidden;
         }
 
         body.no-scroll { overflow: hidden; }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* Progress Bar */
+        .progress-container { position: fixed; top: 0; width: 100%; height: 3px; z-index: 9999; }
+        .progress-bar { height: 100%; background: var(--accent-color); width: 0%; box-shadow: 0 0 15px var(--accent-color); transition: width 0.1s; }
 
-        .progress-container { position: fixed; top: 0; width: 100%; height: 4px; z-index: 9999; }
-        .progress-bar { height: 100%; background: var(--accent-color); width: 0%; box-shadow: 0 0 15px var(--accent-color); }
-
+        /* Navigation */
         nav {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 10px; background: var(--card-bg);
-            padding: 10px 20px; border-radius: 50px; border: 1px solid var(--glass-border);
-            backdrop-filter: blur(15px); z-index: 4000;
+            display: flex; gap: 8px; background: var(--card-bg);
+            padding: 8px 15px; border-radius: 50px; border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px); z-index: 4000;
         }
 
         .nav-link {
-            padding: 10px 25px; color: var(--text-color); text-decoration: none;
-            font-size: 0.85rem; font-weight: 500; border-radius: 25px;
-            transition: var(--transition); cursor: pointer; opacity: 0.6;
+            padding: 10px 22px; color: var(--text-color); text-decoration: none;
+            font-size: 0.8rem; font-weight: 500; border-radius: 25px;
+            transition: var(--transition); cursor: pointer; opacity: 0.5;
         }
-        .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
-        
+        .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.3); }
         #nav-admin-link { display: none; }
 
-        .marquee-container {
-            position: fixed; top: 75px; right: 20px; width: 200px;
-            overflow: hidden; opacity: 0; transition: var(--transition);
-            z-index: 3000; pointer-events: none;
-        }
-        .marquee-container.active { opacity: 1; }
-        .marquee-text {
-            display: inline-block; white-space: nowrap; font-size: 0.7rem;
-            text-transform: uppercase; letter-spacing: 2px;
-            color: var(--accent-color); animation: marquee 10s linear infinite;
-        }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        .social-links { margin-top: 30px; display: flex; justify-content: center; gap: 40px; }
-        .social-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .social-btn { text-decoration: none; color: inherit; cursor: pointer; }
-        .social-btn i { font-size: 2.5rem; transition: var(--transition); }
-        .social-btn:hover i { color: var(--accent-color); transform: scale(1.2); filter: drop-shadow(0 0 10px var(--accent-color)); }
-        .social-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--sub-text); }
-
-        #screamer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; display: none;
-            justify-content: center; align-items: center;
-        }
-        #screamer-overlay img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
-        .controls { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 12px; z-index: 3000; }
-        .volume-container {
-            display: flex; align-items: center; background: var(--card-bg);
-            padding: 0 15px; height: 45px; border-radius: 25px;
-            border: 1px solid var(--glass-border); backdrop-filter: blur(10px);
-            opacity: 0; transform: translateX(20px); transition: var(--transition);
-            pointer-events: none;
-        }
-        .controls:hover .volume-container { opacity: 1; transform: translateX(0); pointer-events: all; }
-        #volume-slider { width: 80px; cursor: pointer; accent-color: var(--accent-color); }
+        /* Controls */
+        .controls { position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 10px; z-index: 3000; }
         .control-btn {
-            width: 45px; height: 45px; border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             background: var(--card-bg); border: 1px solid var(--glass-border);
             color: var(--text-color); cursor: pointer; display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(10px); transition: var(--transition);
         }
+        .control-btn:hover { background: var(--glass-border); transform: scale(1.05); }
 
-        .page { display: none; animation: fadeIn 0.8s ease; padding-bottom: 150px; }
+        /* Marquee */
+        .marquee-container {
+            position: fixed; top: 70px; right: 20px; width: 180px;
+            overflow: hidden; opacity: 0; transition: var(--transition); z-index: 3000;
+        }
+        .marquee-container.active { opacity: 1; }
+        .marquee-text {
+            display: inline-block; white-space: nowrap; font-size: 0.65rem;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--accent-color); animation: marquee 12s linear infinite;
+        }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Sections */
+        .page { display: none; animation: fadeIn 0.6s ease-out forwards; padding-bottom: 120px; }
         .page.active { display: block; }
         #info.active { height: 100vh; display: flex; align-items: center; justify-content: center; padding-bottom: 0; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .info-content {
-            max-width: 700px; text-align: center;
-            padding: 60px; background: var(--card-bg); border-radius: 40px;
-            border: 1px solid var(--glass-border); backdrop-filter: blur(20px);
+            max-width: 600px; text-align: center; padding: 50px;
+            background: var(--card-bg); border-radius: 40px;
+            border: 1px solid var(--glass-border); backdrop-filter: blur(25px);
         }
 
-        .hero-section { text-align: center; padding: 120px 20px 60px; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 40px; }
+        /* Gallery */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 30px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 50px; }
         
         .gallery-item {
-            background: var(--card-bg); border-radius: 30px; overflow: hidden;
+            background: var(--card-bg); border-radius: 24px; overflow: hidden;
             border: 1px solid var(--glass-border); transition: var(--transition);
             position: relative; cursor: pointer;
         }
-        .gallery-item:hover { transform: translateY(-10px); border-color: var(--accent-color); }
-        .gallery-item:active { outline: 3px solid var(--accent-color); outline-offset: -3px; }
+        .gallery-item:hover { transform: translateY(-8px); border-color: var(--accent-color); }
 
-        .img-protection { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: transparent; }
-        .img-container { height: 400px; overflow: hidden; position: relative; background-size: cover; background-position: center; transition: 1.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
-        .gallery-item:hover .img-container { transform: scale(1.1); }
+        .img-container { height: 350px; background-size: cover; background-position: center; transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .gallery-item:hover .img-container { transform: scale(1.08); }
         
-        .gallery-item-info { padding: 25px; background: transparent; text-align: center; } 
-        .gallery-item-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; letter-spacing: 1px; }
+        .gallery-item-info { padding: 20px; text-align: center; }
+        .gallery-item-info h3 { margin: 0; font-size: 1rem; letter-spacing: 1px; }
 
-        .load-more-btn {
-            padding: 16px 50px; background: transparent; border: 1px solid var(--accent-color);
-            color: var(--text-color); border-radius: 50px; cursor: pointer; transition: var(--transition);
-            margin-top: 60px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-        }
-        .load-more-btn:hover { background: var(--accent-color); color: white; box-shadow: 0 10px 30px rgba(255,64,129,0.4); }
-        #no-more-msg { display: none; margin-top: 60px; color: var(--sub-text); letter-spacing: 4px; font-weight: 300; text-transform: uppercase; }
-
+        /* Lightbox */
         .lightbox {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); z-index: 9000; justify-content: center; align-items: center;
-            backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease;
-            cursor: zoom-out;
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 9000; justify-content: center; align-items: center; backdrop-filter: blur(15px);
+            opacity: 0; transition: opacity 0.4s ease;
         }
         .lightbox.active { display: flex; opacity: 1; }
         .lightbox-wrapper { 
-            position: relative; width: 80%; height: 80%; 
-            transform: scale(0.8); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: default; background-size: contain; background-repeat: no-repeat; background-position: center;
+            width: 85%; height: 85%; background-size: contain; 
+            background-repeat: no-repeat; background-position: center;
+            transform: scale(0.9); transition: transform 0.4s ease;
         }
         .lightbox.active .lightbox-wrapper { transform: scale(1); }
-        .close-lightbox { position: absolute; top: -60px; right: 0; color: white; font-size: 3rem; cursor: pointer; transition: var(--transition); }
-        .close-lightbox:hover { transform: rotate(90deg); color: var(--accent-color); }
 
-        .update-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px; transition: var(--transition); }
-        .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+        /* Admin & Cards */
+        .update-card { 
+            background: var(--card-bg); padding: 25px; border-radius: 20px; 
+            border: 1px solid var(--glass-border); margin-bottom: 20px; transition: var(--transition); 
+        }
+        .update-card:hover { border-color: var(--accent-color); background: rgba(255,255,255,0.05); }
 
+        /* Auth Modal */
         #auth-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999;
             display: none; justify-content: center; align-items: center; backdrop-filter: blur(20px);
         }
         .auth-box {
+            background: var(--bg-dark); padding: 40px; border-radius: 30px;
+            border: 1px solid var(--glass-border); text-align: center; width: 300px;
             position: relative;
-            background: var(--card-bg); padding: 40px; border-radius: 30px;
-            border: 1px solid var(--glass-border); text-align: center; width: 320px;
-            display: flex; flex-direction: column; align-items: center; gap: 20px;
         }
-        .close-auth {
-            position: absolute; top: 15px; right: 20px;
-            color: var(--sub-text); font-size: 1.8rem; cursor: pointer;
-            transition: var(--transition); line-height: 1;
+        .close-auth { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 1.5rem; opacity: 0.5; }
+
+        #screamer-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: none; justify-content: center; align-items: center;
         }
-        .close-auth:hover { color: var(--accent-color); transform: rotate(90deg); }
-        
-        #google-signin-btn { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
+        #screamer-overlay img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body oncontextmenu="return false;" class="no-scroll">
+
     <div id="auth-modal">
         <div class="auth-box">
             <span class="close-auth" id="close-auth-x">&times;</span>
-            <h2 id="auth-title" style="letter-spacing: 5px; font-size: 0.9rem; margin-bottom: 10px;">SECURE ACCESS</h2>
-            <p id="auth-desc" style="font-size: 0.7rem; color: var(--sub-text); margin-bottom: 10px;">Sign in with Google to view the archive</p>
+            <h2 id="auth-title" style="letter-spacing: 3px; font-size: 0.8rem; margin-bottom: 20px;">SECURITY CHECK</h2>
             <div id="google-signin-btn"></div>
+            <p id="auth-desc" style="font-size: 0.65rem; color: var(--sub-text); margin-top: 20px;">Access restricted to authorized personnel.</p>
         </div>
     </div>
 
@@ -205,9 +167,7 @@
     <div id="screamer-overlay">
         <img src="https://media1.tenor.com/m/IrsJg0xknJcAAAAC/screamer-creepy.gif" alt="Jumpscare">
     </div>
-    <audio id="screamer-audio" preload="auto">
-        <source src="screamer.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="screamer-audio" preload="auto"><source src="screamer.mp3" type="audio/mpeg"></audio>
 
     <nav>
         <div class="nav-link active" data-target="info">Main</div>
@@ -217,9 +177,6 @@
     </nav>
 
     <div class="controls">
-        <div class="volume-container">
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.25">
-        </div>
         <button class="control-btn" id="theme-toggle">🌓</button>
         <button class="control-btn" id="music-toggle">🎵</button>
     </div>
@@ -228,196 +185,137 @@
         <div class="marquee-text">Now Playing: SOMBRA.mp3 — Atmospheric Flow — </div>
     </div>
 
-    <audio id="bg-music" loop>
-        <source src="SOMBRA.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bg-music" loop><source src="SOMBRA.mp3" type="audio/mpeg"></audio>
 
     <section id="info" class="page active">
         <div class="info-content">
-            <h1 style="letter-spacing: 15px;">VISION</h1>
-            <p style="color: var(--sub-text); line-height: 2.2; font-size: 1rem;">A private digital repository focusing on minimal aesthetics and modern visual culture.</p>
-            <div class="social-links">
-                <div class="social-wrapper">
-                    <a href="https://www.instagram.com" class="social-btn" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-                    <span class="social-label">Instagram</span>
-                </div>
-                <div class="social-wrapper">
-                    <div class="social-btn" id="scare-trigger"><i class="fa-solid fa-ghost"></i></div>
-                    <span class="social-label">Screamer</span>
-                </div>
+            <h1 style="letter-spacing: 12px; margin-bottom: 20px;">VISION</h1>
+            <p style="color: var(--sub-text); line-height: 1.8; font-size: 0.9rem; margin-bottom: 30px;">
+                A private digital repository focusing on minimal aesthetics and modern visual culture.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 30px;">
+                <a href="#" class="control-btn" style="text-decoration: none; width: auto; padding: 0 20px; border-radius: 20px; font-size: 0.7rem;">INSTAGRAM</a>
+                <button class="control-btn" id="scare-trigger" style="width: auto; padding: 0 20px; border-radius: 20px; font-size: 0.7rem;">DECRYPT</button>
             </div>
         </div>
     </section>
 
     <section id="gallery" class="page">
-        <header class="hero-section">
-            <h1 style="letter-spacing: 8px;">ARCHIVE 01</h1>
-            <p id="archive-status" style="color: var(--sub-text); letter-spacing: 5px; font-size: 0.8rem;">CURATED SELECTION</p>
-        </header>
         <div class="container">
+            <header style="text-align: center; padding: 100px 0 40px;">
+                <h1 style="letter-spacing: 8px;">ARCHIVE.01</h1>
+                <p style="color: var(--sub-text); font-size: 0.7rem; letter-spacing: 4px;">CURATED CONTENT</p>
+            </header>
             <div class="gallery" id="photo-grid">
                 <div class="gallery-item" data-src="images/sisi.jpg">
-                    <div class="img-protection"></div>
                     <div class="img-container" style="background-image: url('images/sisi.jpg');"></div>
-                    <div class="gallery-item-info">
-                        <h3>Nocturnal Flow</h3>
-                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 01</p>
-                    </div>
+                    <div class="gallery-item-info"><h3>Nocturnal Flow</h3></div>
                 </div>
                 <div class="gallery-item" data-src="images/face.jpg">
-                    <div class="img-protection"></div>
                     <div class="img-container" style="background-image: url('images/face.jpg');"></div>
-                    <div class="gallery-item-info">
-                        <h3>Minimal Essence</h3>
-                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT 02</p>
-                    </div>
+                    <div class="gallery-item-info"><h3>Minimal Essence</h3></div>
                 </div>
             </div>
-            <center>
-                <button class="load-more-btn" id="load-more">Explore More</button>
-                <div id="no-more-msg">End of Current Archive</div>
+            <center style="margin-top: 50px;">
+                <button class="control-btn" id="load-more" style="width: auto; padding: 15px 40px; border-radius: 30px;">LOAD MORE</button>
+                <div id="no-more-msg" style="display:none; color: var(--sub-text); font-size: 0.7rem; letter-spacing: 3px;">END OF ARCHIVE</div>
             </center>
         </div>
     </section>
 
     <section id="future" class="page">
-        <div class="info-content" style="margin: 150px auto;">
-            <h1 style="letter-spacing: 10px;">HORIZON</h1>
-            <p style="color: var(--sub-text); margin-bottom: 40px;">System Roadmap & Upcoming Modules</p>
+        <div class="container" style="max-width: 700px; padding-top: 100px;">
+            <h2 style="text-align: center; letter-spacing: 6px; margin-bottom: 40px;">HORIZON</h2>
             <div class="update-card">
-                <span class="status-badge" style="background: #4caf50; color: white;">Released</span>
-                <h3>00 Secure Auth</h3>
-                <p style="color:var(--sub-text); font-size:0.85rem; line-height: 1.6;">Google API Integration with Privilege-based access protocol.</p>
+                <small style="color: #4caf50;">● RELEASED</small>
+                <h3>Secure Auth</h3>
+                <p style="color: var(--sub-text); font-size: 0.8rem;">Whitelist-only access protocol via Google API.</p>
+            </div>
+            <div class="update-card">
+                <small style="color: var(--accent-color);">○ SOON</small>
+                <h3>Neural Sorting</h3>
+                <p style="color: var(--sub-text); font-size: 0.8rem;">AI-driven image organization by palette.</p>
             </div>
         </div>
     </section>
 
     <section id="admin" class="page">
-        <div class="info-content" style="margin: 150px auto; text-align: left;">
-            <h1 style="letter-spacing: 10px; text-align: center;">TERMINAL</h1>
+        <div class="container" style="max-width: 800px; padding-top: 100px;">
+            <h2 style="text-align: center; letter-spacing: 6px;">TERMINAL</h2>
+            <div class="update-card" id="whitelist-view" style="font-family: monospace; font-size: 0.75rem;"></div>
             <div class="update-card">
-                <h3 style="color: var(--accent-color);">SYSTEM ROLES</h3>
-                <div id="whitelist-view" style="font-family: monospace; font-size: 0.8rem; margin-top: 15px; opacity: 0.8;"></div>
+                <h4 style="color: #4caf50; margin-top: 0;">SUCCESS_LOGS</h4>
+                <div id="success-logs" style="font-family: monospace; font-size: 0.7rem; max-height: 200px; overflow-y: auto;"></div>
             </div>
             <div class="update-card">
-                <h3 style="color: #4caf50;">ACCESS LOG (SUCCESS)</h3>
-                <div id="success-logs" style="font-family: monospace; font-size: 0.75rem; margin-top: 15px; max-height: 400px; overflow-y: auto; line-height: 1.6;">> Fetching...</div>
+                <h4 style="color: #f44336; margin-top: 0;">SECURITY_ALERTS</h4>
+                <div id="fail-logs" style="font-family: monospace; font-size: 0.7rem; max-height: 200px; overflow-y: auto;"></div>
             </div>
         </div>
     </section>
 
     <div class="lightbox" id="lightbox">
-        <div class="lightbox-wrapper" id="lightbox-wrapper">
-            <span class="close-lightbox" id="close-x">&times;</span>
-            <div class="img-protection"></div>
-        </div>
+        <div class="lightbox-wrapper" id="lightbox-wrapper"></div>
     </div>
 
     <script>
-        // --- DATABASE & CONFIG ---
-        // Роли: 'admin', 'premium', 'user'
-        const USER_DATABASE = {
-            "krekw@mail.ua": "admin",
-            "vladvoloshin2009@gmail.com": "premium",
-            "testuser@gmail.com": "user"
-        };
-        
+        const ALLOWED_USERS = ["krekw@mail.ua", "vladvoloshin2009@gmail.com"];
+        const ADMINS = ["krekw@mail.ua"];
         const BACKEND_URL = "https://node-iar7.onrender.com";
-        let isAuthorized = false;
-        let currentUserRole = null;
 
+        let isAuthorized = false;
+
+        // Anti-inspect
         document.onkeydown = (e) => {
-            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) return false;
+            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && [73, 67, 74].includes(e.keyCode)) || (e.ctrlKey && e.keyCode == 85)) return false;
         };
 
         function parseJwt(token) {
             try { return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); } catch (e) { return null; }
         }
 
-        async function getIp() {
-            try { return (await (await fetch('https://api.ipify.org?format=json')).json()).ip; } catch { return 'Unknown'; }
-        }
-
         async function saveLog(email, status) {
-            const logData = { email, status, ip: await getIp(), device: navigator.userAgent.split('(')[1]?.split(')')[0] || 'Unknown' };
+            const logData = { email, status, time: new Date().toLocaleString() };
             try {
                 await fetch(`${BACKEND_URL}/api/log`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(logData)
                 });
-            } catch (e) {
-                const logs = JSON.parse(localStorage.getItem('archive_logs_v2') || '[]');
-                logs.push({ ...logData, time: new Date().toLocaleString() });
-                localStorage.setItem('archive_logs_v2', JSON.stringify(logs));
-            }
-        }
-
-        function applyPrivileges(role) {
-            const adminLink = document.getElementById('nav-admin-link');
-            const loadMoreBtn = document.getElementById('load-more');
-            const statusLabel = document.getElementById('archive-status');
-
-            statusLabel.innerText = `CURATED SELECTION | ACCESS: ${role.toUpperCase()}`;
-
-            if(role === 'admin') {
-                adminLink.style.display = 'block';
-            } else {
-                adminLink.style.display = 'none';
-            }
-
-            if(role === 'user') {
-                loadMoreBtn.innerText = "UPGRADE TO PREMIUM FOR MORE";
-                loadMoreBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    alert("This content is reserved for Premium members.");
-                };
-            } else {
-                loadMoreBtn.onclick = function() {
-                    this.style.display = 'none';
-                    document.getElementById('no-more-msg').style.display = 'block';
-                };
-            }
+            } catch (e) { console.warn("Logging failed"); }
         }
 
         async function updateAdminView() {
-            const successDiv = document.getElementById('success-logs');
-            const whitelistDiv = document.getElementById('whitelist-view');
-            
-            whitelistDiv.innerHTML = Object.entries(USER_DATABASE).map(([email, role]) => `> ${email} [${role.toUpperCase()}]<br>`).join('');
-            
             try {
-                const logs = await (await fetch(`${BACKEND_URL}/api/logs`)).json();
-                successDiv.innerHTML = logs.reverse().map(l => 
-                    `<div style="margin-bottom:10px; border-left: 2px solid var(--accent-color); padding-left: 10px;">
-                        <span style="color:var(--accent-color)">[LOG]</span> ${l.email} (${l.status})<br>
-                        <span style="opacity:0.5; font-size:0.65rem;">${l.ip} | ${l.time}</span>
-                    </div>`
-                ).join('');
-            } catch (e) { successDiv.innerHTML = "Offline: Backend connection failed."; }
+                const res = await fetch(`${BACKEND_URL}/api/logs`);
+                const logs = await res.json();
+                const renderLog = (l, color) => `<div style="margin-bottom:5px; border-left:2px solid ${color}; padding-left:10px;">[${l.status.toUpperCase()}] ${l.email} <br><small style="opacity:0.5">${l.time}</small></div>`;
+                
+                document.getElementById('success-logs').innerHTML = logs.filter(l => l.status === 'success').reverse().map(l => renderLog(l, '#4caf50')).join('') || '> No entries';
+                document.getElementById('fail-logs').innerHTML = logs.filter(l => l.status === 'denied').reverse().map(l => renderLog(l, '#f44336')).join('') || '> System clean';
+                document.getElementById('whitelist-view').innerHTML = "WHITELIST:<br>" + ALLOWED_USERS.map(u => `> ${u}`).join('<br>');
+            } catch (e) { document.getElementById('success-logs').innerText = "Offline mode."; }
         }
 
         async function handleCredentialResponse(response) {
             const data = parseJwt(response.credential);
             if(data) {
-                const role = USER_DATABASE[data.email];
-                if(role) {
-                    await saveLog(data.email, `success_${role}`);
+                if(ALLOWED_USERS.includes(data.email)) {
                     isAuthorized = true;
-                    currentUserRole = role;
-                    applyPrivileges(role);
+                    await saveLog(data.email, 'success');
                     document.getElementById('auth-modal').style.display = 'none';
                     document.body.classList.remove('no-scroll');
+                    if(ADMINS.includes(data.email)) document.getElementById('nav-admin-link').style.display = 'block';
                     switchPage('gallery');
                 } else {
                     await saveLog(data.email, 'denied');
-                    document.getElementById('auth-title').innerText = "RESTRICTED";
-                    document.getElementById('auth-desc').innerText = "Account not found.";
+                    document.getElementById('auth-title').innerText = "DENIED";
+                    document.getElementById('auth-desc').style.color = "var(--accent-color)";
                 }
             }
         }
 
-        window.onload = function () {
+        window.onload = () => {
             google.accounts.id.initialize({
                 client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
                 callback: handleCredentialResponse
@@ -425,66 +323,71 @@
             google.accounts.id.renderButton(document.getElementById("google-signin-btn"), { theme: "dark", size: "large", width: 250 });
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page');
+        function switchPage(target) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.target === target));
+            document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === target));
+            document.body.classList.toggle('no-scroll', target === 'info');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
 
-            window.switchPage = function(target) {
-                navLinks.forEach(l => l.classList.remove('active'));
-                pages.forEach(p => p.classList.remove('active'));
-                document.querySelector(`[data-target="${target}"]`)?.classList.add('active');
-                document.getElementById(target).classList.add('active');
-                if(target === 'info') document.body.classList.add('no-scroll');
-                else document.body.classList.remove('no-scroll');
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            };
-
-            document.getElementById('close-auth-x').onclick = () => {
-                document.getElementById('auth-modal').style.display = 'none';
-                switchPage('info');
-            };
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    const target = link.getAttribute('data-target');
-                    if((target === 'gallery' || target === 'admin') && !isAuthorized) {
-                        document.getElementById('auth-modal').style.display = 'flex';
-                        return;
-                    }
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.onclick = () => {
+                const target = link.dataset.target;
+                if((target === 'gallery' || target === 'admin') && !isAuthorized) {
+                    document.getElementById('auth-modal').style.display = 'flex';
+                } else {
                     if(target === 'admin') updateAdminView();
                     switchPage(target);
-                });
-            });
-
-            // Theme, Music, Screamer, Lightbox logic
-            document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-            const bgMusic = document.getElementById('bg-music');
-            const musicBtn = document.getElementById('music-toggle');
-            let isPlaying = false;
-            musicBtn.onclick = () => {
-                if(isPlaying) { bgMusic.pause(); document.getElementById('marquee').classList.remove('active'); }
-                else { bgMusic.play(); document.getElementById('marquee').classList.add('active'); }
-                isPlaying = !isPlaying;
-                musicBtn.style.color = isPlaying ? 'var(--accent-color)' : 'var(--text-color)';
+                }
             };
-
-            document.getElementById('scare-trigger').onclick = () => {
-                const overlay = document.getElementById('screamer-overlay');
-                overlay.style.display = 'flex';
-                document.getElementById('screamer-audio').play();
-                setTimeout(() => overlay.style.display = 'none', 1800);
-            };
-
-            const lightbox = document.getElementById('lightbox');
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.onclick = () => {
-                    document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
-                    lightbox.style.display = 'flex';
-                    setTimeout(() => lightbox.classList.add('active'), 10);
-                };
-            });
-            lightbox.onclick = () => { lightbox.classList.remove('active'); setTimeout(() => lightbox.style.display = 'none', 400); };
         });
+
+        document.getElementById('close-auth-x').onclick = () => {
+            document.getElementById('auth-modal').style.display = 'none';
+            switchPage('info');
+        };
+
+        // Scroll Progress
+        window.onscroll = () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById("scrollBar").style.width = (winScroll / height) * 100 + "%";
+        };
+
+        // UI Interactions
+        document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
+        
+        const music = document.getElementById('bg-music');
+        document.getElementById('music-toggle').onclick = function() {
+            if(music.paused) { music.play(); document.getElementById('marquee').classList.add('active'); this.style.color = 'var(--accent-color)'; }
+            else { music.pause(); document.getElementById('marquee').classList.remove('active'); this.style.color = 'inherit'; }
+        };
+
+        document.getElementById('scare-trigger').onclick = () => {
+            const overlay = document.getElementById('screamer-overlay');
+            overlay.style.display = 'flex';
+            document.getElementById('screamer-audio').play();
+            setTimeout(() => overlay.style.display = 'none', 1800);
+        };
+
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.onclick = () => {
+                const lb = document.getElementById('lightbox');
+                document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.dataset.src}')`;
+                lb.style.display = 'flex';
+                setTimeout(() => lb.classList.add('active'), 10);
+            };
+        });
+
+        document.getElementById('lightbox').onclick = function() {
+            this.classList.remove('active');
+            setTimeout(() => this.style.display = 'none', 400);
+        };
+
+        document.getElementById('load-more').onclick = function() {
+            this.style.display = 'none';
+            document.getElementById('no-more-msg').style.display = 'block';
+        };
     </script>
 </body>
 </html>
