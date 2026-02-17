@@ -181,9 +181,32 @@
         .update-card { background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid var(--glass-border); text-align: left; margin-bottom: 25px; transition: var(--transition); }
         .update-card:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.08); }
         .status-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+
+        /* --- Стили для авторизации --- */
+        #auth-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999;
+            display: none; justify-content: center; align-items: center; backdrop-filter: blur(20px);
+        }
+        .auth-box {
+            background: var(--card-bg); padding: 40px; border-radius: 30px;
+            border: 1px solid var(--glass-border); text-align: center; width: 300px;
+        }
+        .auth-input {
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--accent-color);
+            color: white; text-align: center; padding: 10px 0; margin: 20px 0; font-size: 1.2rem; outline: none;
+            letter-spacing: 5px;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;" class="no-scroll">
+    <div id="auth-modal">
+        <div class="auth-box">
+            <h2 style="letter-spacing: 5px; font-size: 0.9rem;">SECURITY CHECK</h2>
+            <input type="password" id="auth-pass" class="auth-input" placeholder="••••">
+            <button class="load-more-btn" id="auth-btn" style="margin-top: 10px; padding: 10px 30px; font-size: 0.7rem;">Access Vault</button>
+        </div>
+    </div>
+
     <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
 
     <div id="screamer-overlay">
@@ -303,6 +326,13 @@
             const audioScreamer = document.getElementById('screamer-audio');
             const marquee = document.getElementById('marquee');
             
+            // --- ЛОГИКА АВТОРИЗАЦИИ ---
+            let isAuthorized = false;
+            const PAS = "2024"; // Ваш пароль
+            const authModal = document.getElementById('auth-modal');
+            const authInput = document.getElementById('auth-pass');
+            const authBtn = document.getElementById('auth-btn');
+
             document.body.addEventListener('click', () => {
                 audioScreamer.play().then(() => {
                     audioScreamer.pause();
@@ -321,18 +351,46 @@
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     const target = link.getAttribute('data-target');
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    pages.forEach(p => p.classList.remove('active'));
-                    link.classList.add('active');
-                    document.getElementById(target).classList.add('active');
                     
-                    if(target === 'info') {
-                        document.body.classList.add('no-scroll');
-                    } else {
-                        document.body.classList.remove('no-scroll');
+                    // Если пытаемся войти в архив без авторизации
+                    if(target === 'gallery' && !isAuthorized) {
+                        authModal.style.display = 'flex';
+                        authInput.focus();
+                        return;
                     }
-                    window.scrollTo({top: 0, behavior: 'smooth'});
+
+                    switchPage(target);
                 });
+            });
+
+            // Функция смены страницы
+            function switchPage(target) {
+                navLinks.forEach(l => l.classList.remove('active'));
+                pages.forEach(p => p.classList.remove('active'));
+                
+                const activeLink = document.querySelector(`[data-target="${target}"]`);
+                if(activeLink) activeLink.classList.add('active');
+                
+                document.getElementById(target).classList.add('active');
+                
+                if(target === 'info') {
+                    document.body.classList.add('no-scroll');
+                } else {
+                    document.body.classList.remove('no-scroll');
+                }
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+
+            // Обработка ввода пароля
+            authBtn.addEventListener('click', () => {
+                if(authInput.value === PAS) {
+                    isAuthorized = true;
+                    authModal.style.display = 'none';
+                    switchPage('gallery');
+                } else {
+                    authInput.style.borderBottomColor = 'red';
+                    setTimeout(() => authInput.style.borderBottomColor = '', 1000);
+                }
             });
 
             const trigger = document.getElementById('scare-trigger');
@@ -392,6 +450,3 @@
     </script>
 </body>
 </html>
-
-
-
