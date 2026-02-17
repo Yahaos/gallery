@@ -65,7 +65,6 @@
         }
         .nav-link.active { background: var(--accent-color); color: white; opacity: 1; box-shadow: 0 5px 15px rgba(255, 64, 129, 0.4); }
         
-        /* Скрытая ссылка для админа */
         #nav-admin-link { display: none; }
 
         .marquee-container {
@@ -300,10 +299,25 @@
     <section id="admin" class="page">
         <div class="info-content" style="margin: 150px auto; text-align: left;">
             <h1 style="letter-spacing: 10px; text-align: center;">TERMINAL</h1>
+            
             <div class="update-card">
                 <h3 style="color: var(--accent-color);">ACCESS WHITELIST</h3>
-                <div id="whitelist-view" style="font-family: monospace; font-size: 0.9rem; margin-top: 15px;">
-                    </div>
+                <div id="whitelist-view" style="font-family: monospace; font-size: 0.8rem; margin-top: 15px; opacity: 0.8;"></div>
+            </div>
+
+            <div class="update-card">
+                <h3 style="color: #4caf50;">ACCESS LOG (SUCCESS)</h3>
+                <div id="success-logs" style="font-family: monospace; font-size: 0.8rem; margin-top: 15px; max-height: 150px; overflow-y: auto;">
+                    > No entries found.
+                </div>
+            </div>
+
+            <div class="update-card">
+                <h3 style="color: #f44336;">SECURITY ALERTS (FAILED)</h3>
+                <div id="fail-logs" style="font-family: monospace; font-size: 0.8rem; margin-top: 15px; max-height: 150px; overflow-y: auto;">
+                    > System clean.
+                </div>
+                <button onclick="localStorage.clear(); location.reload();" style="margin-top: 20px; background: transparent; border: 1px solid rgba(255,0,0,0.3); color: var(--sub-text); padding: 5px 10px; cursor: pointer; font-size: 0.6rem;">CLEAR ALL LOGS</button>
             </div>
         </div>
     </section>
@@ -316,7 +330,7 @@
     </div>
 
     <script>
-        // --- WHITELIST & ADMIN CONFIG ---
+        // --- CONFIG ---
         const ALLOWED_USERS = ["krekw@mail.ua", "friend@gmail.com"];
         const ADMINS = ["krekw@mail.ua"];
 
@@ -337,23 +351,46 @@
             } catch (e) { return null; }
         }
 
+        function saveLog(email, status) {
+            const logs = JSON.parse(localStorage.getItem('archive_logs') || '[]');
+            logs.push({ email, status, time: new Date().toLocaleString() });
+            localStorage.setItem('archive_logs', JSON.stringify(logs));
+        }
+
+        function updateAdminView() {
+            const logs = JSON.parse(localStorage.getItem('archive_logs') || '[]');
+            const successDiv = document.getElementById('success-logs');
+            const failDiv = document.getElementById('fail-logs');
+            
+            const successItems = logs.filter(l => l.status === 'success').reverse();
+            const failItems = logs.filter(l => l.status === 'denied').reverse();
+
+            if(successItems.length) successDiv.innerHTML = successItems.map(l => `<span style="color:#4caf50">[OK]</span> ${l.email} <span style="font-size:0.6rem; opacity:0.5">${l.time}</span><br>`).join('');
+            if(failItems.length) failDiv.innerHTML = failItems.map(l => `<span style="color:#f44336">[BLOCKED]</span> ${l.email} <span style="font-size:0.6rem; opacity:0.5">${l.time}</span><br>`).join('');
+            
+            document.getElementById('whitelist-view').innerHTML = ALLOWED_USERS.map(e => `> ${e}<br>`).join('');
+        }
+
         function handleCredentialResponse(response) {
             const data = parseJwt(response.credential);
-            if(data && ALLOWED_USERS.includes(data.email)) {
-                isAuthorized = true;
-                document.getElementById('auth-modal').style.display = 'none';
-                document.body.classList.remove('no-scroll');
-                
-                if(ADMINS.includes(data.email)) {
-                    document.getElementById('nav-admin-link').style.display = 'block';
-                    document.getElementById('whitelist-view').innerHTML = ALLOWED_USERS.map(e => `> ${e}<br>`).join('');
+            if(data) {
+                if(ALLOWED_USERS.includes(data.email)) {
+                    saveLog(data.email, 'success');
+                    isAuthorized = true;
+                    document.getElementById('auth-modal').style.display = 'none';
+                    document.body.classList.remove('no-scroll');
+                    
+                    if(ADMINS.includes(data.email)) {
+                        document.getElementById('nav-admin-link').style.display = 'block';
+                        updateAdminView();
+                    }
+                    switchPage('gallery');
+                } else {
+                    saveLog(data.email, 'denied');
+                    document.getElementById('auth-title').innerText = "RESTRICTED";
+                    document.getElementById('auth-desc').innerText = "Email not found in whitelist.";
+                    document.getElementById('auth-desc').style.color = "var(--accent-color)";
                 }
-                
-                switchPage('gallery');
-            } else {
-                document.getElementById('auth-title').innerText = "RESTRICTED";
-                document.getElementById('auth-desc').innerText = "Email not found in whitelist.";
-                document.getElementById('auth-desc').style.color = "var(--accent-color)";
             }
         }
 
@@ -397,7 +434,6 @@
                 });
             });
 
-            // Остальная логика (темы, музыка, скример) без изменений
             document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
             
             const bgMusic = document.getElementById('bg-music');
@@ -436,4 +472,3 @@
     </script>
 </body>
 </html>
-
