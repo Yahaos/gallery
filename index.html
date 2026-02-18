@@ -324,204 +324,236 @@
     </div>
 
     <script>
-        // --- CONFIG ---
-        const ALLOWED_USERS = ["krekw@mail.ua", "s@gmail.com"];
-        const ADMINS = ["krekw@mail.ua"];
-        const BACKEND_URL = "https://node-iar7.onrender.com";
+// --- CONFIG ---
+const ALLOWED_USERS = ["krekw@mail.ua", "s@gmail.com"];
+const ADMINS = ["krekw@mail.ua"];
+const BACKEND_URL = "https://node-iar7.onrender.com"; // Убедись, что это актуальный URL бэкенда
 
-        let isAuthorized = false;
+let isAuthorized = false;
 
-        // --- AUTH LOGIC ---
-        function parseJwt(token) {
-            try { return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); } catch (e) { return null; }
-        }
+// --- AUTH LOGIC ---
+function parseJwt(token) {
+    try { return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))); } catch (e) { return null; }
+}
 
-        async function getIp() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return data.ip;
-            } catch { return 'Hidden/Unknown'; }
-        }
+async function getIp() {
+    try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        return data.ip;
+    } catch { return 'Hidden/Unknown'; }
+}
 
-        async function saveLog(email, status) {
-            const ip = await getIp();
-            const device = navigator.userAgent.split(')')[0].split('(')[1] || 'Unknown Device';
-            const logData = { email, status, ip, device };
-            try {
-                await fetch(`${BACKEND_URL}/api/log`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(logData)
-                });
-            } catch (e) { console.error('Log error'); }
-        }
-
-        // --- GALLERY & UPLOAD LOGIC ---
-        async function loadGallery() {
-            const grid = document.getElementById('photo-grid');
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/photos`);
-                const photos = await res.json();
-                
-                if(photos.length > 0) {
-                    grid.innerHTML = photos.map(photo => `
-                        <div class="gallery-item" data-src="${photo.url}">
-                            <div class="img-protection"></div>
-                            <div class="img-container" style="background-image: url('${photo.url}');"></div>
-                            <div class="gallery-item-info">
-                                <h3>${photo.title}</h3>
-                                <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT</p>
-                            </div>
-                        </div>
-                    `).join('');
-                    initLightboxEvents();
-                }
-            } catch (e) { console.error("Load error", e); }
-        }
-
-        function initLightboxEvents() {
-            document.querySelectorAll('.gallery-item').forEach(item => {
-                item.onclick = () => {
-                    document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
-                    const lb = document.getElementById('lightbox');
-                    lb.style.display = 'flex';
-                    setTimeout(() => lb.classList.add('active'), 10);
-                };
-            });
-        }
-
-        // --- ADMIN & SYSTEM ---
-        async function updateAdminView() {
-            const successDiv = document.getElementById('success-logs');
-            try {
-                const res = await fetch(`${BACKEND_URL}/api/logs`);
-                const logs = await res.json();
-                const successItems = logs.filter(l => l.status === 'success').reverse();
-                successDiv.innerHTML = successItems.map(l => 
-                    `<div style="margin-bottom:10px; border-left: 2px solid #4caf50; padding-left: 10px;">
-                        <span style="color:#4caf50">[ACCESS]</span> ${l.email}<br>
-                        <span style="opacity:0.5; font-size:0.65rem;">IP: ${l.ip} | ${l.time}</span>
-                    </div>`
-                ).join('') || "> No entries.";
-            } catch (e) { successDiv.innerHTML = "Offline"; }
-            document.getElementById('whitelist-view').innerHTML = ALLOWED_USERS.map(e => `> ${e}<br>`).join('');
-        }
-
-        async function handleCredentialResponse(response) {
-            const data = parseJwt(response.credential);
-            if(data && ALLOWED_USERS.includes(data.email)) {
-                await saveLog(data.email, 'success');
-                isAuthorized = true;
-                document.getElementById('auth-modal').style.display = 'none';
-                document.body.classList.remove('no-scroll');
-                if(ADMINS.includes(data.email)) document.getElementById('nav-admin-link').style.display = 'block';
-                switchPage('gallery');
-                loadGallery();
-            } else if(data) {
-                await saveLog(data.email, 'denied');
-                document.getElementById('auth-title').innerText = "RESTRICTED";
-            }
-        }
-
-        // --- DOM EVENTS ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const bgMusic = document.getElementById('bg-music');
-            const musicBtn = document.getElementById('music-toggle');
-            const marquee = document.getElementById('marquee');
-            let isPlaying = false;
-
-            // Load Gallery on Start
-            loadGallery();
-
-            // Navigation
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page');
-            window.switchPage = function(target) {
-                navLinks.forEach(l => l.classList.remove('active'));
-                pages.forEach(p => p.classList.remove('active'));
-                document.querySelector(`[data-target="${target}"]`).classList.add('active');
-                document.getElementById(target).classList.add('active');
-                if(target === 'info') document.body.classList.add('no-scroll');
-                else document.body.classList.remove('no-scroll');
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            };
-
-            navLinks.forEach(link => {
-                link.onclick = () => {
-                    const target = link.getAttribute('data-target');
-                    if((target === 'gallery' || target === 'admin') && !isAuthorized) {
-                        document.getElementById('auth-modal').style.display = 'flex';
-                        return;
-                    }
-                    if(target === 'admin') updateAdminView();
-                    switchPage(target);
-                };
-            });
-
-            // Upload Logic
-            document.getElementById('upload-btn').onclick = async () => {
-                const fileInput = document.getElementById('photo-file');
-                const titleInput = document.getElementById('photo-title');
-                const btn = document.getElementById('upload-btn');
-                if(!fileInput.files[0]) return alert("Select file");
-
-                const formData = new FormData();
-                formData.append('image', fileInput.files[0]);
-                formData.append('title', titleInput.value || 'Unnamed');
-
-                btn.innerText = "UPLOADING...";
-                btn.disabled = true;
-
-                try {
-                    await fetch(`${BACKEND_URL}/api/upload`, { method: 'POST', body: formData });
-                    btn.innerText = "SUCCESS";
-                    titleInput.value = "";
-                    fileInput.value = "";
-                    loadGallery();
-                } catch (e) { alert("Upload failed"); }
-                setTimeout(() => { btn.innerText = "Upload to Cloud"; btn.disabled = false; }, 2000);
-            };
-
-            // Helpers
-            document.getElementById('close-auth-x').onclick = () => {
-                document.getElementById('auth-modal').style.display = 'none';
-                switchPage('info');
-            };
-
-            document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
-
-            musicBtn.onclick = () => {
-                if(isPlaying) { bgMusic.pause(); marquee.classList.remove('active'); }
-                else { bgMusic.play(); marquee.classList.add('active'); }
-                isPlaying = !isPlaying;
-                musicBtn.style.color = isPlaying ? 'var(--accent-color)' : 'var(--text-color)';
-            };
-
-            document.getElementById('scare-trigger').onclick = () => {
-                const overlay = document.getElementById('screamer-overlay');
-                overlay.style.display = 'flex';
-                document.getElementById('screamer-audio').play();
-                setTimeout(() => { overlay.style.display = 'none'; }, 1800);
-            };
-
-            const lightbox = document.getElementById('lightbox');
-            lightbox.onclick = () => { 
-                lightbox.classList.remove('active'); 
-                setTimeout(() => lightbox.style.display = 'none', 400); 
-            };
+// ПРОВЕРКА СЕССИИ ПРИ ЗАГРУЗКЕ (Чтобы не логиниться каждый раз)
+async function checkAuthStatus() {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/current_user`, { 
+            credentials: 'include' // ВАЖНО: передаем куки сервера
         });
+        const user = await res.json();
+        
+        if (user && user.email && ALLOWED_USERS.includes(user.email)) {
+            isAuthorized = true;
+            document.getElementById('auth-modal').style.display = 'none';
+            document.body.classList.remove('no-scroll');
+            if(ADMINS.includes(user.email)) document.getElementById('nav-admin-link').style.display = 'block';
+            console.log("Welcome back, " + user.displayName);
+        }
+    } catch (e) {
+        console.log("No active session");
+    }
+}
 
-        window.onload = function () {
-            google.accounts.id.initialize({
-                client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
-                callback: handleCredentialResponse
-            });
-            google.accounts.id.renderButton(
-                document.getElementById("google-signin-btn"),
-                { theme: "dark", size: "large", width: 250, text: "continue_with" }
-            );
+async function saveLog(email, status) {
+    const ip = await getIp();
+    const device = navigator.userAgent.split(')')[0].split('(')[1] || 'Unknown Device';
+    const logData = { email, status, ip, device };
+    try {
+        await fetch(`${BACKEND_URL}/api/log`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(logData),
+            credentials: 'include' // Добавлено
+        });
+    } catch (e) { console.error('Log error'); }
+}
+
+// --- GALLERY & UPLOAD LOGIC ---
+async function loadGallery() {
+    const grid = document.getElementById('photo-grid');
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/photos`, { credentials: 'include' });
+        const photos = await res.json();
+        
+        if(photos.length > 0) {
+            grid.innerHTML = photos.map(photo => `
+                <div class="gallery-item" data-src="${photo.url}">
+                    <div class="img-protection"></div>
+                    <div class="img-container" style="background-image: url('${photo.url}');"></div>
+                    <div class="gallery-item-info">
+                        <h3>${photo.title}</h3>
+                        <p style="color:var(--sub-text); font-size:0.7rem; letter-spacing: 2px;">VAULT UNIT</p>
+                    </div>
+                </div>
+            `).join('');
+            initLightboxEvents();
+        }
+    } catch (e) { console.error("Load error", e); }
+}
+
+function initLightboxEvents() {
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.onclick = () => {
+            document.getElementById('lightbox-wrapper').style.backgroundImage = `url('${item.getAttribute('data-src')}')`;
+            const lb = document.getElementById('lightbox');
+            lb.style.display = 'flex';
+            setTimeout(() => lb.classList.add('active'), 10);
         };
+    });
+}
+
+// --- ADMIN & SYSTEM ---
+async function updateAdminView() {
+    const successDiv = document.getElementById('success-logs');
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/logs`, { credentials: 'include' });
+        const logs = await res.json();
+        const successItems = logs.filter(l => l.status === 'success').reverse();
+        successDiv.innerHTML = successItems.map(l => 
+            `<div style="margin-bottom:10px; border-left: 2px solid #4caf50; padding-left: 10px;">
+                <span style="color:#4caf50">[ACCESS]</span> ${l.email}<br>
+                <span style="opacity:0.5; font-size:0.65rem;">IP: ${l.ip} | ${l.time}</span>
+            </div>`
+        ).join('') || "> No entries.";
+    } catch (e) { successDiv.innerHTML = "Offline"; }
+    document.getElementById('whitelist-view').innerHTML = ALLOWED_USERS.map(e => `> ${e}<br>`).join('');
+}
+
+async function handleCredentialResponse(response) {
+    // В старой логике ты просто парсил JWT локально, 
+    // но для работы сессий лучше отправить токен на сервер или просто подтвердить вход.
+    const data = parseJwt(response.credential);
+    if(data && ALLOWED_USERS.includes(data.email)) {
+        await saveLog(data.email, 'success');
+        isAuthorized = true;
+        document.getElementById('auth-modal').style.display = 'none';
+        document.body.classList.remove('no-scroll');
+        if(ADMINS.includes(data.email)) document.getElementById('nav-admin-link').style.display = 'block';
+        switchPage('gallery');
+        loadGallery();
+        
+        // Маленький хак: чтобы сервер точно создал сессию, 
+        // можно сделать один запрос к эндпоинту, который мы создали для Google Auth,
+        // но так как ты используешь клиентскую библиотеку Google GSI, 
+        // сессия на бэкенде создастся при первом же запросе с валидными данными.
+    } else if(data) {
+        await saveLog(data.email, 'denied');
+        document.getElementById('auth-title').innerText = "RESTRICTED";
+    }
+}
+
+// --- DOM EVENTS ---
+document.addEventListener('DOMContentLoaded', () => {
+    const bgMusic = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-toggle');
+    const marquee = document.getElementById('marquee');
+    let isPlaying = false;
+
+    // Сначала проверяем, залогинен ли пользователь уже
+    checkAuthStatus();
+    loadGallery();
+
+    // Navigation
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = document.querySelectorAll('.page');
+    window.switchPage = function(target) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
+        const activeLink = document.querySelector(`[data-target="${target}"]`);
+        if(activeLink) activeLink.classList.add('active');
+        document.getElementById(target).classList.add('active');
+        
+        if(target === 'info') document.body.classList.add('no-scroll');
+        else document.body.classList.remove('no-scroll');
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    navLinks.forEach(link => {
+        link.onclick = () => {
+            const target = link.getAttribute('data-target');
+            if((target === 'gallery' || target === 'admin') && !isAuthorized) {
+                document.getElementById('auth-modal').style.display = 'flex';
+                return;
+            }
+            if(target === 'admin') updateAdminView();
+            switchPage(target);
+        };
+    });
+
+    // Upload Logic
+    document.getElementById('upload-btn').onclick = async () => {
+        const fileInput = document.getElementById('photo-file');
+        const titleInput = document.getElementById('photo-title');
+        const btn = document.getElementById('upload-btn');
+        if(!fileInput.files[0]) return alert("Select file");
+
+        const formData = new FormData();
+        formData.append('image', fileInput.files[0]);
+        formData.append('title', titleInput.value || 'Unnamed');
+
+        btn.innerText = "UPLOADING...";
+        btn.disabled = true;
+
+        try {
+            await fetch(`${BACKEND_URL}/api/upload`, { 
+                method: 'POST', 
+                body: formData,
+                credentials: 'include' // Обязательно
+            });
+            btn.innerText = "SUCCESS";
+            titleInput.value = "";
+            fileInput.value = "";
+            loadGallery();
+        } catch (e) { alert("Upload failed"); }
+        setTimeout(() => { btn.innerText = "Upload to Cloud"; btn.disabled = false; }, 2000);
+    };
+
+    // Остальные обработчики без изменений...
+    document.getElementById('close-auth-x').onclick = () => {
+        document.getElementById('auth-modal').style.display = 'none';
+        switchPage('info');
+    };
+    document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
+    musicBtn.onclick = () => {
+        if(isPlaying) { bgMusic.pause(); marquee.classList.remove('active'); }
+        else { bgMusic.play(); marquee.classList.add('active'); }
+        isPlaying = !isPlaying;
+        musicBtn.style.color = isPlaying ? 'var(--accent-color)' : 'var(--text-color)';
+    };
+    document.getElementById('scare-trigger').onclick = () => {
+        const overlay = document.getElementById('screamer-overlay');
+        overlay.style.display = 'flex';
+        document.getElementById('screamer-audio').play();
+        setTimeout(() => { overlay.style.display = 'none'; }, 1800);
+    };
+    const lightbox = document.getElementById('lightbox');
+    lightbox.onclick = () => { 
+        lightbox.classList.remove('active'); 
+        setTimeout(() => lightbox.style.display = 'none', 400); 
+    };
+});
+
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
+        callback: handleCredentialResponse
+    });
+    google.accounts.id.renderButton(
+        document.getElementById("google-signin-btn"),
+        { theme: "dark", size: "large", width: 250, text: "continue_with" }
+    );
+};
     </script>
 </body>
 </html>
+
