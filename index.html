@@ -430,17 +430,26 @@ async function updateAdminView() {
 }
 
 async function handleCredentialResponse(response) {
-    // В старой логике ты просто парсил JWT локально, 
-    // но для работы сессий лучше отправить токен на сервер или просто подтвердить вход.
     const data = parseJwt(response.credential);
-    if(data && ALLOWED_USERS.includes(data.email)) {
-        await saveLog(data.email, 'success');
-        isAuthorized = true;
-        document.getElementById('auth-modal').style.display = 'none';
-        document.body.classList.remove('no-scroll');
-        if(ADMINS.includes(data.email)) document.getElementById('nav-admin-link').style.display = 'block';
-        switchPage('gallery');
-        loadGallery();
+    if(data) {
+        const isAllowed = ALLOWED_USERS.includes(data.email);
+        const status = isAllowed ? 'success' : 'denied';
+        
+        // Сначала ждем отправки лога (и уведомления в ТГ)
+        await saveLog(data.email, status); 
+
+        if (isAllowed) {
+            isAuthorized = true;
+            document.getElementById('auth-modal').style.display = 'none';
+            document.body.classList.remove('no-scroll');
+            if(ADMINS.includes(data.email)) document.getElementById('nav-admin-link').style.display = 'block';
+            switchPage('gallery');
+            loadGallery();
+        } else {
+            document.getElementById('auth-title').innerText = "RESTRICTED";
+        }
+    }
+}
         
         // Маленький хак: чтобы сервер точно создал сессию, 
         // можно сделать один запрос к эндпоинту, который мы создали для Google Auth,
@@ -556,4 +565,5 @@ window.onload = function () {
     </script>
 </body>
 </html>
+
 
