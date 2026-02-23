@@ -40,7 +40,27 @@
             transition: background 0.6s var(--cubic);
         }
 
-        /* Фоновая GIF (Криповая атмосфера) */
+        /* КРОВЬ НА ФОНЕ */
+        .blood-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.6;
+        }
+
+        .blood-drop {
+            fill: #660000;
+            animation: drip 15s infinite ease-in;
+        }
+
+        @keyframes drip {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* Фоновая GIF */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0;
@@ -52,7 +72,7 @@
             filter: grayscale(100%) contrast(1.5);
         }
 
-        /* Эффект шума */
+        /* Шум */
         body::after {
             content: "";
             position: fixed; top: 0; left: 0;
@@ -61,10 +81,8 @@
             opacity: 0.1;
             pointer-events: none;
             z-index: 9999;
-            transition: opacity 2s;
         }
 
-        /* Слой бездействия */
         #idle-overlay {
             position: fixed; inset: 0;
             z-index: 8000; pointer-events: none;
@@ -107,11 +125,13 @@
             display: none; min-height: 100vh;
             padding: 120px 20px;
             animation: pageIn 0.8s var(--cubic) forwards;
+            position: relative;
+            z-index: 10;
         }
 
         @keyframes pageIn {
-            from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .page.active { display: block; }
@@ -130,7 +150,6 @@
             0%, 90%, 100% { transform: translate(0); }
             91% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
             93% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
-            95% { transform: translate(-1px, 3px); }
         }
 
         .grid {
@@ -145,7 +164,7 @@
             cursor: pointer; transition: 0.4s var(--cubic);
         }
 
-        .card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6); transition: 0.8s; }
+        .card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.8); transition: 0.8s; }
         .card:hover img { transform: scale(1.1); filter: grayscale(0); }
 
         .top-bar { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 5000; }
@@ -174,6 +193,16 @@
     </style>
 </head>
 <body oncontextmenu="return false;">
+
+    <div class="blood-container">
+        <svg width="100%" height="100%">
+            <rect class="blood-drop" x="5%" width="2" height="100" rx="1" style="animation-delay: 0s;"/>
+            <rect class="blood-drop" x="15%" width="3" height="150" rx="1" style="animation-delay: 4s;"/>
+            <rect class="blood-drop" x="45%" width="2" height="80" rx="1" style="animation-delay: 2s;"/>
+            <rect class="blood-drop" x="75%" width="4" height="200" rx="1" style="animation-delay: 7s;"/>
+            <rect class="blood-drop" x="90%" width="2" height="120" rx="1" style="animation-delay: 1s;"/>
+        </svg>
+    </div>
 
     <div id="idle-overlay">
         <div class="idle-text" id="idle-msg">WATCHING</div>
@@ -236,7 +265,6 @@
     </section>
 
     <div id="scare-overlay"></div>
-    
     <audio id="bg-audio" loop src="SOMBRA.mp3"></audio>
 
     <script>
@@ -248,7 +276,7 @@
         let state = { isAuth: false, music: false };
         const sfxClick = new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3');
 
-        // Логика Бездействия (Idle)
+        // Система бездействия (Idle)
         let idleTimer;
         const idleOverlay = document.getElementById('idle-overlay');
         const idleMsg = document.getElementById('idle-msg');
@@ -260,7 +288,7 @@
             idleTimer = setTimeout(() => {
                 idleMsg.innerText = messages[Math.floor(Math.random() * messages.length)];
                 idleOverlay.style.opacity = '1';
-            }, 10000); // 10 секунд
+            }, 10000);
         }
 
         ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
@@ -302,7 +330,7 @@
                 if (CONFIG.admins.includes(user.email)) document.getElementById('admin-tab').style.display = 'block';
                 showPage('gallery');
             } else {
-                alert("ACCESS DENIED: RECIPIENT NOT RECOGNIZED");
+                alert("ACCESS DENIED");
             }
         }
 
@@ -330,10 +358,6 @@
             ov.style.display = 'block';
             ov.classList.add('flash');
             ov.innerHTML = `<img src="https://media1.tenor.com/m/IrsJg0xknJcAAAAC/screamer-creepy.gif" style="width:100%; height:100%; object-fit:cover;">`;
-            
-            // Если есть звук screamer.mp3 — добавь сюда:
-            // new Audio('screamer.mp3').play();
-
             setTimeout(() => { 
                 ov.style.display = 'none'; 
                 ov.classList.remove('flash');
