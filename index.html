@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION | Digital Archive</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #8b0000;
+            --accent-rgb: 139, 0, 0;
+            --glass: rgba(0, 0, 0, 0.7);
+            --border: rgba(139, 0, 0, 0.4);
+            --text: #e0e0e0;
+            --text-dim: #555555;
+            --cubic: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        body.light-theme {
+            --bg: #f0f0f0;
+            --glass: rgba(255, 255, 255, 0.8);
+            --border: rgba(0, 0, 0, 0.1);
+            --text: #050505;
+            --text-dim: #666666;
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            overflow-x: hidden;
+            transition: background 0.6s var(--cubic);
+        }
+
+        /* Фоновая GIF (Криповая атмосфера) */
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://i.gifer.com/origin/86/86b4ee92011b22e1858a8a4b27b827e7_w200.gif') center center / cover;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: -1;
+            filter: grayscale(100%) contrast(1.5);
+        }
+
+        /* Эффект шума */
+        body::after {
+            content: "";
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        nav {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 8px;
+            background: var(--glass);
+            padding: 8px; border-radius: 100px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            z-index: 5000;
+        }
+
+        .nav-link {
+            padding: 12px 24px; color: var(--text);
+            text-decoration: none; font-size: 0.8rem;
+            border-radius: 100px; transition: 0.4s var(--cubic);
+            cursor: pointer; opacity: 0.5; text-transform: uppercase;
+        }
+
+        .nav-link.active {
+            background: var(--accent); color: #fff; opacity: 1;
+            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.4);
+        }
+
+        .page {
+            display: none; min-height: 100vh;
+            padding: 120px 20px;
+            animation: pageIn 0.8s var(--cubic) forwards;
+        }
+
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .page.active { display: block; }
+
+        .hero-title {
+            font-size: clamp(3rem, 12vw, 9rem);
+            font-weight: 700; line-height: 0.8;
+            color: var(--accent);
+            text-shadow: 0 0 30px rgba(var(--accent-rgb), 0.6);
+            animation: glitch 4s infinite;
+            text-align: center;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            91% { transform: translate(-3px, 2px); }
+            93% { transform: translate(3px, -2px); }
+            95% { transform: translate(-1px, 3px); }
+        }
+
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .card {
+            position: relative; aspect-ratio: 4/5;
+            background: var(--glass); border-radius: 15px;
+            overflow: hidden; border: 1px solid var(--border);
+            cursor: pointer; transition: 0.4s var(--cubic);
+        }
+
+        .card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6); transition: 0.8s; }
+        .card:hover img { transform: scale(1.1); filter: grayscale(0); }
+
+        .top-bar { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 5000; }
+        .icon-btn {
+            width: 45px; height: 45px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--glass);
+            color: var(--text); cursor: pointer; transition: 0.3s;
+        }
+        .icon-btn:hover { background: var(--accent); color: white; }
+
+        /* Auth Modal */
+        #auth-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; place-items: center; z-index: 10000; backdrop-filter: blur(10px);
+        }
+        .auth-card {
+            background: #111; padding: 40px; border-radius: 20px;
+            border: 1px solid var(--accent); text-align: center;
+        }
+
+        /* Screamer */
+        #scare-overlay {
+            position: fixed; inset: 0; background: #000;
+            z-index: 20000; display: none;
+        }
+        .flash { animation: flash 0.1s infinite; }
+        @keyframes flash { 0%, 100% { filter: invert(0); } 50% { filter: invert(1); } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div class="top-bar">
+        <button class="icon-btn" id="theme-btn"><i class="fa-solid fa-circle-half-stroke"></i></button>
+        <button class="icon-btn" id="music-btn"><i class="fa-solid fa-music"></i></button>
+    </div>
+
+    <div id="auth-modal">
+        <div class="auth-card">
+            <h2 style="color: var(--accent)">RESTRICTED ACCESS</h2>
+            <p style="color: #666; margin-bottom: 25px;">Identification required for the Archive.</p>
+            <div id="google-btn"></div>
+            <button onclick="closeAuth()" style="margin-top: 20px; background: none; border: none; color: #444; cursor: pointer;">Abort</button>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-link active" onclick="showPage('info')">Vision</div>
+        <div class="nav-link" onclick="handleAuth('gallery')">Archive</div>
+        <div class="nav-link" onclick="showPage('horizon')">Horizon</div>
+        <div id="admin-tab" class="nav-link" style="display:none" onclick="showPage('admin')">Admin</div>
+    </nav>
+
+    <section id="info" class="page active">
+        <h1 class="hero-title">VI<br>SION</h1>
+        <p align="center" style="letter-spacing: 5px; color: var(--text-dim); font-size: 0.7rem; margin-top: 20px;">
+            STAY IN THE LIGHT
+        </p>
+        <div align="center" style="margin-top: 40px;">
+            <i class="fa-solid fa-ghost" id="ghost-trigger" style="color: var(--accent); opacity: 0.4; cursor: pointer; font-size: 1.2rem;"></i>
+        </div>
+    </section>
+
+    <section id="gallery" class="page">
+        <div class="grid" id="gallery-grid">
+            <div class="card">
+                <img src="images/sisi.jpg" onerror="this.src='https://via.placeholder.com/400x500/111/8b0000?text=DATA+LOST'">
+                <div style="padding: 15px; background: var(--glass); position: absolute; bottom: 0; width: 100%;">
+                    <small style="color: var(--accent)">DATA_01</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="horizon" class="page">
+        <div align="center">
+            <h2 style="color: var(--accent)">FUTURE LOGS</h2>
+            <p style="color: var(--text-dim)">The horizon is bleeding into reality.</p>
+        </div>
+    </section>
+
+    <section id="admin" class="page">
+        <div align="center">
+            <h2 style="color: var(--accent)">TERMINAL REBOOT</h2>
+            <code style="color: #444">Current user: Administrator</code>
+        </div>
+    </section>
+
+    <div id="scare-overlay"></div>
+    
+    <audio id="bg-audio" loop src="SOMBRA.mp3"></audio>
+
+    <script>
+        const CONFIG = {
+            allowed: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"],
+            admins: ["krekw@mail.ua"]
+        };
+
+        let state = { isAuth: false, music: false };
+        const sfxClick = new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3');
+
+        function playClick() {
+            sfxClick.currentTime = 0;
+            sfxClick.play().catch(() => {});
+        }
+
+        function showPage(id) {
+            playClick();
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => {
+                const isMatch = l.innerText.toLowerCase() === id.toLowerCase() || (l.innerText === 'Vision' && id === 'info');
+                l.classList.toggle('active', isMatch);
+            });
+            document.getElementById(id).classList.add('active');
+        }
+
+        function handleAuth(target) {
+            if (state.isAuth) showPage(target);
+            else {
+                playClick();
+                document.getElementById('auth-modal').style.display = 'grid';
+            }
+        }
+
+        function closeAuth() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        function onSignIn(response) {
+            const user = JSON.parse(atob(response.credential.split('.')[1]));
+            if (CONFIG.allowed.includes(user.email)) {
+                state.isAuth = true;
+                closeAuth();
+                if (CONFIG.admins.includes(user.email)) document.getElementById('admin-tab').style.display = 'block';
+                showPage('gallery');
+            } else {
+                alert("ACCESS DENIED: RECIPIENT NOT RECOGNIZED");
+            }
+        }
+
+        window.onload = () => {
+            google.accounts.id.initialize({
+                client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
+                callback: onSignIn
+            });
+            google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
+        };
+
+        document.getElementById('theme-btn').onclick = () => { playClick(); document.body.classList.toggle('light-theme'); };
+
+        const audio = document.getElementById('bg-audio');
+        document.getElementById('music-btn').onclick = () => {
+            playClick();
+            state.music ? audio.pause() : audio.play();
+            state.music = !state.music;
+            document.getElementById('music-btn').style.color = state.music ? 'var(--accent)' : 'var(--text)';
+        };
+
+        document.getElementById('ghost-trigger').onclick = () => {
+            const ov = document.getElementById('scare-overlay');
+            ov.style.display = 'block';
+            ov.classList.add('flash');
+            ov.innerHTML = `<img src="https://media1.tenor.com/m/IrsJg0xknJcAAAAC/screamer-creepy.gif" style="width:100%; height:100%; object-fit:cover;">`;
+            
+            // Если есть звук screamer.mp3 — разкомментируй:
+            // new Audio('screamer.mp3').play();
+
+            setTimeout(() => { 
+                ov.style.display = 'none'; 
+                ov.classList.remove('flash');
+                ov.innerHTML = ''; 
+            }, 1000);
+        };
+
+        document.onkeydown = (e) => {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
+        };
+    </script>
+</body>
+</html>
