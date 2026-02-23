@@ -61,6 +61,23 @@
             opacity: 0.1;
             pointer-events: none;
             z-index: 9999;
+            transition: opacity 2s;
+        }
+
+        /* Слой бездействия */
+        #idle-overlay {
+            position: fixed; inset: 0;
+            z-index: 8000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, transparent 20%, black 150%);
+            opacity: 0; transition: opacity 4s ease-in-out;
+        }
+
+        .idle-text {
+            font-family: serif; color: #4a0000;
+            font-size: clamp(2rem, 8vw, 5rem);
+            font-weight: bold; letter-spacing: 20px;
+            filter: blur(2px); text-transform: uppercase;
         }
 
         nav {
@@ -106,12 +123,13 @@
             text-shadow: 0 0 30px rgba(var(--accent-rgb), 0.6);
             animation: glitch 4s infinite;
             text-align: center;
+            margin: 0;
         }
 
         @keyframes glitch {
             0%, 90%, 100% { transform: translate(0); }
-            91% { transform: translate(-3px, 2px); }
-            93% { transform: translate(3px, -2px); }
+            91% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
+            93% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
             95% { transform: translate(-1px, 3px); }
         }
 
@@ -138,7 +156,6 @@
         }
         .icon-btn:hover { background: var(--accent); color: white; }
 
-        /* Auth Modal */
         #auth-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             display: none; place-items: center; z-index: 10000; backdrop-filter: blur(10px);
@@ -148,7 +165,6 @@
             border: 1px solid var(--accent); text-align: center;
         }
 
-        /* Screamer */
         #scare-overlay {
             position: fixed; inset: 0; background: #000;
             z-index: 20000; display: none;
@@ -158,6 +174,10 @@
     </style>
 </head>
 <body oncontextmenu="return false;">
+
+    <div id="idle-overlay">
+        <div class="idle-text" id="idle-msg">WATCHING</div>
+    </div>
 
     <div class="top-bar">
         <button class="icon-btn" id="theme-btn"><i class="fa-solid fa-circle-half-stroke"></i></button>
@@ -228,6 +248,25 @@
         let state = { isAuth: false, music: false };
         const sfxClick = new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3');
 
+        // Логика Бездействия (Idle)
+        let idleTimer;
+        const idleOverlay = document.getElementById('idle-overlay');
+        const idleMsg = document.getElementById('idle-msg');
+        const messages = ["WATCHING", "BEHIND YOU", "HE IS HERE", "LOOK UP", "HELP ME"];
+
+        function resetIdleTimer() {
+            idleOverlay.style.opacity = '0';
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                idleMsg.innerText = messages[Math.floor(Math.random() * messages.length)];
+                idleOverlay.style.opacity = '1';
+            }, 10000); // 10 секунд
+        }
+
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, resetIdleTimer);
+        });
+
         function playClick() {
             sfxClick.currentTime = 0;
             sfxClick.play().catch(() => {});
@@ -273,6 +312,7 @@
                 callback: onSignIn
             });
             google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
+            resetIdleTimer();
         };
 
         document.getElementById('theme-btn').onclick = () => { playClick(); document.body.classList.toggle('light-theme'); };
@@ -291,7 +331,7 @@
             ov.classList.add('flash');
             ov.innerHTML = `<img src="https://media1.tenor.com/m/IrsJg0xknJcAAAAC/screamer-creepy.gif" style="width:100%; height:100%; object-fit:cover;">`;
             
-            // Если есть звук screamer.mp3 — разкомментируй:
+            // Если есть звук screamer.mp3 — добавь сюда:
             // new Audio('screamer.mp3').play();
 
             setTimeout(() => { 
