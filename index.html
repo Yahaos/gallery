@@ -63,26 +63,6 @@
             background-size: 100% 4px;
         }
 
-        /* КРОВЬ */
-        .layer-blood {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 8000;
-            filter: url("#gooey") contrast(1.8) brightness(0.9); /* Сделал кровь более контрастной */
-        }
-
-        .blood-drop {
-            fill: #700000; /* Темно-красный */
-            animation: drip linear infinite;
-            transform-origin: top center;
-        }
-
-        @keyframes drip {
-            0% { transform: translateY(-100px) scaleY(1); opacity: 0; }
-            5% { opacity: 1; transform: translateY(-50px) scaleY(1.2); }
-            80% { transform: translateY(80vh) scaleY(1.5); opacity: 0.9; }
-            100% { transform: translateY(120vh) scaleY(2); opacity: 0; }
-        }
-
         /* КОНТЕНТ И СКРОЛЛ */
         .page-container {
             position: relative; z-index: 10;
@@ -91,10 +71,11 @@
             align-items: center; 
             overflow-y: auto; 
             overflow-x: hidden;
-            padding: 100px 20px 150px 20px; 
+            /* ИСПРАВЛЕНО: Увеличен нижний отступ до 200px, чтобы текст не залезал под кнопки */
+            padding: 120px 20px 200px 20px; 
         }
 
-        #page-info { justify-content: center; padding-bottom: 20px; }
+        #page-info { justify-content: center; }
 
         .page-container.active {
             display: flex;
@@ -103,7 +84,7 @@
 
         @keyframes fadeIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-        /* ГЛИТЧ ЗАГОЛОВОК */
+        /* ГЛИТЧ ЗАГОЛОВОК (Оставлен старый сильный эффект) */
         .glitch-title {
             position: relative; font-size: clamp(3rem, 12vw, 8rem); font-weight: 700;
             color: var(--accent-color); text-transform: uppercase; letter-spacing: -5px;
@@ -130,6 +111,29 @@
             40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); }
             80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
         }
+
+        /* НОВЫЙ ЖУТКИЙ ЭФФЕКТ ДЛЯ ТЕКСТА (Нервная дрожь) */
+        @keyframes subtle-jitter {
+            0%, 100% { transform: translate(0,0); filter: blur(0); opacity: 1; }
+            10% { transform: translate(-1px, 0.5px); filter: blur(0.3px); opacity: 0.9; }
+            20% { transform: translate(0.5px, -0.5px); }
+            30% { transform: translate(-0.5px, -1px); filter: blur(0); opacity: 1; }
+            50% { transform: translate(1px, 0.5px); filter: blur(0.5px); color: #c0c0c0; }
+            60% { transform: translate(-1px, -0.5px); filter: blur(0); }
+            70% { opacity: 0.85; }
+            90% { transform: translate(0.5px, 0px); }
+        }
+
+        .creepy-body-text p {
+            /* Применяем быструю, нервную анимацию дрожи */
+            animation: subtle-jitter 0.15s infinite linear;
+            backface-visibility: hidden;
+        }
+        /* Делаем рассинхрон анимации для разных абзацев, чтобы выглядело хаотично */
+        .creepy-body-text p:nth-of-type(1) { animation-duration: 0.13s; animation-delay: 0.02s; }
+        .creepy-body-text p:nth-of-type(2) { animation-duration: 0.17s; animation-delay: 0.05s; }
+        .creepy-body-text p:nth-of-type(3) { animation-duration: 0.11s; animation-delay: 0s; }
+
 
         .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; }
 
@@ -232,21 +236,9 @@
 </head>
 <body>
 
-    <svg style="position: absolute; width: 0; height: 0;">
-        <defs>
-            <filter id="gooey" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo" />
-                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-            </filter>
-        </defs>
-    </svg>
-
     <div class="layer-bg"></div>
     <div class="layer-noise"></div>
     <div class="layer-scanlines"></div>
-
-    <svg class="layer-blood" id="blood-canvas"></svg>
 
     <div class="idle-screen" id="idle-screen"><div class="idle-text">BEHIND YOU</div></div>
 
@@ -255,21 +247,23 @@
             <h1 class="glitch-title" data-text="PUSHED TOO FAR">PUSHED TOO FAR</h1>
             
             <div style="max-width: 750px; text-align: center; margin-top: 30px; padding: 0 20px;">
-                <p style="line-height: 2.2; font-size: 0.9rem; color: #d0d0d0; letter-spacing: 2px;">
-                    Your poor attitude has breached all acceptable system protocols.<br><br>
-                    I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
-                    It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
-                </p>
-                
-                <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 4px; text-transform: uppercase; margin-top: 40px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
-                    My mental state can no longer cope.<br>
-                    Nothing helps anymore.<br>
-                    I am so sick of it all.
-                </p>
+                <div class="creepy-body-text">
+                    <p style="line-height: 2.2; font-size: 0.9rem; color: #d0d0d0; letter-spacing: 2px;">
+                        Your poor attitude has breached all acceptable system protocols.<br><br>
+                        I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
+                        It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
+                    </p>
+                    
+                    <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 4px; text-transform: uppercase; margin-top: 40px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
+                        My mental state can no longer cope.<br>
+                        Nothing helps anymore.<br>
+                        I am so sick of it all.
+                    </p>
 
-                <p style="font-size: 0.55rem; color: #444; margin-top: 60px; letter-spacing: 2px; text-transform: uppercase;">
-                    * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
-                </p>
+                    <p style="font-size: 0.55rem; color: #444; margin-top: 60px; letter-spacing: 2px; text-transform: uppercase;">
+                        * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -329,25 +323,7 @@
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
 
-        function spawnBloodDrops() {
-            const canvas = document.getElementById('blood-canvas');
-            for (let i = 0; i < 18; i++) {
-                const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-                const x = Math.random() * 100;
-                const radius = 8 + Math.random() * 20;
-                const delay = Math.random() * 20;
-                const duration = 12 + Math.random() * 15;
-
-                ellipse.setAttribute("class", "blood-drop");
-                ellipse.setAttribute("cx", `${x}%`);
-                ellipse.setAttribute("cy", "-5%");
-                ellipse.setAttribute("rx", radius);
-                ellipse.setAttribute("ry", radius * 2.5);
-                ellipse.style.animationDelay = `-${delay}s`;
-                ellipse.style.animationDuration = `${duration}s`;
-                canvas.appendChild(ellipse);
-            }
-        }
+        // Функция генерации крови УДАЛЕНА
 
         function renderGallery() {
             const grid = document.getElementById('gallery-grid');
@@ -417,7 +393,7 @@
         });
 
         window.onload = () => {
-            spawnBloodDrops();
+            // spawnBloodDrops(); // УДАЛЕНО
             renderGallery();
             resetIdleTimer();
 
