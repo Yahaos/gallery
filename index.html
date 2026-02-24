@@ -27,12 +27,11 @@
             font-family: 'Space Grotesk', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden; /* Глобальный скролл отключен */
+            overflow: hidden; 
             width: 100vw;
             height: 100vh;
         }
 
-        /* Кастомный скроллбар для внутренних секций */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
@@ -68,11 +67,11 @@
         .layer-blood {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 8000;
-            filter: url("#gooey") contrast(1.5) brightness(0.8);
+            filter: url("#gooey") contrast(1.8) brightness(0.9); /* Сделал кровь более контрастной */
         }
 
         .blood-drop {
-            fill: #ff0000;
+            fill: #700000; /* Темно-красный */
             animation: drip linear infinite;
             transform-origin: top center;
         }
@@ -90,12 +89,12 @@
             width: 100%; height: 100%;
             display: none; flex-direction: column;
             align-items: center; 
-            overflow-y: auto; /* Внутренний скролл включен */
+            overflow-y: auto; 
             overflow-x: hidden;
-            padding: 100px 20px 150px 20px; /* Отступы сверху и снизу (для меню) */
+            padding: 100px 20px 150px 20px; 
         }
 
-        #page-info { justify-content: center; padding-bottom: 20px; } /* Главная по центру */
+        #page-info { justify-content: center; padding-bottom: 20px; }
 
         .page-container.active {
             display: flex;
@@ -106,9 +105,10 @@
 
         /* ГЛИТЧ ЗАГОЛОВОК */
         .glitch-title {
-            position: relative; font-size: clamp(4rem, 15vw, 12rem); font-weight: 700;
+            position: relative; font-size: clamp(3rem, 12vw, 8rem); font-weight: 700;
             color: var(--accent-color); text-transform: uppercase; letter-spacing: -5px;
             text-shadow: 0 0 30px var(--accent-glow);
+            text-align: center;
         }
 
         .glitch-title::before, .glitch-title::after {
@@ -144,13 +144,9 @@
         }
 
         .gallery-item {
-            position: relative;
-            aspect-ratio: 3/4;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
+            position: relative; aspect-ratio: 3/4;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 10px; overflow: hidden; cursor: pointer;
             transition: all 0.4s var(--transition-smooth);
         }
 
@@ -181,24 +177,18 @@
 
         .lightbox.show { display: grid; opacity: 1; }
         
-        .lightbox-content {
-            position: relative; max-width: 90vw; max-height: 90vh;
-        }
-
+        .lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; }
         .lightbox-img {
             max-width: 100%; max-height: 90vh; border-radius: 5px;
-            box-shadow: 0 0 50px rgba(186,0,0,0.3);
-            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 50px rgba(186,0,0,0.3); border: 1px solid var(--accent-color);
         }
-
         .lightbox-close {
             position: absolute; top: -40px; right: 0;
-            color: var(--text-muted); font-size: 2rem; cursor: pointer;
-            transition: 0.3s;
+            color: var(--text-muted); font-size: 2rem; cursor: pointer; transition: 0.3s;
         }
         .lightbox-close:hover { color: var(--accent-color); transform: rotate(90deg); }
 
-        /* НАВИГАЦИЯ И УПРАВЛЕНИЕ */
+        /* НАВИГАЦИЯ */
         nav {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
             display: flex; gap: 5px; background: var(--glass-bg);
@@ -262,16 +252,31 @@
 
     <main>
         <section id="page-info" class="page-container active">
-            <h1 class="glitch-title" data-text="VISION">VISION</h1>
-            <p class="subtitle">System Archive / Vault 04</p>
+            <h1 class="glitch-title" data-text="PUSHED TOO FAR">PUSHED TOO FAR</h1>
+            
+            <div style="max-width: 750px; text-align: center; margin-top: 30px; padding: 0 20px;">
+                <p style="line-height: 2.2; font-size: 0.9rem; color: #d0d0d0; letter-spacing: 2px;">
+                    Your poor attitude has breached all acceptable system protocols.<br><br>
+                    I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
+                    It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
+                </p>
+                
+                <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 4px; text-transform: uppercase; margin-top: 40px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
+                    My mental state can no longer cope.<br>
+                    Nothing helps anymore.<br>
+                    I am so sick of it all.
+                </p>
+
+                <p style="font-size: 0.55rem; color: #444; margin-top: 60px; letter-spacing: 2px; text-transform: uppercase;">
+                    * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
+                </p>
+            </div>
         </section>
 
         <section id="page-gallery" class="page-container">
             <h2 style="color: var(--accent-color); letter-spacing: 5px;">ARCHIVE UNLOCKED</h2>
             <p class="subtitle">Data integrity compromised.</p>
-            
-            <div class="gallery-grid" id="gallery-grid">
-                </div>
+            <div class="gallery-grid" id="gallery-grid"></div>
         </section>
 
         <section id="page-horizon" class="page-container">
@@ -305,10 +310,9 @@
         const AppConfig = {
             allowedEmails: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"],
             clientId: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
-            idleTimeLimit: 12000 // 12 секунд до скримера
+            idleTimeLimit: 12000 
         };
 
-        // ТВОИ ИЗОБРАЖЕНИЯ (Можешь заменить ссылки на свои файлы, например 'images/sisi.jpg')
         const galleryImages = [
             { src: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&q=80&w=800', label: 'UNIT_01 : CORRUPTION' },
             { src: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?auto=format&fit=crop&q=80&w=800', label: 'UNIT_02 : FACELESS' },
@@ -325,7 +329,6 @@
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
 
-        // 1. Система генерации крови
         function spawnBloodDrops() {
             const canvas = document.getElementById('blood-canvas');
             for (let i = 0; i < 18; i++) {
@@ -346,46 +349,37 @@
             }
         }
 
-        // 2. Рендер Галереи
         function renderGallery() {
             const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = ''; // Очищаем
+            grid.innerHTML = ''; 
 
             galleryImages.forEach((imgObj) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
-                
                 item.innerHTML = `
                     <img src="${imgObj.src}" alt="${imgObj.label}" class="gallery-img" loading="lazy">
                     <div class="gallery-overlay">> ${imgObj.label}</div>
                 `;
-
-                // Открытие лайтбокса при клике
                 item.addEventListener('click', () => {
                     lightboxImg.src = imgObj.src;
                     lightbox.classList.add('show');
                 });
-
                 grid.appendChild(item);
             });
         }
 
-        // Закрытие лайтбокса
         document.getElementById('lightbox-close').addEventListener('click', () => { lightbox.classList.remove('show'); });
         lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('show'); });
 
-        // 3. Навигация
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.getAttribute('data-target');
                 
-                // Проверка прав для раздела Archive
                 if (targetId === 'page-gallery' && !isAuthorized) {
                     modal.style.display = 'grid';
                     return;
                 }
 
-                // Переключение UI
                 document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 
@@ -394,7 +388,6 @@
             });
         });
 
-        // 4. Авторизация (Google)
         function handleCredentialResponse(response) {
             try {
                 const payload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -411,11 +404,9 @@
         document.getElementById('close-modal-btn').addEventListener('click', () => { modal.style.display = 'none'; });
         modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-        // 5. Система Бездействия (Idle)
         function resetIdleTimer() {
             idleScreen.classList.remove('active');
             clearTimeout(idleTimer);
-            
             if (modal.style.display !== 'grid' && !lightbox.classList.contains('show')) {
                 idleTimer = setTimeout(() => { idleScreen.classList.add('active'); }, AppConfig.idleTimeLimit);
             }
@@ -425,10 +416,9 @@
             window.addEventListener(evt, resetIdleTimer, true);
         });
 
-        // Инициализация
         window.onload = () => {
             spawnBloodDrops();
-            renderGallery(); // Загружаем картинки
+            renderGallery();
             resetIdleTimer();
 
             if (typeof google !== 'undefined') {
