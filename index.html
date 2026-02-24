@@ -27,11 +27,12 @@
             font-family: 'Space Grotesk', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden; 
+            overflow: hidden; /* Глобальный скролл отключен */
             width: 100vw;
             height: 100vh;
         }
 
+        /* Кастомный скроллбар для внутренних секций */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
@@ -40,15 +41,15 @@
         .layer-bg {
             position: fixed; inset: -10%; z-index: -3;
             background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=2000') center/cover;
-            filter: grayscale(100%) brightness(0.4) contrast(1.2);
+            filter: grayscale(100%) brightness(0.3) contrast(1.3);
             animation: breathe 15s infinite alternate ease-in-out;
             pointer-events: none;
             will-change: transform;
         }
 
         @keyframes breathe {
-            0% { transform: scale(1); filter: grayscale(100%) brightness(0.3) contrast(1.2); }
-            100% { transform: scale(1.08); filter: grayscale(100%) brightness(0.5) contrast(1.4); }
+            0% { transform: scale(1); filter: grayscale(100%) brightness(0.25) contrast(1.3); }
+            100% { transform: scale(1.08); filter: grayscale(100%) brightness(0.4) contrast(1.5); }
         }
 
         .layer-noise {
@@ -64,6 +65,11 @@
         }
 
         /* КОНТЕНТ И СКРОЛЛ */
+        main {
+            width: 100vw;
+            height: 100vh;
+        }
+
         .page-container {
             position: relative; z-index: 10;
             width: 100%; height: 100%;
@@ -71,16 +77,18 @@
             align-items: center; 
             overflow-y: auto; 
             overflow-x: hidden;
-            padding: 80px 20px 150px 20px; /* Отступы для прокрутки */
+            padding: 40px 20px 0 20px; 
         }
 
-        /* ИСПРАВЛЕНИЕ БАГА: Умная центровка контента */
+        /* ИСПРАВЛЕНИЕ: Обертка, которая поднимает текст над меню */
         .content-wrapper {
-            margin: auto 0; /* Центрирует, но не ломает скролл */
+            margin: auto 0; /* Авто-выравнивание по вертикали */
+            padding-bottom: 150px; /* Буферная зона для навигации */
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
+            max-width: 800px;
         }
 
         .page-container.active {
@@ -96,6 +104,7 @@
             color: var(--accent-color); text-transform: uppercase; letter-spacing: -5px;
             text-shadow: 0 0 30px var(--accent-glow);
             text-align: center;
+            margin-bottom: 10px;
         }
 
         .glitch-title::before, .glitch-title::after {
@@ -133,12 +142,15 @@
         .creepy-body-text p {
             animation: subtle-jitter 0.15s infinite linear;
             backface-visibility: hidden;
+            margin-bottom: 20px;
         }
+        
+        /* Рассинхрон дрожания для разных абзацев */
         .creepy-body-text p:nth-of-type(1) { animation-duration: 0.13s; animation-delay: 0.02s; }
         .creepy-body-text p:nth-of-type(2) { animation-duration: 0.17s; animation-delay: 0.05s; }
         .creepy-body-text p:nth-of-type(3) { animation-duration: 0.11s; animation-delay: 0s; }
 
-        .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; }
+        .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: 40px;}
 
         /* ГАЛЕРЕЯ */
         .gallery-grid {
@@ -147,7 +159,7 @@
             gap: 25px;
             width: 100%;
             max-width: 1200px;
-            margin-top: 50px;
+            margin-top: 20px;
         }
 
         .gallery-item {
@@ -250,21 +262,21 @@
             <div class="content-wrapper">
                 <h1 class="glitch-title" data-text="PUSHED TOO FAR">PUSHED TOO FAR</h1>
                 
-                <div style="max-width: 750px; text-align: center; margin-top: 30px; padding: 0 20px;">
+                <div style="width: 100%; text-align: center; padding: 0 10px;">
                     <div class="creepy-body-text">
-                        <p style="line-height: 2.2; font-size: 0.9rem; color: #d0d0d0; letter-spacing: 2px;">
+                        <p style="line-height: 1.8; font-size: 0.95rem; color: #d0d0d0; letter-spacing: 1px;">
                             Your poor attitude has breached all acceptable system protocols.<br><br>
                             I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
                             It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
                         </p>
                         
-                        <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 4px; text-transform: uppercase; margin-top: 40px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
+                        <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
                             My mental state can no longer cope.<br>
                             Nothing helps anymore.<br>
                             I am so sick of it all.
                         </p>
 
-                        <p style="font-size: 0.55rem; color: #444; margin-top: 60px; letter-spacing: 2px; text-transform: uppercase;">
+                        <p style="font-size: 0.55rem; color: #444; margin-top: 30px; letter-spacing: 2px; text-transform: uppercase;">
                             * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
                         </p>
                     </div>
