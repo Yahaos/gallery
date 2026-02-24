@@ -31,6 +31,34 @@
             transition: background 0.6s var(--cubic);
         }
 
+        /* ЖУТКИЙ ФОН */
+        body::before {
+            content: "";
+            position: fixed; inset: 0;
+            /* Ссылка на жуткое изображение */
+            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=2000') center/cover;
+            opacity: 0.15; 
+            z-index: -2; 
+            pointer-events: none;
+            filter: grayscale(100%) contrast(1.5) brightness(0.6);
+            animation: breatheBg 12s infinite alternate ease-in-out;
+        }
+
+        @keyframes breatheBg {
+            0% { opacity: 0.1; transform: scale(1); filter: grayscale(100%) contrast(1.5) blur(2px); }
+            100% { opacity: 0.25; transform: scale(1.05); filter: grayscale(100%) contrast(1.5) blur(0px); }
+        }
+
+        /* Эффект старого телевизора (шум) */
+        body::after {
+            content: "";
+            position: fixed; inset: 0;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
         /* ЭФФЕКТ ВЯЗКОЙ КРОВИ */
         .blood-layer {
             position: fixed;
@@ -56,15 +84,6 @@
             100% { transform: translateY(110vh) scaleX(0.7); opacity: 0.8; }
         }
 
-        /* Фон */
-        body::before {
-            content: "";
-            position: fixed; inset: 0;
-            background: url('https://i.gifer.com/origin/86/86b4ee92011b22e1858a8a4b27b827e7_w200.gif') center/cover;
-            opacity: 0.05; z-index: -1; pointer-events: none;
-            filter: grayscale(100%);
-        }
-
         /* Навигация */
         nav {
             position: fixed; bottom: 30px; left: 50%;
@@ -88,7 +107,7 @@
         .nav-link.active { background: var(--accent); color: #fff; opacity: 1; box-shadow: 0 0 15px var(--accent); }
 
         /* Контент страниц */
-        .page { display: none; min-height: 100vh; padding-top: 15vh; text-align: center; }
+        .page { display: none; min-height: 100vh; padding-top: 15vh; text-align: center; position: relative; z-index: 10; }
         .page.active { display: block; animation: pageAppear 0.6s ease-out; }
 
         @keyframes pageAppear { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
@@ -99,12 +118,27 @@
             text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.5);
             margin: 0;
             letter-spacing: -5px;
+            cursor: crosshair;
         }
 
-        /* Idle Слой */
+        /* Глитч при наведении на заголовок */
+        .hero-title:hover {
+            animation: titleGlitch 0.2s infinite;
+        }
+
+        @keyframes titleGlitch {
+            0% { transform: translate(0) skew(0deg); }
+            20% { transform: translate(-5px, 5px) skew(-10deg); color: #fff; }
+            40% { transform: translate(5px, -5px) skew(10deg); color: var(--accent); }
+            60% { transform: translate(-5px, -5px) skew(0deg); }
+            80% { transform: translate(5px, 5px) skew(5deg); }
+            100% { transform: translate(0) skew(0deg); }
+        }
+
+        /* Idle Слой (Бездействие) */
         #idle-screen {
             position: fixed; inset: 0; z-index: 9500;
-            background: radial-gradient(circle, transparent, #000 80%);
+            background: radial-gradient(circle, transparent, #000 90%);
             display: flex; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 3s; pointer-events: none;
         }
@@ -126,7 +160,7 @@
     </div>
 
     <div id="idle-screen">
-        <div style="font-family: serif; font-size: 3rem; color: #500; letter-spacing: 20px;">NOT ALONE</div>
+        <div style="font-family: serif; font-size: clamp(3rem, 8vw, 6rem); color: #500; letter-spacing: 20px;">BEHIND YOU</div>
     </div>
 
     <nav>
@@ -162,7 +196,7 @@
         const CONFIG = { allowed: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"] };
         let state = { isAuth: false };
 
-        // Генератор капель
+        // Генератор капель крови
         function spawnBlood() {
             const box = document.getElementById('blood-box');
             for (let i = 0; i < 15; i++) {
@@ -210,7 +244,7 @@
             }
         }
 
-        // Логика Idle
+        // Логика Idle (Если пользователь не трогает мышь 10 секунд)
         let idleCounter;
         const resetIdle = () => {
             document.getElementById('idle-screen').style.opacity = '0';
@@ -232,6 +266,7 @@
 
         window.onmousemove = resetIdle;
         window.onclick = resetIdle;
+        window.onkeydown = resetIdle;
     </script>
 </body>
 </html>
