@@ -71,11 +71,17 @@
             align-items: center; 
             overflow-y: auto; 
             overflow-x: hidden;
-            /* ИСПРАВЛЕНО: Увеличен нижний отступ до 200px, чтобы текст не залезал под кнопки */
-            padding: 120px 20px 200px 20px; 
+            padding: 80px 20px 150px 20px; /* Отступы для прокрутки */
         }
 
-        #page-info { justify-content: center; }
+        /* ИСПРАВЛЕНИЕ БАГА: Умная центровка контента */
+        .content-wrapper {
+            margin: auto 0; /* Центрирует, но не ломает скролл */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
 
         .page-container.active {
             display: flex;
@@ -84,7 +90,7 @@
 
         @keyframes fadeIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-        /* ГЛИТЧ ЗАГОЛОВОК (Оставлен старый сильный эффект) */
+        /* ГЛИТЧ ЗАГОЛОВОК */
         .glitch-title {
             position: relative; font-size: clamp(3rem, 12vw, 8rem); font-weight: 700;
             color: var(--accent-color); text-transform: uppercase; letter-spacing: -5px;
@@ -112,7 +118,7 @@
             80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
         }
 
-        /* НОВЫЙ ЖУТКИЙ ЭФФЕКТ ДЛЯ ТЕКСТА (Нервная дрожь) */
+        /* ЖУТКИЙ ЭФФЕКТ ДЛЯ ТЕКСТА (Нервная дрожь) */
         @keyframes subtle-jitter {
             0%, 100% { transform: translate(0,0); filter: blur(0); opacity: 1; }
             10% { transform: translate(-1px, 0.5px); filter: blur(0.3px); opacity: 0.9; }
@@ -125,15 +131,12 @@
         }
 
         .creepy-body-text p {
-            /* Применяем быструю, нервную анимацию дрожи */
             animation: subtle-jitter 0.15s infinite linear;
             backface-visibility: hidden;
         }
-        /* Делаем рассинхрон анимации для разных абзацев, чтобы выглядело хаотично */
         .creepy-body-text p:nth-of-type(1) { animation-duration: 0.13s; animation-delay: 0.02s; }
         .creepy-body-text p:nth-of-type(2) { animation-duration: 0.17s; animation-delay: 0.05s; }
         .creepy-body-text p:nth-of-type(3) { animation-duration: 0.11s; animation-delay: 0s; }
-
 
         .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; }
 
@@ -244,38 +247,44 @@
 
     <main>
         <section id="page-info" class="page-container active">
-            <h1 class="glitch-title" data-text="PUSHED TOO FAR">PUSHED TOO FAR</h1>
-            
-            <div style="max-width: 750px; text-align: center; margin-top: 30px; padding: 0 20px;">
-                <div class="creepy-body-text">
-                    <p style="line-height: 2.2; font-size: 0.9rem; color: #d0d0d0; letter-spacing: 2px;">
-                        Your poor attitude has breached all acceptable system protocols.<br><br>
-                        I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
-                        It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
-                    </p>
-                    
-                    <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 4px; text-transform: uppercase; margin-top: 40px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
-                        My mental state can no longer cope.<br>
-                        Nothing helps anymore.<br>
-                        I am so sick of it all.
-                    </p>
+            <div class="content-wrapper">
+                <h1 class="glitch-title" data-text="PUSHED TOO FAR">PUSHED TOO FAR</h1>
+                
+                <div style="max-width: 750px; text-align: center; margin-top: 30px; padding: 0 20px;">
+                    <div class="creepy-body-text">
+                        <p style="line-height: 2.2; font-size: 0.9rem; color: #d0d0d0; letter-spacing: 2px;">
+                            Your poor attitude has breached all acceptable system protocols.<br><br>
+                            I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
+                            It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
+                        </p>
+                        
+                        <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 4px; text-transform: uppercase; margin-top: 40px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
+                            My mental state can no longer cope.<br>
+                            Nothing helps anymore.<br>
+                            I am so sick of it all.
+                        </p>
 
-                    <p style="font-size: 0.55rem; color: #444; margin-top: 60px; letter-spacing: 2px; text-transform: uppercase;">
-                        * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
-                    </p>
+                        <p style="font-size: 0.55rem; color: #444; margin-top: 60px; letter-spacing: 2px; text-transform: uppercase;">
+                            * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
+                        </p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="page-gallery" class="page-container">
-            <h2 style="color: var(--accent-color); letter-spacing: 5px;">ARCHIVE UNLOCKED</h2>
-            <p class="subtitle">Data integrity compromised.</p>
-            <div class="gallery-grid" id="gallery-grid"></div>
+            <div class="content-wrapper">
+                <h2 style="color: var(--accent-color); letter-spacing: 5px;">ARCHIVE UNLOCKED</h2>
+                <p class="subtitle">Data integrity compromised.</p>
+                <div class="gallery-grid" id="gallery-grid"></div>
+            </div>
         </section>
 
         <section id="page-horizon" class="page-container">
-            <h2 style="color: var(--accent-color); letter-spacing: 5px;">THE HORIZON</h2>
-            <p class="subtitle">Connection established. Waiting for terminal input...</p>
+            <div class="content-wrapper">
+                <h2 style="color: var(--accent-color); letter-spacing: 5px;">THE HORIZON</h2>
+                <p class="subtitle">Connection established. Waiting for terminal input...</p>
+            </div>
         </section>
     </main>
 
@@ -322,8 +331,6 @@
         const idleScreen = document.getElementById('idle-screen');
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
-
-        // Функция генерации крови УДАЛЕНА
 
         function renderGallery() {
             const grid = document.getElementById('gallery-grid');
@@ -388,12 +395,11 @@
             }
         }
 
-        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'].forEach(evt => {
             window.addEventListener(evt, resetIdleTimer, true);
         });
 
         window.onload = () => {
-            // spawnBloodDrops(); // УДАЛЕНО
             renderGallery();
             resetIdleTimer();
 
