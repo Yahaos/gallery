@@ -27,12 +27,17 @@
             font-family: 'Space Grotesk', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden; /* Запрещаем системный скролл, чтобы не ломать анимации */
+            overflow: hidden; /* Глобальный скролл отключен */
             width: 100vw;
             height: 100vh;
         }
 
-        /* 1. ФОНОВЫЕ СЛОИ */
+        /* Кастомный скроллбар для внутренних секций */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+
+        /* ФОНОВЫЕ СЛОИ */
         .layer-bg {
             position: fixed; inset: -10%; z-index: -3;
             background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=2000') center/cover;
@@ -47,7 +52,6 @@
             100% { transform: scale(1.08); filter: grayscale(100%) brightness(0.5) contrast(1.4); }
         }
 
-        /* Зернистость и сканлайны (эффект старого монитора) */
         .layer-noise {
             position: fixed; inset: 0; z-index: -2; pointer-events: none;
             background: url('https://grainy-gradients.vercel.app/noise.svg');
@@ -60,7 +64,7 @@
             background-size: 100% 4px;
         }
 
-        /* 2. СЛОЙ С КРОВЬЮ */
+        /* КРОВЬ */
         .layer-blood {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 8000;
@@ -80,13 +84,18 @@
             100% { transform: translateY(120vh) scaleY(2); opacity: 0; }
         }
 
-        /* 3. КОНТЕНТ */
+        /* КОНТЕНТ И СКРОЛЛ */
         .page-container {
             position: relative; z-index: 10;
             width: 100%; height: 100%;
             display: none; flex-direction: column;
-            align-items: center; justify-content: center;
+            align-items: center; 
+            overflow-y: auto; /* Внутренний скролл включен */
+            overflow-x: hidden;
+            padding: 100px 20px 150px 20px; /* Отступы сверху и снизу (для меню) */
         }
+
+        #page-info { justify-content: center; padding-bottom: 20px; } /* Главная по центру */
 
         .page-container.active {
             display: flex;
@@ -95,89 +104,122 @@
 
         @keyframes fadeIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-        /* Настоящий CSS Glitch */
+        /* ГЛИТЧ ЗАГОЛОВОК */
         .glitch-title {
-            position: relative;
-            font-size: clamp(4rem, 15vw, 12rem);
-            font-weight: 700;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: -5px;
+            position: relative; font-size: clamp(4rem, 15vw, 12rem); font-weight: 700;
+            color: var(--accent-color); text-transform: uppercase; letter-spacing: -5px;
             text-shadow: 0 0 30px var(--accent-glow);
         }
 
         .glitch-title::before, .glitch-title::after {
-            content: attr(data-text);
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            opacity: 0.8;
+            content: attr(data-text); position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; opacity: 0.8;
         }
 
-        .glitch-title::before {
-            left: 3px;
-            text-shadow: -2px 0 red;
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
-        }
-
-        .glitch-title::after {
-            left: -3px;
-            text-shadow: -2px 0 blue;
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
-        }
+        .glitch-title::before { left: 3px; text-shadow: -2px 0 red; animation: glitch-anim-1 2s infinite linear alternate-reverse; }
+        .glitch-title::after { left: -3px; text-shadow: -2px 0 blue; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
 
         @keyframes glitch-anim-1 {
-            0% { clip-path: inset(20% 0 80% 0); }
-            20% { clip-path: inset(60% 0 10% 0); }
-            40% { clip-path: inset(40% 0 50% 0); }
-            60% { clip-path: inset(80% 0 5% 0); }
-            80% { clip-path: inset(10% 0 70% 0); }
-            100% { clip-path: inset(30% 0 20% 0); }
+            0% { clip-path: inset(20% 0 80% 0); } 20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); } 60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); } 100% { clip-path: inset(30% 0 20% 0); }
         }
 
         @keyframes glitch-anim-2 {
-            0% { clip-path: inset(10% 0 60% 0); }
-            20% { clip-path: inset(30% 0 20% 0); }
-            40% { clip-path: inset(70% 0 10% 0); }
-            60% { clip-path: inset(20% 0 50% 0); }
-            80% { clip-path: inset(50% 0 30% 0); }
-            100% { clip-path: inset(5% 0 80% 0); }
+            0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(30% 0 20% 0); }
+            40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); }
+            80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
         }
 
-        .subtitle {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            letter-spacing: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
+        .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; }
+
+        /* ГАЛЕРЕЯ */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 50px;
         }
 
-        /* 4. НАВИГАЦИЯ И UI */
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 3/4;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s var(--transition-smooth);
+        }
+
+        .gallery-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%) contrast(1.2) brightness(0.7);
+            transition: all 0.6s var(--transition-smooth);
+        }
+
+        .gallery-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: var(--accent-color); font-size: 0.7rem; letter-spacing: 3px;
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.4s var(--transition-smooth);
+        }
+
+        .gallery-item:hover { border-color: var(--accent-color); box-shadow: 0 10px 30px rgba(186,0,0,0.2); transform: translateY(-5px); }
+        .gallery-item:hover .gallery-img { filter: grayscale(0%) contrast(1.1) brightness(1); transform: scale(1.05); }
+        .gallery-item:hover .gallery-overlay { transform: translateY(0); opacity: 1; }
+
+        /* ЛАЙТБОКС */
+        .lightbox {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; place-items: center; z-index: 10000;
+            backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.4s;
+        }
+
+        .lightbox.show { display: grid; opacity: 1; }
+        
+        .lightbox-content {
+            position: relative; max-width: 90vw; max-height: 90vh;
+        }
+
+        .lightbox-img {
+            max-width: 100%; max-height: 90vh; border-radius: 5px;
+            box-shadow: 0 0 50px rgba(186,0,0,0.3);
+            border: 1px solid var(--accent-color);
+        }
+
+        .lightbox-close {
+            position: absolute; top: -40px; right: 0;
+            color: var(--text-muted); font-size: 2rem; cursor: pointer;
+            transition: 0.3s;
+        }
+        .lightbox-close:hover { color: var(--accent-color); transform: rotate(90deg); }
+
+        /* НАВИГАЦИЯ И УПРАВЛЕНИЕ */
         nav {
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 5px;
-            background: var(--glass-bg);
-            padding: 8px; border-radius: 50px;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-            z-index: 9900;
+            display: flex; gap: 5px; background: var(--glass-bg);
+            padding: 8px; border-radius: 50px; border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px); z-index: 9900;
         }
 
         .nav-btn {
             padding: 10px 24px; color: var(--text-muted);
             font-size: 0.75rem; font-weight: 500; letter-spacing: 2px;
-            text-transform: uppercase; text-decoration: none;
-            border-radius: 50px; cursor: pointer;
+            text-transform: uppercase; text-decoration: none; border-radius: 50px; cursor: pointer;
             transition: all 0.3s var(--transition-smooth);
         }
 
         .nav-btn:hover { color: var(--text-main); }
         .nav-btn.active { background: var(--accent-color); color: #fff; box-shadow: 0 0 20px var(--accent-glow); }
 
-        /* Модальное окно */
+        /* МОДАЛКА АВТОРИЗАЦИИ */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; place-items: center; z-index: 10000;
-            backdrop-filter: blur(15px);
+            display: none; place-items: center; z-index: 10000; backdrop-filter: blur(15px);
         }
 
         .modal-box {
@@ -186,25 +228,16 @@
             box-shadow: 0 0 40px rgba(186,0,0,0.2);
         }
 
-        /* Экран бездействия */
+        /* ЭКРАН БЕЗДЕЙСТВИЯ */
         .idle-screen {
             position: fixed; inset: 0; z-index: 9500;
             background: radial-gradient(circle, transparent 10%, #000 90%);
             display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.5s ease-out;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s ease-out;
         }
 
-        .idle-screen.active {
-            opacity: 1; transition: opacity 5s ease-in;
-        }
-
-        .idle-text {
-            font-family: 'Times New Roman', serif;
-            font-size: clamp(3rem, 10vw, 8rem);
-            color: #400; letter-spacing: 1.5rem;
-            filter: blur(2px);
-        }
+        .idle-screen.active { opacity: 1; transition: opacity 5s ease-in; }
+        .idle-text { font-family: 'Times New Roman', serif; font-size: clamp(3rem, 10vw, 8rem); color: #400; letter-spacing: 1.5rem; filter: blur(2px); }
     </style>
 </head>
 <body>
@@ -225,9 +258,7 @@
 
     <svg class="layer-blood" id="blood-canvas"></svg>
 
-    <div class="idle-screen" id="idle-screen">
-        <div class="idle-text">BEHIND YOU</div>
-    </div>
+    <div class="idle-screen" id="idle-screen"><div class="idle-text">BEHIND YOU</div></div>
 
     <main>
         <section id="page-info" class="page-container active">
@@ -238,13 +269,23 @@
         <section id="page-gallery" class="page-container">
             <h2 style="color: var(--accent-color); letter-spacing: 5px;">ARCHIVE UNLOCKED</h2>
             <p class="subtitle">Data integrity compromised.</p>
+            
+            <div class="gallery-grid" id="gallery-grid">
+                </div>
         </section>
 
         <section id="page-horizon" class="page-container">
             <h2 style="color: var(--accent-color); letter-spacing: 5px;">THE HORIZON</h2>
-            <p class="subtitle">Connection established.</p>
+            <p class="subtitle">Connection established. Waiting for terminal input...</p>
         </section>
     </main>
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <i class="fa-solid fa-xmark lightbox-close" id="lightbox-close"></i>
+            <img src="" alt="Enlarged" class="lightbox-img" id="lightbox-img">
+        </div>
+    </div>
 
     <nav>
         <div class="nav-btn active" data-target="page-info">Main</div>
@@ -264,20 +305,30 @@
         const AppConfig = {
             allowedEmails: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"],
             clientId: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
-            idleTimeLimit: 12000 // 12 секунд до появления надписи
+            idleTimeLimit: 12000 // 12 секунд до скримера
         };
+
+        // ТВОИ ИЗОБРАЖЕНИЯ (Можешь заменить ссылки на свои файлы, например 'images/sisi.jpg')
+        const galleryImages = [
+            { src: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&q=80&w=800', label: 'UNIT_01 : CORRUPTION' },
+            { src: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?auto=format&fit=crop&q=80&w=800', label: 'UNIT_02 : FACELESS' },
+            { src: 'https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800', label: 'UNIT_03 : DESPAIR' },
+            { src: 'https://images.unsplash.com/photo-1623275335658-5d4c82c6aab1?auto=format&fit=crop&q=80&w=800', label: 'UNIT_04 : VOID' },
+            { src: 'https://images.unsplash.com/photo-1508781197106-d8c535dcb816?auto=format&fit=crop&q=80&w=800', label: 'UNIT_05 : SYSTEM_ERROR' },
+            { src: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800', label: 'UNIT_06 : GLITCH' }
+        ];
 
         let isAuthorized = false;
         let idleTimer = null;
         const modal = document.getElementById('auth-modal');
         const idleScreen = document.getElementById('idle-screen');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
 
         // 1. Система генерации крови
         function spawnBloodDrops() {
             const canvas = document.getElementById('blood-canvas');
-            const dropCount = 18;
-
-            for (let i = 0; i < dropCount; i++) {
+            for (let i = 0; i < 18; i++) {
                 const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
                 const x = Math.random() * 100;
                 const radius = 8 + Math.random() * 20;
@@ -291,12 +342,39 @@
                 ellipse.setAttribute("ry", radius * 2.5);
                 ellipse.style.animationDelay = `-${delay}s`;
                 ellipse.style.animationDuration = `${duration}s`;
-
                 canvas.appendChild(ellipse);
             }
         }
 
-        // 2. Навигация
+        // 2. Рендер Галереи
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = ''; // Очищаем
+
+            galleryImages.forEach((imgObj) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                
+                item.innerHTML = `
+                    <img src="${imgObj.src}" alt="${imgObj.label}" class="gallery-img" loading="lazy">
+                    <div class="gallery-overlay">> ${imgObj.label}</div>
+                `;
+
+                // Открытие лайтбокса при клике
+                item.addEventListener('click', () => {
+                    lightboxImg.src = imgObj.src;
+                    lightbox.classList.add('show');
+                });
+
+                grid.appendChild(item);
+            });
+        }
+
+        // Закрытие лайтбокса
+        document.getElementById('lightbox-close').addEventListener('click', () => { lightbox.classList.remove('show'); });
+        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('show'); });
+
+        // 3. Навигация
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.getAttribute('data-target');
@@ -316,7 +394,7 @@
             });
         });
 
-        // 3. Авторизация (Google)
+        // 4. Авторизация (Google)
         function handleCredentialResponse(response) {
             try {
                 const payload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -327,51 +405,35 @@
                 } else {
                     alert("ACCESS DENIED: Entity not recognized.");
                 }
-            } catch (e) {
-                console.error("Auth parsing error", e);
-            }
+            } catch (e) { console.error("Auth parsing error", e); }
         }
 
-        // Закрытие модального окна
-        document.getElementById('close-modal-btn').addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
+        document.getElementById('close-modal-btn').addEventListener('click', () => { modal.style.display = 'none'; });
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
-        });
-
-        // 4. Система Бездействия (Idle)
+        // 5. Система Бездействия (Idle)
         function resetIdleTimer() {
             idleScreen.classList.remove('active');
             clearTimeout(idleTimer);
             
-            // Не запускаем скример, если открыто окно входа
-            if (modal.style.display !== 'grid') {
-                idleTimer = setTimeout(() => {
-                    idleScreen.classList.add('active');
-                }, AppConfig.idleTimeLimit);
+            if (modal.style.display !== 'grid' && !lightbox.classList.contains('show')) {
+                idleTimer = setTimeout(() => { idleScreen.classList.add('active'); }, AppConfig.idleTimeLimit);
             }
         }
 
-        ['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach(evt => {
-            window.addEventListener(evt, resetIdleTimer);
+        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, resetIdleTimer, true);
         });
 
-        // Инициализация при загрузке
+        // Инициализация
         window.onload = () => {
             spawnBloodDrops();
+            renderGallery(); // Загружаем картинки
             resetIdleTimer();
 
-            // Безопасная инициализация Google API
             if (typeof google !== 'undefined') {
-                google.accounts.id.initialize({
-                    client_id: AppConfig.clientId,
-                    callback: handleCredentialResponse
-                });
-                google.accounts.id.renderButton(document.getElementById("google-btn"), { 
-                    theme: "filled_black", size: "large" 
-                });
+                google.accounts.id.initialize({ client_id: AppConfig.clientId, callback: handleCredentialResponse });
+                google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
             } else {
                 document.getElementById("google-btn").innerHTML = "<span style='color:red;'>Auth system offline (Check AdBlock).</span>";
             }
