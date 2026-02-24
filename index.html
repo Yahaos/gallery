@@ -34,14 +34,14 @@
         /* ЖУТКИЙ ФОН */
         body::before {
             content: "";
-            position: fixed; inset: 0;
-            /* Ссылка на жуткое изображение */
+            position: fixed; inset: -5%; /* Немного больше экрана для плавной анимации */
             background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=2000') center/cover;
             opacity: 0.15; 
             z-index: -2; 
             pointer-events: none;
             filter: grayscale(100%) contrast(1.5) brightness(0.6);
             animation: breatheBg 12s infinite alternate ease-in-out;
+            will-change: transform, opacity, filter; /* Оптимизация рендера */
         }
 
         @keyframes breatheBg {
@@ -49,7 +49,7 @@
             100% { opacity: 0.25; transform: scale(1.05); filter: grayscale(100%) contrast(1.5) blur(0px); }
         }
 
-        /* Эффект старого телевизора (шум) */
+        /* Эффект шума старой пленки */
         body::after {
             content: "";
             position: fixed; inset: 0;
@@ -69,19 +69,23 @@
             filter: url("#gooey-filter");
         }
 
-        .blood-svg { width: 100%; height: 100%; }
+        .blood-svg { 
+            width: 100%; 
+            height: 100%; 
+            overflow: visible; /* Фикс: чтобы кровь не обрезалась снизу */
+        }
 
         .blood-drop {
             fill: #700000;
             opacity: 0.95;
-            animation: drip-move 20s infinite linear;
+            animation: drip-move linear infinite;
         }
 
         @keyframes drip-move {
             0% { transform: translateY(-150%) scaleX(1.2); opacity: 0; }
             5% { opacity: 1; transform: translateY(-100%) scaleX(1.1); }
             50% { transform: translateY(50vh) scaleX(0.9); }
-            100% { transform: translateY(110vh) scaleX(0.7); opacity: 0.8; }
+            100% { transform: translateY(120vh) scaleX(0.7); opacity: 0.8; }
         }
 
         /* Навигация */
@@ -121,10 +125,8 @@
             cursor: crosshair;
         }
 
-        /* Глитч при наведении на заголовок */
-        .hero-title:hover {
-            animation: titleGlitch 0.2s infinite;
-        }
+        /* Глитч при наведении */
+        .hero-title:hover { animation: titleGlitch 0.2s infinite; }
 
         @keyframes titleGlitch {
             0% { transform: translate(0) skew(0deg); }
@@ -140,7 +142,14 @@
             position: fixed; inset: 0; z-index: 9500;
             background: radial-gradient(circle, transparent, #000 90%);
             display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 3s; pointer-events: none;
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.3s ease-out; /* Фикс: мгновенное исчезновение */
+        }
+        
+        #idle-screen.show {
+            opacity: 1;
+            transition: opacity 4s ease-in; /* Медленное жуткое появление */
         }
     </style>
 </head>
@@ -148,7 +157,7 @@
 
     <svg style="position: absolute; width: 0; height: 0;">
         <defs>
-            <filter id="gooey-filter">
+            <filter id="gooey-filter" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
                 <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
             </filter>
@@ -218,6 +227,7 @@
             }
         }
 
+        // Переключение страниц
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -228,11 +238,18 @@
             });
         }
 
+        // Вызов авторизации
         function handleAuth(target) {
             if (state.isAuth) showPage(target);
-            else document.getElementById('auth-modal').style.display = 'grid';
+            else {
+                const modal = document.getElementById('auth-modal');
+                modal.style.display = 'grid';
+                // Перехват клика вне карточки для закрытия
+                modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+            }
         }
 
+        // Успешный логин
         function onSignIn(response) {
             const user = JSON.parse(atob(response.credential.split('.')[1]));
             if (CONFIG.allowed.includes(user.email)) {
@@ -247,26 +264,33 @@
         // Логика Idle (Если пользователь не трогает мышь 10 секунд)
         let idleCounter;
         const resetIdle = () => {
-            document.getElementById('idle-screen').style.opacity = '0';
+            document.getElementById('idle-screen').classList.remove('show');
             clearTimeout(idleCounter);
             idleCounter = setTimeout(() => {
-                document.getElementById('idle-screen').style.opacity = '1';
+                document.getElementById('idle-screen').classList.add('show');
             }, 10000);
         };
 
         window.onload = () => {
             spawnBlood();
             resetIdle();
-            google.accounts.id.initialize({
-                client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
-                callback: onSignIn
-            });
-            google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
+            
+            // Защита от ошибок, если Google скрипт заблокирован AdBlock'ом
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
+                    callback: onSignIn
+                });
+                google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
+            } else {
+                document.getElementById("google-btn").innerHTML = "<p style='color: #444;'>Auth unavailable. Check adblocker.</p>";
+            }
         };
 
-        window.onmousemove = resetIdle;
-        window.onclick = resetIdle;
-        window.onkeydown = resetIdle;
+        // Отслеживание активности
+        ['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, resetIdle);
+        });
     </script>
 </body>
 </html>
