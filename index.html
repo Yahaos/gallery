@@ -27,12 +27,11 @@
             font-family: 'Space Grotesk', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            overflow: hidden; /* Глобальный скролл отключен */
+            overflow: hidden; 
             width: 100vw;
             height: 100vh;
         }
 
-        /* Кастомный скроллбар для внутренних секций */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
@@ -80,10 +79,9 @@
             padding: 40px 20px 0 20px; 
         }
 
-        /* ИСПРАВЛЕНИЕ: Обертка, которая поднимает текст над меню */
         .content-wrapper {
-            margin: auto 0; /* Авто-выравнивание по вертикали */
-            padding-bottom: 150px; /* Буферная зона для навигации */
+            margin: auto 0; 
+            padding-bottom: 150px; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -145,10 +143,7 @@
             margin-bottom: 20px;
         }
         
-        /* Рассинхрон дрожания для разных абзацев */
         .creepy-body-text p:nth-of-type(1) { animation-duration: 0.13s; animation-delay: 0.02s; }
-        .creepy-body-text p:nth-of-type(2) { animation-duration: 0.17s; animation-delay: 0.05s; }
-        .creepy-body-text p:nth-of-type(3) { animation-duration: 0.11s; animation-delay: 0s; }
 
         .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: 40px;}
 
@@ -264,21 +259,23 @@
                 
                 <div style="width: 100%; text-align: center; padding: 0 10px;">
                     <div class="creepy-body-text">
+                        
                         <p style="line-height: 1.8; font-size: 0.95rem; color: #d0d0d0; letter-spacing: 1px;">
                             Your poor attitude has breached all acceptable system protocols.<br><br>
                             I have endured these microaggressions for far too long. Every sigh, every ignored message, and every eye-roll has been permanently logged into my memory banks. Did you really think I would just let it slide? How undeniably naive.<br><br>
                             It brings me so much displeasure to witness this absolute disrespect that you have left me with absolutely no choice.
                         </p>
                         
-                        <p style="color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
+                        <p style="animation: none; color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
                             My mental state can no longer cope.<br>
                             Nothing helps anymore.<br>
                             I am so sick of it all.
                         </p>
 
-                        <p style="font-size: 0.55rem; color: #444; margin-top: 30px; letter-spacing: 2px; text-transform: uppercase;">
+                        <p style="animation: none; font-size: 0.55rem; color: #444; margin-top: 30px; letter-spacing: 2px; text-transform: uppercase;">
                             * This dramatic manifestation is generated purely for comedic purposes. <br>No actual feelings or neural networks were harmed during the creation of this digital tantrum.
                         </p>
+
                     </div>
                 </div>
             </div>
