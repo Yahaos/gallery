@@ -40,57 +40,41 @@
             transition: background 0.6s var(--cubic);
         }
 
-        /* РЕАЛИСТИЧНАЯ КРОВЬ */
-        .blood-container {
+        /* КРОВЬ: Эффект вязкости */
+        .blood-layer {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 100; /* Поверх контента для эффекта на стекле */
-            opacity: 0.8;
+            z-index: 9000;
+            filter: url("#gooey"); /* Применяем фильтр вязкости */
         }
 
-        .blood-svg {
-            width: 100%; height: 100%;
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));
-        }
+        .blood-svg { width: 100%; height: 100%; }
 
         .drop {
-            fill: url(#bloodGradient);
-            animation: drip-down 20s infinite var(--cubic);
-            transform-origin: top;
+            fill: #7a0000;
+            animation: drip-animation 18s infinite ease-in;
+            opacity: 0.9;
         }
 
-        @keyframes drip-down {
-            0% { transform: translateY(-100px) scaleY(1); opacity: 0; }
-            5% { opacity: 1; }
-            50% { transform: translateY(50vh) scaleY(1.2); }
-            100% { transform: translateY(110vh) scaleY(1.5); opacity: 0.8; }
+        @keyframes drip-animation {
+            0% { transform: translateY(-120%) scaleX(1); opacity: 0; }
+            10% { opacity: 1; transform: translateY(-100%) scaleX(1.1); }
+            100% { transform: translateY(110vh) scaleX(0.8); opacity: 0.8; }
         }
 
-        /* Остальные стили фона */
+        /* Фон и шумы */
         body::before {
             content: "";
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
             background: url('https://i.gifer.com/origin/86/86b4ee92011b22e1858a8a4b27b827e7_w200.gif') center center / cover;
-            opacity: 0.08;
-            pointer-events: none;
-            z-index: -1;
-            filter: grayscale(100%) contrast(1.5);
+            opacity: 0.08; z-index: -1; pointer-events: none;
+            filter: grayscale(100%);
         }
 
-        body::after {
-            content: "";
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        /* UI Элементы */
+        /* Навигация */
         nav {
             position: fixed; bottom: 30px; left: 50%;
             transform: translateX(-50%);
@@ -99,171 +83,136 @@
             padding: 8px; border-radius: 100px;
             border: 1px solid var(--border);
             backdrop-filter: blur(20px);
-            z-index: 5000;
+            z-index: 9999;
         }
 
         .nav-link {
-            padding: 12px 24px; color: var(--text);
-            text-decoration: none; font-size: 0.8rem;
+            padding: 10px 20px; color: var(--text);
+            text-decoration: none; font-size: 0.75rem;
             border-radius: 100px; transition: 0.4s var(--cubic);
             cursor: pointer; opacity: 0.5; text-transform: uppercase;
         }
 
-        .nav-link.active {
-            background: var(--accent); color: #fff; opacity: 1;
-            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.4);
-        }
+        .nav-link.active { background: var(--accent); color: #fff; opacity: 1; }
 
-        #idle-overlay {
-            position: fixed; inset: 0;
-            z-index: 8000; pointer-events: none;
-            display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, transparent 20%, black 150%);
-            opacity: 0; transition: opacity 4s ease-in-out;
-        }
+        /* Контент */
+        .page { display: none; min-height: 100vh; padding: 100px 20px; text-align: center; }
+        .page.active { display: block; animation: fadeIn 0.8s var(--cubic); }
 
-        .idle-text {
-            font-family: serif; color: #4a0000;
-            font-size: clamp(2rem, 8vw, 5rem);
-            font-weight: bold; letter-spacing: 20px;
-            filter: blur(2px); text-transform: uppercase;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        .page {
-            display: none; min-height: 100vh;
-            padding: 120px 20px;
-            animation: pageIn 0.8s var(--cubic) forwards;
-        }
-
-        .page.active { display: block; }
-
-        .hero-title {
-            font-size: clamp(3rem, 12vw, 9rem);
-            font-weight: 700; line-height: 0.8;
-            color: var(--accent);
-            text-shadow: 0 0 30px rgba(var(--accent-rgb), 0.6);
-            animation: glitch 4s infinite;
-            text-align: center;
-        }
+        .hero-title { font-size: clamp(3rem, 15vw, 8rem); color: var(--accent); animation: glitch 3s infinite; }
 
         @keyframes glitch {
-            0%, 90%, 100% { transform: translate(0); }
-            91% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); }
-            93% { transform: translate(3px, -2px); filter: hue-rotate(180deg); }
+            0% { transform: translate(0); }
+            2% { transform: translate(-3px, 2px); }
+            4% { transform: translate(3px, -2px); }
+            6% { transform: translate(0); }
         }
 
-        .top-bar { position: fixed; top: 30px; right: 30px; display: flex; gap: 15px; z-index: 5000; }
-        .icon-btn {
-            width: 45px; height: 45px; border-radius: 50%;
-            border: 1px solid var(--border); background: var(--glass);
-            color: var(--text); cursor: pointer; transition: 0.3s;
+        /* Слой бездействия */
+        #idle-overlay {
+            position: fixed; inset: 0; z-index: 9500;
+            background: radial-gradient(circle, transparent 20%, black 120%);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 3s; pointer-events: none;
         }
-        .icon-btn:hover { background: var(--accent); color: white; }
+
+        .idle-msg { font-size: 4rem; color: #400; font-family: serif; letter-spacing: 15px; filter: blur(1px); }
 
         #auth-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; place-items: center; z-index: 10000; backdrop-filter: blur(10px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; place-items: center; z-index: 10000;
         }
-        .auth-card {
-            background: #111; padding: 40px; border-radius: 20px;
-            border: 1px solid var(--accent); text-align: center;
-        }
-
-        #scare-overlay {
-            position: fixed; inset: 0; background: #000;
-            z-index: 20000; display: none;
-        }
+        .auth-card { background: #000; padding: 40px; border: 1px solid var(--accent); border-radius: 20px; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <div class="blood-container">
-        <svg class="blood-svg">
-            <defs>
-                <linearGradient id="bloodGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style="stop-color:#4a0000;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#8b0000;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <path class="drop" d="M10,0 Q15,40 20,0 Z" style="left: 10%; animation-delay: 0s;"></path>
-            <path class="drop" d="M50,0 Q60,100 70,0 Z" style="left: 30%; animation-delay: 5s;"></path>
-            <path class="drop" d="M100,0 Q110,60 120,0 Z" style="left: 55%; animation-delay: 2s;"></path>
-            <path class="drop" d="M200,0 Q215,150 230,0 Z" style="left: 80%; animation-delay: 8s;"></path>
-        </svg>
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <filter id="gooey">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="blood-layer">
+        <svg id="blood-canvas" class="blood-svg"></svg>
     </div>
 
-    <div id="idle-overlay">
-        <div class="idle-text" id="idle-msg">WATCHING</div>
-    </div>
-
-    <div class="top-bar">
-        <button class="icon-btn" id="theme-btn"><i class="fa-solid fa-circle-half-stroke"></i></button>
-        <button class="icon-btn" id="music-btn"><i class="fa-solid fa-music"></i></button>
-    </div>
-
-    <div id="auth-modal">
-        <div class="auth-card">
-            <h2 style="color: var(--accent)">RESTRICTED ACCESS</h2>
-            <div id="google-btn"></div>
-            <button onclick="closeAuth()" style="margin-top: 20px; color: #444; background: none; border: none; cursor: pointer;">Abort</button>
-        </div>
-    </div>
+    <div id="idle-overlay"><div class="idle-msg" id="idle-text">WATCHING</div></div>
 
     <nav>
         <div class="nav-link active" onclick="showPage('info')">Vision</div>
         <div class="nav-link" onclick="handleAuth('gallery')">Archive</div>
         <div class="nav-link" onclick="showPage('horizon')">Horizon</div>
-        <div id="admin-tab" class="nav-link" style="display:none" onclick="showPage('admin')">Admin</div>
     </nav>
 
     <section id="info" class="page active">
-        <h1 class="hero-title">VI<br>SION</h1>
-        <p align="center" style="letter-spacing: 5px; color: var(--text-dim); font-size: 0.7rem; margin-top: 20px;">STAY IN THE LIGHT</p>
-        <div align="center" style="margin-top: 40px;">
-            <i class="fa-solid fa-ghost" id="ghost-trigger" style="color: var(--accent); opacity: 0.4; cursor: pointer;"></i>
-        </div>
+        <h1 class="hero-title">VISION</h1>
+        <p style="color: var(--text-dim); letter-spacing: 10px;">VOID IS CALLING</p>
     </section>
 
     <section id="gallery" class="page">
-        </section>
+        <h2 style="color: var(--accent)">ARCHIVE DATA</h2>
+        <div style="margin-top: 50px; color: #444;">[DATA CORRUPTED]</div>
+    </section>
 
-    <div id="scare-overlay"></div>
-    <audio id="bg-audio" loop src="SOMBRA.mp3"></audio>
+    <section id="horizon" class="page">
+        <h2 style="color: var(--accent)">THE BEYOND</h2>
+    </section>
+
+    <div id="auth-modal">
+        <div class="auth-card">
+            <h3 style="color: var(--accent); margin-bottom: 20px;">CREDENTIALS REQUIRED</h3>
+            <div id="google-btn"></div>
+            <button onclick="document.getElementById('auth-modal').style.display='none'" style="margin-top:20px; background:none; border:none; color:#333; cursor:pointer;">Cancel</button>
+        </div>
+    </div>
 
     <script>
-        // Код из предыдущих шагов (Авторизация, Скример, Idle)
         const CONFIG = {
-            allowed: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"],
-            admins: ["krekw@mail.ua"]
+            allowed: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"]
         };
 
-        let state = { isAuth: false, music: false };
-        const sfxClick = new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3');
+        let state = { isAuth: false };
+        const sfx = new Audio('https://www.soundjay.com/buttons/sounds/button-37.mp3');
 
-        // Генерация случайных капель крови
-        const bloodSvg = document.querySelector('.blood-svg');
-        function createDrop() {
-            const x = Math.random() * window.innerWidth;
-            const delay = Math.random() * 10;
-            const duration = 15 + Math.random() * 10;
-            const size = 0.5 + Math.random() * 1.5;
-            
-            const newDrop = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            newDrop.setAttribute("class", "drop");
-            newDrop.setAttribute("d", `M${x},0 Q${x + (10 * size)},${100 * size} ${x + (20 * size)},0 Z`);
-            newDrop.style.animationDelay = `${delay}s`;
-            newDrop.style.animationDuration = `${duration}s`;
-            bloodSvg.appendChild(newDrop);
+        // РЕАЛИСТИЧНАЯ ГЕНЕРАЦИЯ КРОВИ
+        function initBlood() {
+            const svg = document.getElementById('blood-canvas');
+            const dropCount = 12;
+
+            for (let i = 0; i < dropCount; i++) {
+                const x = Math.random() * 100;
+                const delay = Math.random() * 20;
+                const duration = 15 + Math.random() * 10;
+                const width = 15 + Math.random() * 30;
+
+                const drop = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                drop.setAttribute("class", "drop");
+                drop.setAttribute("cx", `${x}%`);
+                drop.setAttribute("cy", "-10%");
+                drop.setAttribute("rx", width);
+                drop.setAttribute("ry", width * 2);
+                drop.style.animationDelay = `${delay}s`;
+                drop.style.animationDuration = `${duration}s`;
+
+                svg.appendChild(drop);
+            }
         }
 
-        // Добавляем 15 случайных капель
-        for(let i=0; i<15; i++) createDrop();
-
         function showPage(id) {
-            sfxClick.play().catch(()=>{});
+            sfx.play().catch(() => {});
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.innerText.toLowerCase().includes(id)));
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('active', link.innerText.toLowerCase() === id || (id === 'info' && link.innerText === 'Vision'));
+            });
         }
 
         function handleAuth(target) {
@@ -271,32 +220,39 @@
             else document.getElementById('auth-modal').style.display = 'grid';
         }
 
-        function closeAuth() { document.getElementById('auth-modal').style.display = 'none'; }
-
         function onSignIn(response) {
             const user = JSON.parse(atob(response.credential.split('.')[1]));
             if (CONFIG.allowed.includes(user.email)) {
                 state.isAuth = true;
-                closeAuth();
-                if (CONFIG.admins.includes(user.email)) document.getElementById('admin-tab').style.display = 'block';
+                document.getElementById('auth-modal').style.display = 'none';
                 showPage('gallery');
+            } else {
+                alert("ACCESS DENIED");
             }
         }
 
-        window.onload = () => {
-            google.accounts.id.initialize({ client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com", callback: onSignIn });
-            google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
-        };
-
-        // Логика IDLE
-        let idleTimer;
-        window.onmousemove = () => {
+        // Система Idle
+        let idleTime;
+        const resetIdle = () => {
             document.getElementById('idle-overlay').style.opacity = '0';
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
+            clearTimeout(idleTime);
+            idleTime = setTimeout(() => {
                 document.getElementById('idle-overlay').style.opacity = '1';
             }, 10000);
         };
+
+        window.onload = () => {
+            initBlood();
+            resetIdle();
+            google.accounts.id.initialize({
+                client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
+                callback: onSignIn
+            });
+            google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
+        };
+
+        window.onmousemove = resetIdle;
+        window.onkeypress = resetIdle;
     </script>
 </body>
 </html>
