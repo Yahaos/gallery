@@ -11,145 +11,199 @@
 
     <style>
         :root {
-            --bg: #050505;
-            --accent: #8b0000;
-            --accent-rgb: 139, 0, 0;
-            --glass: rgba(0, 0, 0, 0.8);
-            --border: rgba(139, 0, 0, 0.4);
-            --text: #e0e0e0;
-            --cubic: cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-color: #030303;
+            --accent-color: #ba0000;
+            --accent-glow: rgba(186, 0, 0, 0.6);
+            --text-main: #f0f0f0;
+            --text-muted: #666;
+            --glass-bg: rgba(10, 10, 10, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --transition-smooth: cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Space Grotesk', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            overflow-x: hidden;
-            transition: background 0.6s var(--cubic);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden; /* Запрещаем системный скролл, чтобы не ломать анимации */
+            width: 100vw;
+            height: 100vh;
         }
 
-        /* ЖУТКИЙ ФОН */
-        body::before {
-            content: "";
-            position: fixed; inset: -5%; /* Немного больше экрана для плавной анимации */
+        /* 1. ФОНОВЫЕ СЛОИ */
+        .layer-bg {
+            position: fixed; inset: -10%; z-index: -3;
             background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=2000') center/cover;
-            opacity: 0.15; 
-            z-index: -2; 
+            filter: grayscale(100%) brightness(0.4) contrast(1.2);
+            animation: breathe 15s infinite alternate ease-in-out;
             pointer-events: none;
-            filter: grayscale(100%) contrast(1.5) brightness(0.6);
-            animation: breatheBg 12s infinite alternate ease-in-out;
-            will-change: transform, opacity, filter; /* Оптимизация рендера */
+            will-change: transform;
         }
 
-        @keyframes breatheBg {
-            0% { opacity: 0.1; transform: scale(1); filter: grayscale(100%) contrast(1.5) blur(2px); }
-            100% { opacity: 0.25; transform: scale(1.05); filter: grayscale(100%) contrast(1.5) blur(0px); }
+        @keyframes breathe {
+            0% { transform: scale(1); filter: grayscale(100%) brightness(0.3) contrast(1.2); }
+            100% { transform: scale(1.08); filter: grayscale(100%) brightness(0.5) contrast(1.4); }
         }
 
-        /* Эффект шума старой пленки */
-        body::after {
-            content: "";
-            position: fixed; inset: 0;
+        /* Зернистость и сканлайны (эффект старого монитора) */
+        .layer-noise {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none;
             background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.1;
-            z-index: -1;
-            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        .layer-scanlines {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
         }
 
-        /* ЭФФЕКТ ВЯЗКОЙ КРОВИ */
-        .blood-layer {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 9000;
-            filter: url("#gooey-filter");
-        }
-
-        .blood-svg { 
-            width: 100%; 
-            height: 100%; 
-            overflow: visible; /* Фикс: чтобы кровь не обрезалась снизу */
+        /* 2. СЛОЙ С КРОВЬЮ */
+        .layer-blood {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 8000;
+            filter: url("#gooey") contrast(1.5) brightness(0.8);
         }
 
         .blood-drop {
-            fill: #700000;
-            opacity: 0.95;
-            animation: drip-move linear infinite;
+            fill: #ff0000;
+            animation: drip linear infinite;
+            transform-origin: top center;
         }
 
-        @keyframes drip-move {
-            0% { transform: translateY(-150%) scaleX(1.2); opacity: 0; }
-            5% { opacity: 1; transform: translateY(-100%) scaleX(1.1); }
-            50% { transform: translateY(50vh) scaleX(0.9); }
-            100% { transform: translateY(120vh) scaleX(0.7); opacity: 0.8; }
+        @keyframes drip {
+            0% { transform: translateY(-100px) scaleY(1); opacity: 0; }
+            5% { opacity: 1; transform: translateY(-50px) scaleY(1.2); }
+            80% { transform: translateY(80vh) scaleY(1.5); opacity: 0.9; }
+            100% { transform: translateY(120vh) scaleY(2); opacity: 0; }
         }
 
-        /* Навигация */
-        nav {
-            position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 10px;
-            background: var(--glass);
-            padding: 10px 20px; border-radius: 100px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(15px);
-            z-index: 9999;
+        /* 3. КОНТЕНТ */
+        .page-container {
+            position: relative; z-index: 10;
+            width: 100%; height: 100%;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
         }
 
-        .nav-link {
-            padding: 8px 18px; color: var(--text);
-            text-decoration: none; font-size: 0.8rem;
-            border-radius: 100px; transition: 0.3s;
-            cursor: pointer; opacity: 0.4; text-transform: uppercase;
-            letter-spacing: 1px;
+        .page-container.active {
+            display: flex;
+            animation: fadeIn 0.8s var(--transition-smooth);
         }
 
-        .nav-link.active { background: var(--accent); color: #fff; opacity: 1; box-shadow: 0 0 15px var(--accent); }
+        @keyframes fadeIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
 
-        /* Контент страниц */
-        .page { display: none; min-height: 100vh; padding-top: 15vh; text-align: center; position: relative; z-index: 10; }
-        .page.active { display: block; animation: pageAppear 0.6s ease-out; }
-
-        @keyframes pageAppear { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
-
-        .hero-title { 
-            font-size: clamp(4rem, 18vw, 10rem); 
-            color: var(--accent); 
-            text-shadow: 0 0 20px rgba(var(--accent-rgb), 0.5);
-            margin: 0;
+        /* Настоящий CSS Glitch */
+        .glitch-title {
+            position: relative;
+            font-size: clamp(4rem, 15vw, 12rem);
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
             letter-spacing: -5px;
-            cursor: crosshair;
+            text-shadow: 0 0 30px var(--accent-glow);
         }
 
-        /* Глитч при наведении */
-        .hero-title:hover { animation: titleGlitch 0.2s infinite; }
-
-        @keyframes titleGlitch {
-            0% { transform: translate(0) skew(0deg); }
-            20% { transform: translate(-5px, 5px) skew(-10deg); color: #fff; }
-            40% { transform: translate(5px, -5px) skew(10deg); color: var(--accent); }
-            60% { transform: translate(-5px, -5px) skew(0deg); }
-            80% { transform: translate(5px, 5px) skew(5deg); }
-            100% { transform: translate(0) skew(0deg); }
+        .glitch-title::before, .glitch-title::after {
+            content: attr(data-text);
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0.8;
         }
 
-        /* Idle Слой (Бездействие) */
-        #idle-screen {
+        .glitch-title::before {
+            left: 3px;
+            text-shadow: -2px 0 red;
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+
+        .glitch-title::after {
+            left: -3px;
+            text-shadow: -2px 0 blue;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: inset(20% 0 80% 0); }
+            20% { clip-path: inset(60% 0 10% 0); }
+            40% { clip-path: inset(40% 0 50% 0); }
+            60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 70% 0); }
+            100% { clip-path: inset(30% 0 20% 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip-path: inset(10% 0 60% 0); }
+            20% { clip-path: inset(30% 0 20% 0); }
+            40% { clip-path: inset(70% 0 10% 0); }
+            60% { clip-path: inset(20% 0 50% 0); }
+            80% { clip-path: inset(50% 0 30% 0); }
+            100% { clip-path: inset(5% 0 80% 0); }
+        }
+
+        .subtitle {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            letter-spacing: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* 4. НАВИГАЦИЯ И UI */
+        nav {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 5px;
+            background: var(--glass-bg);
+            padding: 8px; border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            z-index: 9900;
+        }
+
+        .nav-btn {
+            padding: 10px 24px; color: var(--text-muted);
+            font-size: 0.75rem; font-weight: 500; letter-spacing: 2px;
+            text-transform: uppercase; text-decoration: none;
+            border-radius: 50px; cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+        }
+
+        .nav-btn:hover { color: var(--text-main); }
+        .nav-btn.active { background: var(--accent-color); color: #fff; box-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; place-items: center; z-index: 10000;
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-box {
+            background: #050505; padding: 50px; border-radius: 15px;
+            border: 1px solid var(--accent-color); text-align: center;
+            box-shadow: 0 0 40px rgba(186,0,0,0.2);
+        }
+
+        /* Экран бездействия */
+        .idle-screen {
             position: fixed; inset: 0; z-index: 9500;
-            background: radial-gradient(circle, transparent, #000 90%);
+            background: radial-gradient(circle, transparent 10%, #000 90%);
             display: flex; align-items: center; justify-content: center;
-            opacity: 0; 
-            pointer-events: none;
-            transition: opacity 0.3s ease-out; /* Фикс: мгновенное исчезновение */
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.5s ease-out;
         }
-        
-        #idle-screen.show {
-            opacity: 1;
-            transition: opacity 4s ease-in; /* Медленное жуткое появление */
+
+        .idle-screen.active {
+            opacity: 1; transition: opacity 5s ease-in;
+        }
+
+        .idle-text {
+            font-family: 'Times New Roman', serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            color: #400; letter-spacing: 1.5rem;
+            filter: blur(2px);
         }
     </style>
 </head>
@@ -157,140 +211,171 @@
 
     <svg style="position: absolute; width: 0; height: 0;">
         <defs>
-            <filter id="gooey-filter" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+            <filter id="gooey" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
             </filter>
         </defs>
     </svg>
 
-    <div class="blood-layer">
-        <svg id="blood-box" class="blood-svg"></svg>
+    <div class="layer-bg"></div>
+    <div class="layer-noise"></div>
+    <div class="layer-scanlines"></div>
+
+    <svg class="layer-blood" id="blood-canvas"></svg>
+
+    <div class="idle-screen" id="idle-screen">
+        <div class="idle-text">BEHIND YOU</div>
     </div>
 
-    <div id="idle-screen">
-        <div style="font-family: serif; font-size: clamp(3rem, 8vw, 6rem); color: #500; letter-spacing: 20px;">BEHIND YOU</div>
-    </div>
+    <main>
+        <section id="page-info" class="page-container active">
+            <h1 class="glitch-title" data-text="VISION">VISION</h1>
+            <p class="subtitle">System Archive / Vault 04</p>
+        </section>
+
+        <section id="page-gallery" class="page-container">
+            <h2 style="color: var(--accent-color); letter-spacing: 5px;">ARCHIVE UNLOCKED</h2>
+            <p class="subtitle">Data integrity compromised.</p>
+        </section>
+
+        <section id="page-horizon" class="page-container">
+            <h2 style="color: var(--accent-color); letter-spacing: 5px;">THE HORIZON</h2>
+            <p class="subtitle">Connection established.</p>
+        </section>
+    </main>
 
     <nav>
-        <div class="nav-link active" onclick="showPage('info')">Vision</div>
-        <div class="nav-link" onclick="handleAuth('gallery')">Archive</div>
-        <div class="nav-link" onclick="showPage('horizon')">Horizon</div>
+        <div class="nav-btn active" data-target="page-info">Main</div>
+        <div class="nav-btn" data-target="page-gallery">Archive</div>
+        <div class="nav-btn" data-target="page-horizon">Horizon</div>
     </nav>
 
-    <section id="info" class="page active">
-        <h1 class="hero-title">VISION</h1>
-        <p style="opacity: 0.3; letter-spacing: 15px; font-size: 0.7rem; margin-top: 20px;">SYSTEM ARCHIVE v.04</p>
-    </section>
-
-    <section id="gallery" class="page">
-        <h2 style="color: var(--accent)">ENCRYPTED DATA</h2>
-        <p style="opacity: 0.5">Authorization successful.</p>
-    </section>
-
-    <section id="horizon" class="page">
-        <h2 style="color: var(--accent)">THE HORIZON</h2>
-        <p style="opacity: 0.5">Beyond the digital veil.</p>
-    </section>
-
-    <div id="auth-modal" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); display:none; place-items:center; z-index:10000;">
-        <div style="background:#000; padding:50px; border:1px solid var(--accent); border-radius:20px; text-align:center;">
-            <h2 style="color:var(--accent); margin-bottom:30px;">IDENTIFY YOURSELF</h2>
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-box">
+            <h2 style="color: var(--accent-color); margin-bottom: 30px; letter-spacing: 3px;">SECURE ACCESS</h2>
             <div id="google-btn"></div>
-            <button onclick="document.getElementById('auth-modal').style.display='none'" style="margin-top:20px; background:none; border:none; color:#444; cursor:pointer;">ABORT</button>
+            <button id="close-modal-btn" style="margin-top:25px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-family: inherit; letter-spacing: 2px;">ABORT</button>
         </div>
     </div>
 
     <script>
-        const CONFIG = { allowed: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"] };
-        let state = { isAuth: false };
+        const AppConfig = {
+            allowedEmails: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"],
+            clientId: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
+            idleTimeLimit: 12000 // 12 секунд до появления надписи
+        };
 
-        // Генератор капель крови
-        function spawnBlood() {
-            const box = document.getElementById('blood-box');
-            for (let i = 0; i < 15; i++) {
-                const drop = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+        let isAuthorized = false;
+        let idleTimer = null;
+        const modal = document.getElementById('auth-modal');
+        const idleScreen = document.getElementById('idle-screen');
+
+        // 1. Система генерации крови
+        function spawnBloodDrops() {
+            const canvas = document.getElementById('blood-canvas');
+            const dropCount = 18;
+
+            for (let i = 0; i < dropCount; i++) {
+                const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
                 const x = Math.random() * 100;
-                const radiusX = 10 + Math.random() * 25;
-                const delay = Math.random() * 25;
-                const duration = 15 + Math.random() * 15;
+                const radius = 8 + Math.random() * 20;
+                const delay = Math.random() * 20;
+                const duration = 12 + Math.random() * 15;
 
-                drop.setAttribute("class", "blood-drop");
-                drop.setAttribute("cx", `${x}%`);
-                drop.setAttribute("cy", "-10%");
-                drop.setAttribute("rx", radiusX);
-                drop.setAttribute("ry", radiusX * 2.5);
-                drop.style.animationDelay = `${delay}s`;
-                drop.style.animationDuration = `${duration}s`;
+                ellipse.setAttribute("class", "blood-drop");
+                ellipse.setAttribute("cx", `${x}%`);
+                ellipse.setAttribute("cy", "-5%");
+                ellipse.setAttribute("rx", radius);
+                ellipse.setAttribute("ry", radius * 2.5);
+                ellipse.style.animationDelay = `-${delay}s`;
+                ellipse.style.animationDuration = `${duration}s`;
 
-                box.appendChild(drop);
+                canvas.appendChild(ellipse);
             }
         }
 
-        // Переключение страниц
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            
-            document.querySelectorAll('.nav-link').forEach(link => {
-                const text = link.innerText.toLowerCase();
-                link.classList.toggle('active', text === id || (id === 'info' && text === 'vision'));
+        // 2. Навигация
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                
+                // Проверка прав для раздела Archive
+                if (targetId === 'page-gallery' && !isAuthorized) {
+                    modal.style.display = 'grid';
+                    return;
+                }
+
+                // Переключение UI
+                document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                
+                document.getElementById(targetId).classList.add('active');
+                btn.classList.add('active');
             });
-        }
-
-        // Вызов авторизации
-        function handleAuth(target) {
-            if (state.isAuth) showPage(target);
-            else {
-                const modal = document.getElementById('auth-modal');
-                modal.style.display = 'grid';
-                // Перехват клика вне карточки для закрытия
-                modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
-            }
-        }
-
-        // Успешный логин
-        function onSignIn(response) {
-            const user = JSON.parse(atob(response.credential.split('.')[1]));
-            if (CONFIG.allowed.includes(user.email)) {
-                state.isAuth = true;
-                document.getElementById('auth-modal').style.display = 'none';
-                showPage('gallery');
-            } else {
-                alert("ACCESS DENIED");
-            }
-        }
-
-        // Логика Idle (Если пользователь не трогает мышь 10 секунд)
-        let idleCounter;
-        const resetIdle = () => {
-            document.getElementById('idle-screen').classList.remove('show');
-            clearTimeout(idleCounter);
-            idleCounter = setTimeout(() => {
-                document.getElementById('idle-screen').classList.add('show');
-            }, 10000);
-        };
-
-        window.onload = () => {
-            spawnBlood();
-            resetIdle();
-            
-            // Защита от ошибок, если Google скрипт заблокирован AdBlock'ом
-            if (typeof google !== 'undefined' && google.accounts) {
-                google.accounts.id.initialize({
-                    client_id: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
-                    callback: onSignIn
-                });
-                google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
-            } else {
-                document.getElementById("google-btn").innerHTML = "<p style='color: #444;'>Auth unavailable. Check adblocker.</p>";
-            }
-        };
-
-        // Отслеживание активности
-        ['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach(evt => {
-            window.addEventListener(evt, resetIdle);
         });
+
+        // 3. Авторизация (Google)
+        function handleCredentialResponse(response) {
+            try {
+                const payload = JSON.parse(atob(response.credential.split('.')[1]));
+                if (AppConfig.allowedEmails.includes(payload.email)) {
+                    isAuthorized = true;
+                    modal.style.display = 'none';
+                    document.querySelector('.nav-btn[data-target="page-gallery"]').click();
+                } else {
+                    alert("ACCESS DENIED: Entity not recognized.");
+                }
+            } catch (e) {
+                console.error("Auth parsing error", e);
+            }
+        }
+
+        // Закрытие модального окна
+        document.getElementById('close-modal-btn').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+        // 4. Система Бездействия (Idle)
+        function resetIdleTimer() {
+            idleScreen.classList.remove('active');
+            clearTimeout(idleTimer);
+            
+            // Не запускаем скример, если открыто окно входа
+            if (modal.style.display !== 'grid') {
+                idleTimer = setTimeout(() => {
+                    idleScreen.classList.add('active');
+                }, AppConfig.idleTimeLimit);
+            }
+        }
+
+        ['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, resetIdleTimer);
+        });
+
+        // Инициализация при загрузке
+        window.onload = () => {
+            spawnBloodDrops();
+            resetIdleTimer();
+
+            // Безопасная инициализация Google API
+            if (typeof google !== 'undefined') {
+                google.accounts.id.initialize({
+                    client_id: AppConfig.clientId,
+                    callback: handleCredentialResponse
+                });
+                google.accounts.id.renderButton(document.getElementById("google-btn"), { 
+                    theme: "filled_black", size: "large" 
+                });
+            } else {
+                document.getElementById("google-btn").innerHTML = "<span style='color:red;'>Auth system offline (Check AdBlock).</span>";
+            }
+        };
     </script>
 </body>
 </html>
