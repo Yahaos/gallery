@@ -125,25 +125,16 @@
             80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
         }
 
-        /* ЖУТКИЙ ЭФФЕКТ ДЛЯ ТЕКСТА (Нервная дрожь) */
-        @keyframes subtle-jitter {
-            0%, 100% { transform: translate(0,0); filter: blur(0); opacity: 1; }
-            10% { transform: translate(-1px, 0.5px); filter: blur(0.3px); opacity: 0.9; }
-            20% { transform: translate(0.5px, -0.5px); }
-            30% { transform: translate(-0.5px, -1px); filter: blur(0); opacity: 1; }
-            50% { transform: translate(1px, 0.5px); filter: blur(0.5px); color: #c0c0c0; }
-            60% { transform: translate(-1px, -0.5px); filter: blur(0); }
-            70% { opacity: 0.85; }
-            90% { transform: translate(0.5px, 0px); }
+        /* МЕДЛЕННОЕ ПЛАВНОЕ ДЫХАНИЕ ТЕКСТА (Вместо мигания и дрожи) */
+        @keyframes slow-breathe-text {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
         .creepy-body-text p {
-            animation: subtle-jitter 0.15s infinite linear;
-            backface-visibility: hidden;
+            animation: slow-breathe-text 6s ease-in-out infinite;
             margin-bottom: 20px;
         }
-        
-        .creepy-body-text p:nth-of-type(1) { animation-duration: 0.13s; animation-delay: 0.02s; }
 
         .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: 40px;}
 
