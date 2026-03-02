@@ -27,6 +27,32 @@
             user-select: none;
         }
 
+        /* Стартовый экран для активации звука */
+        #start-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030303;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            z-index: 100;
+            transition: opacity 1s ease-out;
+            animation: pulse-text 2s infinite alternate;
+        }
+
+        @keyframes pulse-text {
+            from { opacity: 0.3; }
+            to { opacity: 0.8; }
+        }
+
         /* Эффект вспышки молнии */
         #lightning {
             position: absolute;
@@ -38,7 +64,7 @@
             opacity: 0;
             pointer-events: none;
             z-index: 5;
-            transition: opacity 0.05s ease-out; /* Очень резкое появление/затухание */
+            transition: opacity 0.05s ease-out;
         }
 
         .rain-container {
@@ -61,13 +87,11 @@
         }
 
         @keyframes fall {
-            to {
-                transform: translateY(120vh);
-            }
+            to { transform: translateY(120vh); }
         }
 
         .text-container {
-            z-index: 10; /* Текст поверх молнии и дождя */
+            z-index: 10;
             text-align: center;
         }
 
@@ -100,8 +124,9 @@
 </head>
 <body>
 
-    <div id="lightning"></div>
+    <div id="start-overlay">Нажми, чтобы начать</div>
 
+    <div id="lightning"></div>
     <div class="rain-container" id="rain-container"></div>
 
     <div class="text-container">
@@ -109,9 +134,17 @@
     </div>
 
     <script>
+        // --- АУДИО ---
+        const rainAudio = new Audio('https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg');
+        rainAudio.loop = true;
+        rainAudio.volume = 0.4; // Шум дождя фоном
+
+        const thunderAudio = new Audio('https://actions.google.com/sounds/v1/weather/thunder_crack.ogg');
+        thunderAudio.volume = 0.9; // Гром громкий
+
         // --- ГЕНЕРАЦИЯ ДОЖДЯ ---
         const rainContainer = document.getElementById('rain-container');
-        const dropCount = 200; // Немного увеличил плотность для грозы
+        const dropCount = 200;
 
         for (let i = 0; i < dropCount; i++) {
             const drop = document.createElement('div');
@@ -119,7 +152,7 @@
 
             const xPosition = Math.random() * 100;
             const delay = Math.random() * 2;
-            const duration = Math.random() * 0.4 + 0.3; // Ускорил падение (сильный дождь)
+            const duration = Math.random() * 0.4 + 0.3;
             const opacity = Math.random() * 0.5 + 0.2;
 
             drop.style.left = `${xPosition}vw`;
@@ -134,16 +167,20 @@
         const lightning = document.getElementById('lightning');
 
         function triggerLightning() {
+            // Воспроизводим звук грома (сбрасываем время, если уже играл)
+            thunderAudio.currentTime = 0;
+            thunderAudio.play();
+
             // Первая вспышка
-            lightning.style.opacity = Math.random() * 0.5 + 0.3; // Яркость от 0.3 до 0.8
+            lightning.style.opacity = Math.random() * 0.5 + 0.3;
             
             setTimeout(() => {
                 lightning.style.opacity = 0;
                 
-                // Случайная вероятность двойной вспышки (как настоящая молния)
+                // Вероятность двойной вспышки
                 if (Math.random() > 0.4) {
                     setTimeout(() => {
-                        lightning.style.opacity = Math.random() * 0.6 + 0.4; // Вторая вспышка ярче
+                        lightning.style.opacity = Math.random() * 0.6 + 0.4;
                         setTimeout(() => {
                             lightning.style.opacity = 0;
                         }, 50 + Math.random() * 100);
@@ -151,13 +188,27 @@
                 }
             }, 50 + Math.random() * 100);
 
-            // Планируем следующую молнию (случайный интервал от 3 до 10 секунд)
-            const nextFlash = 3000 + Math.random() * 7000;
+            // Планируем следующую молнию (от 5 до 15 секунд)
+            const nextFlash = 5000 + Math.random() * 10000;
             setTimeout(triggerLightning, nextFlash);
         }
 
-        // Запускаем первую молнию через случайное время до 5 секунд
-        setTimeout(triggerLightning, Math.random() * 5000);
+        // --- ИНИЦИАЛИЗАЦИЯ ПО КЛИКУ ---
+        const startOverlay = document.getElementById('start-overlay');
+        
+        startOverlay.addEventListener('click', () => {
+            // Прячем оверлей
+            startOverlay.style.opacity = '0';
+            setTimeout(() => {
+                startOverlay.style.display = 'none';
+            }, 1000);
+
+            // Включаем звук дождя
+            rainAudio.play();
+
+            // Запускаем первую молнию через случайное время до 4 секунд
+            setTimeout(triggerLightning, Math.random() * 4000);
+        });
     </script>
 
 </body>
