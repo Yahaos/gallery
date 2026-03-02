@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Базовые настройки */
         * {
             margin: 0;
             padding: 0;
@@ -18,8 +17,8 @@
         body, html {
             width: 100%;
             height: 100%;
-            background-color: #030303; /* Почти черный фон */
-            overflow: hidden; /* Скрываем скролл */
+            background-color: #030303;
+            overflow: hidden;
             font-family: 'Cinzel', serif;
             display: flex;
             justify-content: center;
@@ -28,53 +27,61 @@
             user-select: none;
         }
 
-        /* Контейнер для капель дождя */
+        /* Эффект вспышки молнии */
+        #lightning {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.05s ease-out; /* Очень резкое появление/затухание */
+        }
+
         .rain-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Чтобы дождь не мешал кликам */
+            pointer-events: none;
             z-index: 1;
         }
 
-        /* Стили отдельной капли */
         .drop {
             position: absolute;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.3));
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.4));
             width: 1px;
-            height: 80px;
-            top: -100px; /* Прячем каплю выше экрана до начала анимации */
+            height: 100px;
+            top: -120px;
             animation: fall linear infinite;
         }
 
-        /* Анимация падения дождя */
         @keyframes fall {
             to {
-                transform: translateY(120vh); /* Падает за пределы нижнего края */
+                transform: translateY(120vh);
             }
         }
 
-        /* Контейнер для текста */
         .text-container {
-            z-index: 2;
+            z-index: 10; /* Текст поверх молнии и дождя */
             text-align: center;
         }
 
-        /* Стили текста "almost" */
         .almost-text {
             color: #ffffff;
-            font-size: clamp(4rem, 10vw, 8rem); /* Адаптивный размер текста */
+            font-size: clamp(4rem, 10vw, 8rem);
             font-weight: 400;
             letter-spacing: 20px;
             text-transform: lowercase;
             margin: 0;
-            margin-right: -20px; /* Компенсация letter-spacing для выравнивания по центру */
+            margin-right: -20px;
             animation: breathe 4s ease-in-out infinite alternate;
         }
 
-        /* Красивый эффект "дыхания" и свечения текста */
         @keyframes breathe {
             0% {
                 opacity: 0.5;
@@ -93,6 +100,8 @@
 </head>
 <body>
 
+    <div id="lightning"></div>
+
     <div class="rain-container" id="rain-container"></div>
 
     <div class="text-container">
@@ -100,19 +109,18 @@
     </div>
 
     <script>
-        // Скрипт для генерации дождя
+        // --- ГЕНЕРАЦИЯ ДОЖДЯ ---
         const rainContainer = document.getElementById('rain-container');
-        const dropCount = 150; // Количество капель на экране
+        const dropCount = 200; // Немного увеличил плотность для грозы
 
         for (let i = 0; i < dropCount; i++) {
             const drop = document.createElement('div');
             drop.classList.add('drop');
 
-            // Случайные параметры для каждой капли, чтобы дождь выглядел естественно
-            const xPosition = Math.random() * 100; // Позиция по горизонтали (0-100vw)
-            const delay = Math.random() * 2; // Задержка перед стартом
-            const duration = Math.random() * 0.5 + 0.5; // Скорость падения (от 0.5с до 1с)
-            const opacity = Math.random() * 0.5 + 0.2; // Прозрачность капли
+            const xPosition = Math.random() * 100;
+            const delay = Math.random() * 2;
+            const duration = Math.random() * 0.4 + 0.3; // Ускорил падение (сильный дождь)
+            const opacity = Math.random() * 0.5 + 0.2;
 
             drop.style.left = `${xPosition}vw`;
             drop.style.animationDuration = `${duration}s`;
@@ -121,6 +129,35 @@
 
             rainContainer.appendChild(drop);
         }
+
+        // --- ГЕНЕРАЦИЯ ГРОЗЫ ---
+        const lightning = document.getElementById('lightning');
+
+        function triggerLightning() {
+            // Первая вспышка
+            lightning.style.opacity = Math.random() * 0.5 + 0.3; // Яркость от 0.3 до 0.8
+            
+            setTimeout(() => {
+                lightning.style.opacity = 0;
+                
+                // Случайная вероятность двойной вспышки (как настоящая молния)
+                if (Math.random() > 0.4) {
+                    setTimeout(() => {
+                        lightning.style.opacity = Math.random() * 0.6 + 0.4; // Вторая вспышка ярче
+                        setTimeout(() => {
+                            lightning.style.opacity = 0;
+                        }, 50 + Math.random() * 100);
+                    }, 50 + Math.random() * 150);
+                }
+            }, 50 + Math.random() * 100);
+
+            // Планируем следующую молнию (случайный интервал от 3 до 10 секунд)
+            const nextFlash = 3000 + Math.random() * 7000;
+            setTimeout(triggerLightning, nextFlash);
+        }
+
+        // Запускаем первую молнию через случайное время до 5 секунд
+        setTimeout(triggerLightning, Math.random() * 5000);
     </script>
 
 </body>
