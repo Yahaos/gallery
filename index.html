@@ -134,6 +134,37 @@
     </div>
 
     <script>
+        // --- ЗАЩИТА ОТ КОПИРОВАНИЯ И DEVTOOLS ---
+        const warningMessage = "Don't try to do this.";
+
+        // Блокировка правого клика
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert(warningMessage);
+        });
+
+        // Блокировка горячих клавиш
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                alert(warningMessage);
+                return false;
+            }
+            // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+                e.preventDefault();
+                alert(warningMessage);
+                return false;
+            }
+            // Ctrl+U (Просмотр кода)
+            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                e.preventDefault();
+                alert(warningMessage);
+                return false;
+            }
+        });
+
         // --- АУДИО ---
         const rainAudio = new Audio('https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg');
         rainAudio.loop = true;
