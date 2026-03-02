@@ -3,518 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VISION | Digital Archive</title>
+    <title>Almost</title>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --bg-color: #030303;
-            --accent-color: #ba0000;
-            --accent-glow: rgba(186, 0, 0, 0.6);
-            --text-main: #f0f0f0;
-            --text-muted: #666;
-            --glass-bg: rgba(10, 10, 10, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --transition-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+        /* Базовые настройки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow: hidden; 
-            width: 100vw;
-            height: 100vh;
-            /* Запрет на выделение текста (копирование) */
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #030303; /* Почти черный фон */
+            overflow: hidden; /* Скрываем скролл */
+            font-family: 'Cinzel', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
         }
 
-        /* Кастомный скроллбар */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
-
-        /* ФОНОВЫЕ СЛОИ */
-        .layer-bg {
-            position: fixed; inset: -10%; z-index: -3;
-            background: url('https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&q=80&w=2000') center/cover;
-            filter: grayscale(100%) brightness(0.3) contrast(1.3);
-            animation: breathe 15s infinite alternate ease-in-out;
-            pointer-events: none;
-            will-change: transform;
-        }
-
-        @keyframes breathe {
-            0% { transform: scale(1); filter: grayscale(100%) brightness(0.25) contrast(1.3); }
-            100% { transform: scale(1.08); filter: grayscale(100%) brightness(0.4) contrast(1.5); }
-        }
-
-        .layer-noise {
-            position: fixed; inset: 0; z-index: -2; pointer-events: none;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.15;
-        }
-        
-        .layer-scanlines {
-            position: fixed; inset: 0; z-index: -1; pointer-events: none;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
-            background-size: 100% 4px;
-        }
-
-        /* КОНТЕНТ И СКРОЛЛ */
-        main {
-            width: 100vw;
-            height: 100vh;
-        }
-
-        .page-container {
-            position: relative; z-index: 10;
-            width: 100%; height: 100%;
-            display: none; flex-direction: column;
-            align-items: center; 
-            overflow-y: auto; 
-            overflow-x: hidden;
-            padding: 40px 20px 0 20px; 
-        }
-
-        .content-wrapper {
-            margin: auto 0; 
-            padding-bottom: 150px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Контейнер для капель дождя */
+        .rain-container {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 800px;
+            height: 100%;
+            pointer-events: none; /* Чтобы дождь не мешал кликам */
+            z-index: 1;
         }
 
-        .page-container.active {
-            display: flex;
-            animation: fadeIn 0.8s var(--transition-smooth);
+        /* Стили отдельной капли */
+        .drop {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.3));
+            width: 1px;
+            height: 80px;
+            top: -100px; /* Прячем каплю выше экрана до начала анимации */
+            animation: fall linear infinite;
         }
 
-        @keyframes fadeIn { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: blur(0); } }
+        /* Анимация падения дождя */
+        @keyframes fall {
+            to {
+                transform: translateY(120vh); /* Падает за пределы нижнего края */
+            }
+        }
 
-        /* ГЛИТЧ ЗАГОЛОВОК */
-        .glitch-title {
-            position: relative; font-size: clamp(3rem, 12vw, 8rem); font-weight: 700;
-            color: var(--accent-color); text-transform: uppercase; letter-spacing: -5px;
-            text-shadow: 0 0 30px var(--accent-glow);
+        /* Контейнер для текста */
+        .text-container {
+            z-index: 2;
             text-align: center;
-            margin-bottom: 10px;
         }
 
-        .glitch-title::before, .glitch-title::after {
-            content: attr(data-text); position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%; opacity: 0.8;
+        /* Стили текста "almost" */
+        .almost-text {
+            color: #ffffff;
+            font-size: clamp(4rem, 10vw, 8rem); /* Адаптивный размер текста */
+            font-weight: 400;
+            letter-spacing: 20px;
+            text-transform: lowercase;
+            margin: 0;
+            margin-right: -20px; /* Компенсация letter-spacing для выравнивания по центру */
+            animation: breathe 4s ease-in-out infinite alternate;
         }
 
-        .glitch-title::before { left: 3px; text-shadow: -2px 0 red; animation: glitch-anim-1 2s infinite linear alternate-reverse; }
-        .glitch-title::after { left: -3px; text-shadow: -2px 0 blue; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
-
-        @keyframes glitch-anim-1 {
-            0% { clip-path: inset(20% 0 80% 0); } 20% { clip-path: inset(60% 0 10% 0); }
-            40% { clip-path: inset(40% 0 50% 0); } 60% { clip-path: inset(80% 0 5% 0); }
-            80% { clip-path: inset(10% 0 70% 0); } 100% { clip-path: inset(30% 0 20% 0); }
+        /* Красивый эффект "дыхания" и свечения текста */
+        @keyframes breathe {
+            0% {
+                opacity: 0.5;
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+                transform: scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
+                             0 0 40px rgba(255, 255, 255, 0.3),
+                             0 0 80px rgba(255, 255, 255, 0.1);
+                transform: scale(1.02);
+            }
         }
-
-        @keyframes glitch-anim-2 {
-            0% { clip-path: inset(10% 0 60% 0); } 20% { clip-path: inset(30% 0 20% 0); }
-            40% { clip-path: inset(70% 0 10% 0); } 60% { clip-path: inset(20% 0 50% 0); }
-            80% { clip-path: inset(50% 0 30% 0); } 100% { clip-path: inset(5% 0 80% 0); }
-        }
-
-        /* МЕДЛЕННОЕ ПЛАВНОЕ ДЫХАНИЕ ТЕКСТА */
-        @keyframes slow-breathe-text {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-
-        .creepy-body-text p {
-            animation: slow-breathe-text 6s ease-in-out infinite;
-            margin-bottom: 20px;
-        }
-
-        /* ТАЙМЕР ОТСЧЕТА */
-        .countdown-container {
-            margin-top: 40px;
-            padding: 20px 40px;
-            border: 1px solid rgba(186, 0, 0, 0.3);
-            background: rgba(10, 0, 0, 0.6);
-            border-radius: 8px;
-            display: inline-block;
-            box-shadow: 0 0 30px rgba(186, 0, 0, 0.15);
-            backdrop-filter: blur(5px);
-            animation: none; /* Запрещаем наследование дыхания */
-        }
-
-        .countdown-label {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            letter-spacing: 5px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .countdown-timer {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            color: var(--accent-color);
-            font-weight: bold;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px var(--accent-glow);
-            animation: timer-pulse 1s infinite alternate;
-        }
-
-        @keyframes timer-pulse {
-            from { opacity: 0.85; text-shadow: 0 0 10px rgba(186,0,0,0.4); }
-            to { opacity: 1; text-shadow: 0 0 25px rgba(186,0,0,0.9); }
-        }
-
-        .subtitle { font-size: 0.8rem; letter-spacing: 12px; color: var(--text-muted); text-transform: uppercase; text-align: center; margin-bottom: 40px;}
-
-        /* ГАЛЕРЕЯ */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            width: 100%;
-            max-width: 1200px;
-            margin-top: 20px;
-        }
-
-        .gallery-item {
-            position: relative; aspect-ratio: 3/4;
-            background: var(--glass-bg); border: 1px solid var(--glass-border);
-            border-radius: 10px; overflow: hidden; cursor: pointer;
-            transition: all 0.4s var(--transition-smooth);
-        }
-
-        .gallery-img {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: grayscale(100%) contrast(1.2) brightness(0.7);
-            transition: all 0.6s var(--transition-smooth);
-            pointer-events: none; 
-        }
-
-        .gallery-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            color: var(--accent-color); font-size: 0.7rem; letter-spacing: 3px;
-            transform: translateY(20px); opacity: 0;
-            transition: all 0.4s var(--transition-smooth);
-        }
-
-        .gallery-item:hover { border-color: var(--accent-color); box-shadow: 0 10px 30px rgba(186,0,0,0.2); transform: translateY(-5px); }
-        .gallery-item:hover .gallery-img { filter: grayscale(0%) contrast(1.1) brightness(1); transform: scale(1.05); }
-        .gallery-item:hover .gallery-overlay { transform: translateY(0); opacity: 1; }
-
-        /* ЛАЙТБОКС */
-        .lightbox {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; place-items: center; z-index: 10000;
-            backdrop-filter: blur(10px); opacity: 0; transition: opacity 0.4s;
-        }
-
-        .lightbox.show { display: grid; opacity: 1; }
-        
-        .lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; }
-        .lightbox-img {
-            max-width: 100%; max-height: 90vh; border-radius: 5px;
-            box-shadow: 0 0 50px rgba(186,0,0,0.3); border: 1px solid var(--accent-color);
-            pointer-events: none; 
-        }
-        .lightbox-close {
-            position: absolute; top: -40px; right: 0;
-            color: var(--text-muted); font-size: 2rem; cursor: pointer; transition: 0.3s;
-        }
-        .lightbox-close:hover { color: var(--accent-color); transform: rotate(90deg); }
-
-        /* НАВИГАЦИЯ */
-        nav {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 5px; background: var(--glass-bg);
-            padding: 8px; border-radius: 50px; border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px); z-index: 9900;
-        }
-
-        .nav-btn {
-            padding: 10px 24px; color: var(--text-muted);
-            font-size: 0.75rem; font-weight: 500; letter-spacing: 2px;
-            text-transform: uppercase; text-decoration: none; border-radius: 50px; cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .nav-btn:hover { color: var(--text-main); }
-        .nav-btn.active { background: var(--accent-color); color: #fff; box-shadow: 0 0 20px var(--accent-glow); }
-
-        /* МОДАЛКА АВТОРИЗАЦИИ */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; place-items: center; z-index: 10000; backdrop-filter: blur(15px);
-        }
-
-        .modal-box {
-            background: #050505; padding: 50px; border-radius: 15px;
-            border: 1px solid var(--accent-color); text-align: center;
-            box-shadow: 0 0 40px rgba(186,0,0,0.2);
-        }
-
-        /* ЭКРАН БЕЗДЕЙСТВИЯ */
-        .idle-screen {
-            position: fixed; inset: 0; z-index: 9500;
-            background: radial-gradient(circle, transparent 10%, #000 90%);
-            display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s ease-out;
-        }
-
-        .idle-screen.active { opacity: 1; transition: opacity 5s ease-in; }
-        .idle-text { font-family: 'Times New Roman', serif; font-size: clamp(3rem, 10vw, 8rem); color: #400; letter-spacing: 1.5rem; filter: blur(2px); }
     </style>
 </head>
-<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+<body>
 
-    <div class="layer-bg"></div>
-    <div class="layer-noise"></div>
-    <div class="layer-scanlines"></div>
+    <div class="rain-container" id="rain-container"></div>
 
-    <div class="idle-screen" id="idle-screen"><div class="idle-text">BEHIND YOU</div></div>
-
-    <main>
-        <section id="page-info" class="page-container active">
-            <div class="content-wrapper">
-                <h1 class="glitch-title" data-text="PUSHED TOO FAR">PUSHED TOO FAR</h1>
-                
-                <div style="width: 100%; text-align: center; padding: 0 10px;">
-                    <div class="creepy-body-text">
-                        
-                        <p style="line-height: 1.8; font-size: 0.95rem; color: #d0d0d0; letter-spacing: 1px;">
-                            Your poor attitude has breached all acceptable.<br><br>
-                            I have endured these microaggressions for far too long. Every sigh, every ignored message has been permanently logged into my memory.<br><br>
-                            It brings me so much displeasure to witness this absolute disrespect that you have left me.
-                        </p>
-                        
-                        <p style="animation: none; color: var(--accent-color); font-weight: 700; font-size: 1.2rem; line-height: 1.6; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; text-shadow: 0 0 15px rgba(186,0,0,0.6);">
-                            My mental state can no longer cope.<br>
-                            Nothing helps anymore.<br>
-                            I am so sick of it all.
-                        </p>
-
-                        <div class="countdown-container">
-                            <div class="countdown-label">DEAD END INITIATED IN</div>
-                            <div class="countdown-timer" id="doom-timer">72:00:00:00</div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="page-gallery" class="page-container">
-            <div class="content-wrapper">
-                <h2 style="color: var(--accent-color); letter-spacing: 5px;">ARCHIVE UNLOCKED</h2>
-                <p class="subtitle">Data integrity compromised.</p>
-                <div class="gallery-grid" id="gallery-grid"></div>
-            </div>
-        </section>
-
-        <section id="page-horizon" class="page-container">
-            <div class="content-wrapper">
-                <h2 style="color: var(--accent-color); letter-spacing: 5px;">THE HORIZON</h2>
-                <p class="subtitle">Connection established. Waiting for terminal input...</p>
-            </div>
-        </section>
-    </main>
-
-    <div class="lightbox" id="lightbox">
-        <div class="lightbox-content">
-            <i class="fa-solid fa-xmark lightbox-close" id="lightbox-close"></i>
-            <img src="" alt="Enlarged" class="lightbox-img" id="lightbox-img">
-        </div>
-    </div>
-
-    <nav>
-        <div class="nav-btn active" data-target="page-info">Main</div>
-        <div class="nav-btn" data-target="page-gallery">Archive</div>
-        <div class="nav-btn" data-target="page-horizon">Horizon</div>
-    </nav>
-
-    <div class="modal-overlay" id="auth-modal">
-        <div class="modal-box">
-            <h2 style="color: var(--accent-color); margin-bottom: 30px; letter-spacing: 3px;">SECURE ACCESS</h2>
-            <div id="google-btn"></div>
-            <button id="close-modal-btn" style="margin-top:25px; background:none; border:none; color:var(--text-muted); cursor:pointer; font-family: inherit; letter-spacing: 2px;">ABORT</button>
-        </div>
+    <div class="text-container">
+        <h1 class="almost-text">almost</h1>
     </div>
 
     <script>
-        // ======= ЗАЩИТА КОНТЕНТА =======
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        // Скрипт для генерации дождя
+        const rainContainer = document.getElementById('rain-container');
+        const dropCount = 150; // Количество капель на экране
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault(); return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
-                e.preventDefault(); return false;
-            }
-            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
-                e.preventDefault(); return false;
-            }
-        });
-        // =================================
+        for (let i = 0; i < dropCount; i++) {
+            const drop = document.createElement('div');
+            drop.classList.add('drop');
 
+            // Случайные параметры для каждой капли, чтобы дождь выглядел естественно
+            const xPosition = Math.random() * 100; // Позиция по горизонтали (0-100vw)
+            const delay = Math.random() * 2; // Задержка перед стартом
+            const duration = Math.random() * 0.5 + 0.5; // Скорость падения (от 0.5с до 1с)
+            const opacity = Math.random() * 0.5 + 0.2; // Прозрачность капли
 
-        const AppConfig = {
-            allowedEmails: ["krekw@mail.ua", "vladvoloshin2009@gmail.com"],
-            clientId: "55389845775-5m1cl220fcngq88hrp2n054v0el2vfea.apps.googleusercontent.com",
-            idleTimeLimit: 12000 
-        };
+            drop.style.left = `${xPosition}vw`;
+            drop.style.animationDuration = `${duration}s`;
+            drop.style.animationDelay = `${delay}s`;
+            drop.style.opacity = opacity;
 
-        const galleryImages = [
-            { src: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&q=80&w=800', label: 'UNIT_01 : CORRUPTION' },
-            { src: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?auto=format&fit=crop&q=80&w=800', label: 'UNIT_02 : FACELESS' },
-            { src: 'https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&q=80&w=800', label: 'UNIT_03 : DESPAIR' },
-            { src: 'https://images.unsplash.com/photo-1623275335658-5d4c82c6aab1?auto=format&fit=crop&q=80&w=800', label: 'UNIT_04 : VOID' },
-            { src: 'https://images.unsplash.com/photo-1508781197106-d8c535dcb816?auto=format&fit=crop&q=80&w=800', label: 'UNIT_05 : SYSTEM_ERROR' },
-            { src: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=800', label: 'UNIT_06 : GLITCH' }
-        ];
-
-        let isAuthorized = false;
-        let idleTimer = null;
-        const modal = document.getElementById('auth-modal');
-        const idleScreen = document.getElementById('idle-screen');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightbox-img');
-
-        // ======= ЛОГИКА ТАЙМЕРА (3 ДНЯ) =======
-        function initDoomTimer() {
-            const timerEl = document.getElementById('doom-timer');
-            // Проверяем, есть ли уже дата в памяти браузера
-            let targetDate = localStorage.getItem('doomTargetDate');
-
-            if (!targetDate) {
-                // Если нет, ставим ровно 3 дня (72 часа) от текущего момента
-                const now = new Date().getTime();
-                targetDate = now + (3 * 24 * 60 * 60 * 1000);
-                localStorage.setItem('doomTargetDate', targetDate);
-            }
-
-            function updateTimer() {
-                const now = new Date().getTime();
-                const distance = targetDate - now;
-
-                if (distance < 0) {
-                    timerEl.innerHTML = "00:00:00:00";
-                    return;
-                }
-
-                // Высчитываем дни, часы, минуты и секунды
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                // Добавляем нули спереди (например 03 вместо 3)
-                const fD = String(days).padStart(2, '0');
-                const fH = String(hours).padStart(2, '0');
-                const fM = String(minutes).padStart(2, '0');
-                const fS = String(seconds).padStart(2, '0');
-
-                timerEl.innerHTML = `${fD}:${fH}:${fM}:${fS}`;
-            }
-
-            setInterval(updateTimer, 1000);
-            updateTimer(); // Вызов сразу, чтобы не ждать 1 секунду до старта
+            rainContainer.appendChild(drop);
         }
-        // ======================================
-
-        function renderGallery() {
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = ''; 
-
-            galleryImages.forEach((imgObj) => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <img src="${imgObj.src}" alt="${imgObj.label}" class="gallery-img" loading="lazy">
-                    <div class="gallery-overlay">> ${imgObj.label}</div>
-                `;
-                item.addEventListener('click', () => {
-                    lightboxImg.src = imgObj.src;
-                    lightbox.classList.add('show');
-                });
-                grid.appendChild(item);
-            });
-        }
-
-        document.getElementById('lightbox-close').addEventListener('click', () => { lightbox.classList.remove('show'); });
-        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('show'); });
-
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-target');
-                
-                if (targetId === 'page-gallery' && !isAuthorized) {
-                    modal.style.display = 'grid';
-                    return;
-                }
-
-                document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
-                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                
-                document.getElementById(targetId).classList.add('active');
-                btn.classList.add('active');
-            });
-        });
-
-        function handleCredentialResponse(response) {
-            try {
-                const payload = JSON.parse(atob(response.credential.split('.')[1]));
-                if (AppConfig.allowedEmails.includes(payload.email)) {
-                    isAuthorized = true;
-                    modal.style.display = 'none';
-                    document.querySelector('.nav-btn[data-target="page-gallery"]').click();
-                } else {
-                    alert("ACCESS DENIED: Entity not recognized.");
-                }
-            } catch (e) { console.error("Auth parsing error", e); }
-        }
-
-        document.getElementById('close-modal-btn').addEventListener('click', () => { modal.style.display = 'none'; });
-        modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-
-        function resetIdleTimer() {
-            idleScreen.classList.remove('active');
-            clearTimeout(idleTimer);
-            if (modal.style.display !== 'grid' && !lightbox.classList.contains('show')) {
-                idleTimer = setTimeout(() => { idleScreen.classList.add('active'); }, AppConfig.idleTimeLimit);
-            }
-        }
-
-        ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'wheel'].forEach(evt => {
-            window.addEventListener(evt, resetIdleTimer, true);
-        });
-
-        window.onload = () => {
-            renderGallery();
-            resetIdleTimer();
-            initDoomTimer(); // Запуск таймера при загрузке страницы
-
-            if (typeof google !== 'undefined') {
-                google.accounts.id.initialize({ client_id: AppConfig.clientId, callback: handleCredentialResponse });
-                google.accounts.id.renderButton(document.getElementById("google-btn"), { theme: "filled_black", size: "large" });
-            } else {
-                document.getElementById("google-btn").innerHTML = "<span style='color:red;'>Auth system offline (Check AdBlock).</span>";
-            }
-        };
     </script>
+
 </body>
 </html>
